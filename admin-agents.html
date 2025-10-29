@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الوكلاء - Mauri Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-nav {
+            background: #2c5aa0;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: black;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #2c5aa0;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
+        .status-pending { background: #fff3e0; color: #f57c00; padding: 0.3rem 0.8rem; border-radius: 15px; }
+        .status-approved { background: #e8f5e8; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 15px; }
+        .status-rejected { background: #ffebee; color: #c62828; padding: 0.3rem 0.8rem; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>إدارة الوكلاء - Mauri Services</h1>
+        <div>
+            <span>مرحباً، المدير</span>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <a href="admin-dashboard.html">لوحة التحكم</a>
+        <a href="admin-visitors.html">الزوار</a>
+        <a href="admin-orders.html">الطلبات</a>
+        <a href="admin-settings.html">الإعدادات</a>
+        <a href="admin-agents.html" class="active">الوكلاء</a>
+    </nav>
+    
+    <div class="content">
+        <div class="stats-cards">
+            <div class="stat-card">
+                <span class="stat-number" id="totalAgents">0</span>
+                <p>إجمالي الوكلاء</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="pendingAgents">0</span>
+                <p>طلبات pending</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="activeAgents">0</span>
+                <p>وكلاء نشطين</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="agentCommissions">0 MRU</span>
+                <p>عمولات مستحقة</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>طلبات الانضمام</h2>
+            <div id="applicationsTable">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>الوكلاء النشطين</h2>
+            <div id="agentsTable">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من تسجيل الدخول
+        if (!localStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin-login.html';
+        }
+        
+        // بيانات وكلاء تجريبية
+        const sampleAgents = [
+            {
+                id: 1,
+                name: "أحمد محمد",
+                phone: "12345678",
+                city: "نواكشوط",
+                joinDate: "2024-01-10",
+                status: "approved",
+                totalSales: 5,
+                totalCommission: 12500
+            },
+            {
+                id: 2,
+                name: "فاطمة عبد الله", 
+                phone: "87654321",
+                city: "نواكشوط",
+                joinDate: "2024-01-12",
+                status: "approved",
+                totalSales: 3,
+                totalCommission: 7500
+            }
+        ];
+        
+        const sampleApplications = [
+            {
+                id: 1001,
+                name: "سيدي ولد أحمد",
+                phone: "11223344", 
+                city: "نواكشوط",
+                applicationDate: "2024-01-15",
+                status: "pending",
+                experience: "لا توجد خبرة سابقة"
+            }
+        ];
+        
+        function updateStats() {
+            const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
+            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
+            
+            document.getElementById('totalAgents').textContent = agents.length;
+            document.getElementById('pendingAgents').textContent = applications.length;
+            document.getElementById('activeAgents').textContent = agents.filter(a => a.status === 'approved').length;
+            
+            const totalCommissions = agents.reduce((sum, agent) => sum + (agent.totalCommission || 0), 0);
+            document.getElementById('agentCommissions').textContent = totalCommissions + ' MRU';
+        }
+        
+        function loadApplications() {
+            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
+            const table = document.getElementById('applicationsTable');
+            
+            if (applications.length === 0) {
+                table.innerHTML = '<p>لا توجد طلبات انضمام pending</p>';
+                return;
+            }
+            
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الهاتف</th>
+                            <th>المدينة</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${applications.map(app => `
+                            <tr>
+                                <td>${app.name}</td>
+                                <td>${app.phone}</td>
+                                <td>${app.city}</td>
+                                <td>${app.applicationDate}</td>
+                                <td>
+                                    <span class="status-${app.status}">
+                                        ${app.status === 'pending' ? 'قيد المراجعة' : app.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success" onclick="approveApplication(${app.id})">قبول</button>
+                                    <button class="btn btn-danger" onclick="rejectApplication(${app.id})">رفض</button>
+                                    <button class="btn btn-primary" onclick="viewApplication(${app.id})">تفاصيل</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            table.innerHTML = html;
+        }
+        
+        function loadAgents() {
+            const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
+            const table = document.getElementById('agentsTable');
+            
+            if (agents.length === 0) {
+                table.innerHTML = '<p>لا توجد وكلاء مسجلين</p>';
+                return;
+            }
+            
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الهاتف</th>
+                            <th>المدينة</th>
+                            <th>تاريخ الانضمام</th>
+                            <th>عدد المبيعات</th>
+                            <th>إجمالي العمولات</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${agents.map(agent => `
+                            <tr>
+                                <td>${agent.name}</td>
+                                <td>${agent.phone}</td>
+                                <td>${agent.city}</td>
+                                <td>${agent.joinDate}</td>
+                                <td>${agent.totalSales || 0}</td>
+                                <td>${agent.totalCommission || 0} MRU</td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="viewAgent(${agent.id})">تفاصيل</button>
+                                    <button class="btn btn-danger" onclick="removeAgent(${agent.id})">إزالة</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            table.innerHTML = html;
+        }
+        
+        function approveApplication(appId) {
+            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
+            const appIndex = applications.findIndex(app => app.id === appId);
+            
+            if (appIndex !== -1) {
+                const approvedApp = applications[appIndex];
+                
+                // نقل إلى قائمة الوكلاء
+                const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
+                agents.push({
+                    ...approvedApp,
+                    status: 'approved',
+                    joinDate: new Date().toISOString().split('T')[0],
+                    totalSales: 0,
+                    totalCommission: 0
+                });
+                
+                // حذف من الطلبات
+                applications.splice(appIndex, 1);
+                
+                localStorage.setItem('agents', JSON.stringify(agents));
+                localStorage.setItem('agentApplications', JSON.stringify(applications));
+                
+                loadApplications();
+                loadAgents();
+                updateStats();
+                
+                alert('تم قبول الوكيل بنجاح');
+            }
+        }
+        
+        function rejectApplication(appId) {
+            if (confirm('هل أنت متأكد من رفض هذا الطلب؟')) {
+                const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
+                const updatedApplications = applications.filter(app => app.id !== appId);
+                localStorage.setItem('agentApplications', JSON.stringify(updatedApplications));
+                loadApplications();
+                updateStats();
+            }
+        }
+        
+        function viewApplication(appId) {
+            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
+            const application = applications.find(app => app.id === appId);
+            if (application) {
+                alert(`تفاصيل الطلب:\nالاسم: ${application.name}\nالهاتف: ${application.phone}\nالمدينة: ${application.city}\nالخبرة: ${application.experience || 'غير محددة'}`);
+            }
+        }
+        
+        function viewAgent(agentId) {
+            const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
+            const agent = agents.find(a => a.id === agentId);
+            if (agent) {
+                alert(`تفاصيل الوكيل:\nالاسم: ${agent.name}\nالهاتف: ${agent.phone}\nالمدينة: ${agent.city}\nالمبيعات: ${agent.totalSales}\nالعمولات: ${agent.totalCommission} MRU`);
+            }
+        }
+        
+        function removeAgent(agentId) {
+            if (confirm('هل أنت متأكد من إزالة هذا الوكيل؟')) {
+                const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
+                const updatedAgents = agents.filter(agent => agent.id !== agentId);
+                localStorage.setItem('agents', JSON.stringify(updatedAgents));
+                loadAgents();
+                updateStats();
+            }
+        }
+        
+        // تحميل البيانات عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            loadApplications();
+            loadAgents();
+        });
+    </script>
+</body>
+</html>

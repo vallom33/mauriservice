@@ -3,13 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الأسعار - موريتانيا اكسبريس</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>الأسعار - موريتانيا للخدمات</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link.active {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .page-hero {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 100px 2rem 60px;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
         .pricing-plans {
             padding: 80px 0;
-            background: var(--light-bg);
+            background: #f8f9fa;
         }
 
         .pricing-grid {
@@ -20,17 +85,17 @@
         }
 
         .pricing-card {
-            background: var(--white);
+            background: white;
             padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
-            transition: var(--transition);
+            transition: all 0.3s ease;
             border: 2px solid #eee;
         }
 
         .pricing-card.featured {
-            border-color: var(--primary-color);
+            border-color: #2c5aa0;
             transform: scale(1.05);
         }
 
@@ -49,7 +114,7 @@
         .pricing-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -59,19 +124,19 @@
 
         .pricing-icon i {
             font-size: 2rem;
-            color: var(--white);
+            color: white;
         }
 
         .pricing-title {
             font-size: 1.5rem;
-            color: var(--primary-color);
+            color: #2c5aa0;
             margin-bottom: 0.5rem;
         }
 
         .pricing-price {
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #2c5aa0;
             margin-bottom: 1rem;
         }
 
@@ -89,21 +154,37 @@
             border-bottom: none;
         }
 
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1e3a8a;
+        }
+
         .price-comparison {
-            background: var(--white);
+            background: white;
             padding: 80px 0;
         }
 
         .comparison-table {
-            background: var(--white);
-            border-radius: var(--border-radius);
+            background: white;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .table-header {
-            background: var(--primary-color);
-            color: var(--white);
+            background: #2c5aa0;
+            color: white;
             padding: 1.5rem;
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
@@ -121,7 +202,7 @@
         }
 
         .table-row:nth-child(even) {
-            background: var(--light-bg);
+            background: #f8f9fa;
         }
 
         .service-name {
@@ -129,7 +210,7 @@
         }
 
         .our-price {
-            color: var(--primary-color);
+            color: #2c5aa0;
             font-weight: 700;
         }
 
@@ -137,17 +218,58 @@
             color: #666;
             text-decoration: line-through;
         }
+
+        .footer {
+            background: #1e3a8a;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+            
+            .pricing-card.featured:hover {
+                transform: translateY(-10px);
+            }
+            
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <!-- نفس شريط التنقل -->
+        <div class="nav-logo">
+            <i class="fas fa-passport"></i>
+            <span>موريتانيا للخدمات</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <a href="services.html" class="nav-link">الخدمات</a>
+            <a href="pricing.html" class="nav-link active">الأسعار</a>
+              <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="about.html" class="nav-link">من نحن</a>
+            <a href="contact.html" class="nav-link">اتصل بنا</a>
+            <a href="admin-login.html" class="nav-link">الإدارة</a>
+        </div>
     </nav>
 
     <section class="page-hero">
         <div class="container">
-            <h1 data-i18n="pricingTitle">أسعارنا التنافسية</h1>
-            <p data-i18n="pricingSubtitle">أسعار شفافة بدون مفاجآت - جودة عالية بتكلفة معقولة</p>
+            <h1>أسعارنا التنافسية</h1>
+            <p>أسعار شفافة بدون مفاجآت - جودة عالية بتكلفة معقولة</p>
         </div>
     </section>
 
@@ -160,19 +282,19 @@
                         <div class="pricing-icon">
                             <i class="fas fa-file-alt"></i>
                         </div>
-                        <h3 class="pricing-title" data-i18n="basicPackage">الباقة الأساسية</h3>
+                        <h3 class="pricing-title">الباقة الأساسية</h3>
                         <div class="pricing-price">1500 MRU</div>
-                        <p data-i18n="basicPackageDesc">لشهادات الميلاد والإقامة</p>
+                        <p>لشهادات الميلاد والإقامة</p>
                     </div>
                     
                     <ul class="pricing-features">
-                        <li data-i18n="feature1">استخراج وثيقة واحدة</li>
-                        <li data-i18n="feature2">تسليم خلال 48 ساعة</li>
-                        <li data-i18n="feature3">دعم عبر الواتساب</li>
-                        <li data-i18n="feature4">مراجعة المستندات</li>
+                        <li>استخراج وثيقة واحدة</li>
+                        <li>تسليم خلال 48 ساعة</li>
+                        <li>دعم عبر الواتساب</li>
+                        <li>مراجعة المستندات</li>
                     </ul>
                     
-                    <button class="btn-primary" onclick="orderService('basic')" data-i18n="orderNow">اطلب الآن</button>
+                    <button class="btn-primary" onclick="orderService('شهادة ميلاد', 1500)">اطلب الآن</button>
                 </div>
 
                 <!-- باقة متوسطة -->
@@ -181,19 +303,19 @@
                         <div class="pricing-icon">
                             <i class="fas fa-id-card"></i>
                         </div>
-                        <h3 class="pricing-title" data-i18n="standardPackage">الباقة المتوسطة</h3>
+                        <h3 class="pricing-title">الباقة المتوسطة</h3>
                         <div class="pricing-price">5000 MRU</div>
-                        <p data-i18n="standardPackageDesc">لرخص القيادة والوثائق المتوسطة</p>
+                        <p>لرخص القيادة والوثائق المتوسطة</p>
                     </div>
                     
                     <ul class="pricing-features">
-                        <li data-i18n="feature5">رخصة قيادة كاملة</li>
-                        <li data-i18n="feature6">تسليم خلال 24 ساعة</li>
-                        <li data-i18n="feature7">دعم هاتفي مخصص</li>
-                        <li data-i18n="feature8">متابعة حتى التسليم</li>
+                        <li>رخصة قيادة كاملة</li>
+                        <li>تسليم خلال 24 ساعة</li>
+                        <li>دعم هاتفي مخصص</li>
+                        <li>متابعة حتى التسليم</li>
                     </ul>
                     
-                    <button class="btn-primary" onclick="orderService('standard')" data-i18n="orderNow">اطلب الآن</button>
+                    <button class="btn-primary" onclick="orderService('رخصة قيادة', 5000)">اطلب الآن</button>
                 </div>
 
                 <!-- باقة متقدمة -->
@@ -202,19 +324,19 @@
                         <div class="pricing-icon">
                             <i class="fas fa-passport"></i>
                         </div>
-                        <h3 class="pricing-title" data-i18n="premiumPackage">الباقة المتقدمة</h3>
+                        <h3 class="pricing-title">الباقة المتقدمة</h3>
                         <div class="pricing-price">15000 MRU</div>
-                        <p data-i18n="premiumPackageDesc">لجوازات السفر والوثائق المعقدة</p>
+                        <p>لجوازات السفر والوثائق المعقدة</p>
                     </div>
                     
                     <ul class="pricing-features">
-                        <li data-i18n="feature9">جواز سفر كامل</li>
-                        <li data-i18n="feature10">تسليم عاجل 12 ساعة</li>
-                        <li data-i18n="feature11">دعم 24/7</li>
-                        <li data-i18n="feature12">خدمة استعجالية</li>
+                        <li>جواز سفر كامل</li>
+                        <li>تسليم عاجل 12 ساعة</li>
+                        <li>دعم 24/7</li>
+                        <li>خدمة استعجالية</li>
                     </ul>
                     
-                    <button class="btn-primary" onclick="orderService('premium')" data-i18n="orderNow">اطلب الآن</button>
+                    <button class="btn-primary" onclick="orderService('جواز سفر', 15000)">اطلب الآن</button>
                 </div>
             </div>
         </div>
@@ -222,35 +344,35 @@
 
     <section class="price-comparison">
         <div class="container">
-            <h2 class="section-title" data-i18n="priceComparison">مقارنة الأسعار</h2>
+            <h2 style="text-align: center; font-size: 2.5rem; color: #2c5aa0; margin-bottom: 3rem;">مقارنة الأسعار</h2>
             
             <div class="comparison-table">
                 <div class="table-header">
-                    <div data-i18n="service">الخدمة</div>
-                    <div data-i18n="ourPrice">سعرنا</div>
-                    <div data-i18n="traditionalPrice">السعر التقليدي</div>
+                    <div>الخدمة</div>
+                    <div>سعرنا</div>
+                    <div>السعر التقليدي</div>
                 </div>
                 
                 <div class="table-row">
-                    <div class="service-name" data-i18n="birthCertificate">شهادة ميلاد</div>
+                    <div class="service-name">شهادة ميلاد</div>
                     <div class="our-price">1500 MRU</div>
                     <div class="traditional-price">2000 MRU</div>
                 </div>
                 
                 <div class="table-row">
-                    <div class="service-name" data-i18n="drivingLicense">رخصة قيادة</div>
+                    <div class="service-name">رخصة قيادة</div>
                     <div class="our-price">5000 MRU</div>
                     <div class="traditional-price">7000 MRU</div>
                 </div>
                 
                 <div class="table-row">
-                    <div class="service-name" data-i18n="residenceCertificate">شهادة إقامة</div>
+                    <div class="service-name">شهادة إقامة</div>
                     <div class="our-price">2000 MRU</div>
                     <div class="traditional-price">3000 MRU</div>
                 </div>
                 
                 <div class="table-row">
-                    <div class="service-name" data-i18n="passportServices">جواز سفر</div>
+                    <div class="service-name">جواز سفر</div>
                     <div class="our-price">15000 MRU</div>
                     <div class="traditional-price">20000 MRU</div>
                 </div>
@@ -258,53 +380,60 @@
         </div>
     </section>
 
-    <!-- نفس الفوتر -->
-</body>
-<script>
-// نظام تتبع الزوار الحقيقي
-if (typeof(Storage) !== "undefined") {
-    let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-    
-    const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
-    
-    const visitorData = {
-        timestamp: new Date().toLocaleString('ar-SA'),
-        page: pageName,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        ip: 'user-' + Math.random().toString(36).substr(2, 9) // IP مبسط للتتبع
-    };
-    
-    visitors.push(visitorData);
-    
-    // حفظ فقط آخر 1000 زيارة لتجنب امتلاء الذاكرة
-    if (visitors.length > 1000) {
-        visitors = visitors.slice(-1000);
-    }
-    
-    localStorage.setItem('website_visitors', JSON.stringify(visitors));
-}
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+        </div>
+    </footer>
 
-// نظام تتبع الطلبات الحقيقي
-window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
-    if (typeof(Storage) !== "undefined") {
-        let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-        
-        const orderData = {
-            customer: customerName,
-            service: serviceName,
-            price: price,
-            timestamp: new Date().toLocaleString('ar-SA'),
-            status: 'جديد',
-            id: Date.now()
-        };
-        
-        orders.push(orderData);
-        localStorage.setItem('customer_orders', JSON.stringify(orders));
-        
-        return true;
-    }
-    return false;
-};
-</script>
+    <script>
+        // نظام تتبع الزوار الحقيقي
+        if (typeof(Storage) !== "undefined") {
+            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            
+            const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
+            
+            const visitorData = {
+                timestamp: new Date().toLocaleString('ar-SA'),
+                page: pageName,
+                referrer: document.referrer,
+                userAgent: navigator.userAgent,
+                ip: 'user-' + Math.random().toString(36).substr(2, 9)
+            };
+            
+            visitors.push(visitorData);
+            
+            if (visitors.length > 1000) {
+                visitors = visitors.slice(-1000);
+            }
+            
+            localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        }
+
+        // نظام تتبع الطلبات الحقيقي
+        function orderService(serviceName, price) {
+            if (typeof(Storage) !== "undefined") {
+                let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                
+                const orderData = {
+                    customer: 'عميل جديد',
+                    service: serviceName,
+                    price: price,
+                    timestamp: new Date().toLocaleString('ar-SA'),
+                    status: 'جديد',
+                    id: Date.now()
+                };
+                
+                orders.push(orderData);
+                localStorage.setItem('customer_orders', JSON.stringify(orders));
+            }
+            
+            // توجيه إلى واتساب
+            const message = `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU`;
+            const whatsappUrl = `https://wa.me/22244869780?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
 </html>

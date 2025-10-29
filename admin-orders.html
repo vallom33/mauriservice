@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الطلبات - Mauri Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-nav {
+            background: #2c5aa0;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: black;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #2c5aa0;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
+        .status-new { background: #e3f2fd; color: #1976d2; padding: 0.3rem 0.8rem; border-radius: 15px; }
+        .status-processing { background: #fff3e0; color: #f57c00; padding: 0.3rem 0.8rem; border-radius: 15px; }
+        .status-completed { background: #e8f5e8; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>إدارة الطلبات - Mauri Services</h1>
+        <div>
+            <span>مرحباً، المدير</span>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <a href="admin-dashboard.html">لوحة التحكم</a>
+        <a href="admin-visitors.html">الزوار</a>
+        <a href="admin-orders.html" class="active">الطلبات</a>
+        <a href="admin-settings.html">الإعدادات</a>
+        <a href="admin-agents.html">الوكلاء</a>
+    </nav>
+    
+    <div class="content">
+        <div class="stats-cards">
+            <div class="stat-card">
+                <span class="stat-number" id="totalOrders">0</span>
+                <p>إجمالي الطلبات</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="newOrders">0</span>
+                <p>طلبات جديدة</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="completedOrders">0</span>
+                <p>طلبات مكتملة</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="totalRevenue">0 MRU</span>
+                <p>إجمالي الإيرادات</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>جميع الطلبات</h2>
+            <div id="ordersTable">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من تسجيل الدخول
+        if (!localStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin-login.html';
+        }
+        
+        function updateStats() {
+            const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+            
+            document.getElementById('totalOrders').textContent = orders.length;
+            
+            const newOrders = orders.filter(order => order.status === 'جديد' || !order.status);
+            document.getElementById('newOrders').textContent = newOrders.length;
+            
+            const completedOrders = orders.filter(order => order.status === 'مكتمل');
+            document.getElementById('completedOrders').textContent = completedOrders.length;
+            
+            const totalRevenue = orders.reduce((sum, order) => sum + (order.price || 0), 0);
+            document.getElementById('totalRevenue').textContent = totalRevenue + ' MRU';
+        }
+        
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+            const table = document.getElementById('ordersTable');
+            
+            if (orders.length === 0) {
+                table.innerHTML = '<p>لا توجد طلبات مسجلة بعد</p>';
+                return;
+            }
+            
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>العميل</th>
+                            <th>الخدمة</th>
+                            <th>السعر</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.slice().reverse().map(order => `
+                            <tr>
+                                <td>#${order.id}</td>
+                                <td>${order.customer}</td>
+                                <td>${order.service}</td>
+                                <td>${order.price} MRU</td>
+                                <td>${order.timestamp}</td>
+                                <td>
+                                    <span class="status-${getStatusClass(order.status)}">
+                                        ${order.status || 'جديد'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success" onclick="updateOrderStatus(${order.id}, 'processing')">قيد التنفيذ</button>
+                                    <button class="btn btn-primary" onclick="updateOrderStatus(${order.id}, 'completed')">إكمال</button>
+                                    <button class="btn btn-danger" onclick="deleteOrder(${order.id})">حذف</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            table.innerHTML = html;
+        }
+        
+        function getStatusClass(status) {
+            switch(status) {
+                case 'جديد': return 'new';
+                case 'قيد التنفيذ': return 'processing';
+                case 'مكتمل': return 'completed';
+                default: return 'new';
+            }
+        }
+        
+        function updateOrderStatus(orderId, newStatus) {
+            let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+            const orderIndex = orders.findIndex(order => order.id === orderId);
+            
+            if (orderIndex !== -1) {
+                const statusText = {
+                    'processing': 'قيد التنفيذ',
+                    'completed': 'مكتمل'
+                }[newStatus];
+                
+                orders[orderIndex].status = statusText;
+                localStorage.setItem('customer_orders', JSON.stringify(orders));
+                loadOrders();
+                updateStats();
+            }
+        }
+        
+        function deleteOrder(orderId) {
+            if (confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
+                let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                orders = orders.filter(order => order.id !== orderId);
+                localStorage.setItem('customer_orders', JSON.stringify(orders));
+                loadOrders();
+                updateStats();
+            }
+        }
+        
+        // تحميل البيانات عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            loadOrders();
+        });
+    </script>
+</body>
+</html>
