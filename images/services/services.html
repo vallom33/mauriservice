@@ -6,6 +6,223 @@
     <title>الخدمات - موريتانيا اكسبريس</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* إضافة CSS لصفحة الخدمات */
+        .page-hero {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 120px 0 60px;
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        .services-detailed {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .service-detail {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .service-info {
+            flex: 2;
+        }
+
+        .service-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .service-image i {
+            font-size: 8rem;
+            color: #2c5aa0;
+            opacity: 0.7;
+        }
+
+        .service-detail h2 {
+            color: #2c5aa0;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-detail p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        .service-features, .required-documents {
+            margin-bottom: 2rem;
+        }
+
+        .service-features h3, .required-documents h3 {
+            color: #2c5aa0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .service-features ul, .required-documents ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .service-features li, .required-documents li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+
+        .service-features li:before, .required-documents li:before {
+            content: "✓";
+            color: #25D366;
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+        }
+
+        .service-actions {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .price-tag {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #2c5aa0;
+        }
+
+        .price-tag .price {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .price-tag .amount {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+
+        .additional-services {
+            margin-top: 4rem;
+        }
+
+        .additional-services h2 {
+            text-align: center;
+            color: #2c5aa0;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .service-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .service-card h3 {
+            color: #2c5aa0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .service-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card .price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-order {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-order:hover {
+            background: #1e3a8a;
+        }
+
+        /* التجاوب مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .service-detail {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+            }
+            
+            .service-actions {
+                flex-direction: column;
+            }
+            
+            .service-image i {
+                font-size: 5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -156,9 +373,40 @@
         </div>
     </section>
 
-    <!-- نفس الفوتر من index.html -->
+    <!-- الفوتر -->
     <footer class="footer">
-        <!-- ... نفس كود الفوتر ... -->
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>موريتانيا اكسبريس</h3>
+                    <p data-i18n="footerDesc">شركتك الموثوقة لاستخراج الوثائق الرسمية في موريتانيا</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 data-i18n="quickLinks">روابط سريعة</h4>
+                    <a href="services.html" data-i18n="services">الخدمات</a>
+                    <a href="pricing.html" data-i18n="pricing">الأسعار</a>
+                    <a href="about.html" data-i18n="about">من نحن</a>
+                    <a href="contact.html" data-i18n="contact">اتصل بنا</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 data-i18n="contactInfo">معلومات الاتصال</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> نواكشوط، موريتانيا</p>
+                    <p><i class="fas fa-phone"></i> 12345678</p>
+                    <p><i class="fas fa-envelope"></i> info@moritania-express.com</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
     </footer>
 
     <script src="js/language.js"></script>
