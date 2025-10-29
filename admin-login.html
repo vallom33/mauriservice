@@ -3,36 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - موريتانيا اكسبريس</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>تسجيل الدخول - الإدارة</title>
     <style>
-        .login-container {
-            min-height: 100vh;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            padding: 2rem;
+            padding: 1rem;
         }
         
-        .login-card {
-            background: var(--white);
+        .login-container {
+            background: white;
             padding: 3rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 400px;
         }
         
-        .login-logo {
+        .login-header {
             text-align: center;
             margin-bottom: 2rem;
         }
         
-        .login-logo i {
-            font-size: 3rem;
-            color: var(--primary-color);
+        .login-header h1 {
+            color: #2c5aa0;
+            margin-bottom: 0.5rem;
         }
         
         .form-group {
@@ -42,126 +47,139 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text-color);
+            font-weight: 500;
+            color: #333;
         }
         
         .form-group input {
             width: 100%;
             padding: 1rem;
-            border: 2px solid #eee;
-            border-radius: var(--border-radius);
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
         }
         
         .form-group input:focus {
-            border-color: var(--primary-color);
+            border-color: #2c5aa0;
             outline: none;
         }
         
         .login-btn {
             width: 100%;
             padding: 1rem;
-            background: var(--primary-color);
-            color: var(--white);
+            background: #2c5aa0;
+            color: white;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             font-size: 1.1rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
+            margin-bottom: 1rem;
         }
         
         .login-btn:hover {
-            background: var(--secondary-color);
+            background: #1e3a8a;
         }
         
         .back-link {
             display: block;
             text-align: center;
-            margin-top: 1rem;
-            color: var(--primary-color);
+            color: #2c5aa0;
             text-decoration: none;
+        }
+        
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .demo-credentials {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="login-card">
-            <div class="login-logo">
-                <i class="fas fa-passport"></i>
-                <h2>تسجيل الدخول</h2>
-                <p>لوحة إدارة موريتانيا اكسبريس</p>
+        <div class="login-header">
+            <h1>تسجيل الدخول</h1>
+            <p>لوحة إدارة موريتانيا اكسبريس</p>
+        </div>
+        
+        <div class="demo-credentials">
+            <strong>بيانات الدخول للتجربة:</strong><br>
+            اسم المستخدم: <strong>admin</strong><br>
+            كلمة المرور: <strong>admin123</strong>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">اسم المستخدم</label>
+                <input type="text" id="username" required value="admin">
             </div>
             
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">اسم المستخدم</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">كلمة المرور</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                
-                <button type="submit" class="login-btn">تسجيل الدخول</button>
-            </form>
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" required value="admin123">
+            </div>
             
-            <a href="index.html" class="back-link">العودة للرئيسية</a>
-        </div>
+            <button type="submit" class="login-btn">تسجيل الدخول</button>
+            <div class="error-message" id="errorMessage">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+        </form>
+        
+        <a href="index.html" class="back-link">العودة للرئيسية</a>
     </div>
 
-    <script src="js/auth.js"></script>
-</body>
-<script>
-// نظام تتبع الزوار الحقيقي
-if (typeof(Storage) !== "undefined") {
-    let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-    
-    const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
-    
-    const visitorData = {
-        timestamp: new Date().toLocaleString('ar-SA'),
-        page: pageName,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        ip: 'user-' + Math.random().toString(36).substr(2, 9) // IP مبسط للتتبع
-    };
-    
-    visitors.push(visitorData);
-    
-    // حفظ فقط آخر 1000 زيارة لتجنب امتلاء الذاكرة
-    if (visitors.length > 1000) {
-        visitors = visitors.slice(-1000);
-    }
-    
-    localStorage.setItem('website_visitors', JSON.stringify(visitors));
-}
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // بيانات الدخول
+            const validCredentials = [
+                { username: 'admin', password: 'admin123' },
+                { username: 'omar', password: 'omar' }
+            ];
+            
+            const isValid = validCredentials.some(cred => 
+                cred.username === username && cred.password === password
+            );
+            
+            if (isValid) {
+                localStorage.setItem('adminLoggedIn', 'true');
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
 
-// نظام تتبع الطلبات الحقيقي
-window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
-    if (typeof(Storage) !== "undefined") {
-        let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-        
-        const orderData = {
-            customer: customerName,
-            service: serviceName,
-            price: price,
-            timestamp: new Date().toLocaleString('ar-SA'),
-            status: 'جديد',
-            id: Date.now()
-        };
-        
-        orders.push(orderData);
-        localStorage.setItem('customer_orders', JSON.stringify(orders));
-        
-        return true;
-    }
-    return false;
-};
-</script>
+        // نظام تتبع الزوار
+        if (typeof(Storage) !== "undefined") {
+            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            
+            const visitorData = {
+                timestamp: new Date().toLocaleString('ar-SA'),
+                page: 'تسجيل الدخول - الإدارة',
+                referrer: document.referrer,
+                userAgent: navigator.userAgent,
+                ip: 'user-' + Math.random().toString(36).substr(2, 9)
+            };
+            
+            visitors.push(visitorData);
+            
+            if (visitors.length > 1000) {
+                visitors = visitors.slice(-1000);
+            }
+            
+            localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        }
+    </script>
+</body>
 </html>
