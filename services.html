@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الخدمات - موريتانيا للخدمات</title>
+    <title>الخدمات - Mauri-Services</title>
     <style>
-        /* CSS كامل هنا داخل الصفحة */
         * {
             margin: 0;
             padding: 0;
@@ -73,29 +72,59 @@
             padding: 0 2rem;
         }
         
-        .service-detail {
+        .services-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .category-card {
             background: white;
-            margin: 3rem auto;
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
-        .service-detail h2 {
-            color: #2c5aa0;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .service-item:last-child {
+            border-bottom: none;
         }
         
         .btn-primary {
             background: #2c5aa0;
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
             cursor: pointer;
-            margin-top: 1rem;
+            font-size: 0.9rem;
         }
         
         .footer {
@@ -110,15 +139,15 @@
 <body>
     <nav class="navbar">
         <div class="nav-logo">
-            <i class="fas fa-passport"></i>
-            <span>موريتانيا للخدمات</span>
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
         </div>
         
         <div class="nav-links">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link active">الخدمات</a>
             <a href="pricing.html" class="nav-link">الأسعار</a>
-              <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="agents.html" class="nav-link">انضم كوكيل</a>
             <a href="about.html" class="nav-link">من نحن</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
         </div>
@@ -126,100 +155,234 @@
 
     <section class="page-hero">
         <div class="container">
-            <h1>خدماتنا المتكاملة</h1>
-            <p>نقدم جميع خدمات الاستخراج الرسمي تحت سقف واحد</p>
+            <h1>جميع خدماتنا في مكان واحد</h1>
+            <p>اكتشف مجموعة الخدمات الواسعة التي نقدمها لتسهيل حياتك</p>
         </div>
     </section>
 
     <section class="container">
-        <div class="service-detail">
-            <h2>شهادات الميلاد</h2>
-            <p>نقوم باستخراج وتجديد شهادات الميلاد من البلديات الموريتانية بأسرع وقت ممكن. نتعامل مع جميع البلديات في نواكشوط والولايات.</p>
-            <button class="btn-primary">اطلب الخدمة - 1500 MRU</button>
-        </div>
-        
-        <div class="service-detail">
-            <h2>رخص القيادة</h2>
-            <p>خدمة متكاملة لاستخراج وتجديد رخص القيادة بأنواعها المختلفة. نسهل عليك كل الإجراءات من الفحص الطبي حتى استلام الرخصة.</p>
-            <button class="btn-primary">اطلب الخدمة - 5000 MRU</button>
-        </div>
-        
-        <div class="service-detail">
-            <h2>شهادات الإقامة</h2>
-            <p>استخراج شهادات الإقامة الرسمية للمواطنين والمقيمين في موريتانيا.</p>
-            <button class="btn-primary">اطلب الخدمة - 2000 MRU</button>
+        <div class="services-categories">
+            <!-- خدمات التوصيل -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🚗</div>
+                    <h2>خدمات التوصيل</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>توصيل مشتريات السوق</h3>
+                        <p>خضروات، فواكه، لحوم، شاي</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('توصيل مشتريات سوق', 500)">500 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>توصيل وجبات طعام</h3>
+                        <p>من المطاعم إلى منزلك</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('توصيل وجبات طعام', 400)">400 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>توصيل طرود</h3>
+                        <p>أي شيء، في أي مكان</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('توصيل طرود', 400)">400 MRU</button>
+                </div>
+            </div>
+
+            <!-- خدمات المستندات -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">📄</div>
+                    <h2>خدمات المستندات</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>طباعة مستندات</h3>
+                        <p>طباعة أي مستند تحتاجه</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('طباعة مستندات', 300)">300 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>تصوير أوراق</h3>
+                        <p>تصوير وثائق وبطاقات</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('تصوير أوراق', 200)">200 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>ترجمة مستندات</h3>
+                        <p>فرنسي - عربي والعكس</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('ترجمة مستندات', 1000)">1000 MRU</button>
+                </div>
+            </div>
+
+            <!-- خدمات الدفع -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">💳</div>
+                    <h2>خدمات الدفع</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>شحن رصيد</h3>
+                        <p>شحن رصيد جميع الشركات</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('شحن رصيد', 200)">200 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>دفع فواتير</h3>
+                        <p>كهرباء، ماء، إنترنت</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('دفع فواتير', 300)">300 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>شراء بطاقات</h3>
+                        <p>Netflix, Steam, Google Play</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('شراء بطاقات', 500)">500 MRU</button>
+                </div>
+            </div>
+
+            <!-- خدمات منزلية -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🔧</div>
+                    <h2>خدمات منزلية</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>سباكة</h3>
+                        <p>إصلاح تسريبات وتركيبات</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('خدمة سباكة', 1500)">1500 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>كهرباء</h3>
+                        <p>إصلاح أعطال كهربائية</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('خدمة كهرباء', 1200)">1200 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>نجارة</h3>
+                        <p>إصلاح أثاث وتركيبات</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('خدمة نجارة', 1000)">1000 MRU</button>
+                </div>
+            </div>
+
+            <!-- خدمات حكومية -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🏛️</div>
+                    <h2>خدمات حكومية</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>مساعدة في الوثائق</h3>
+                        <p>إرشاد لإكمال الإجراءات</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('مساعدة وثائق', 800)">800 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>توصيل مستندات</h3>
+                        <p>توصيل أوراق للدوائر</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('توصيل مستندات حكومية', 600)">600 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>استشارات إجرائية</h3>
+                        <p>نصائح للإجراءات الرسمية</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('استشارات إجرائية', 500)">500 MRU</button>
+                </div>
+            </div>
+
+            <!-- خدمات إضافية -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">✨</div>
+                    <h2>خدمات إضافية</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>خدمة ساعي خاص</h3>
+                        <p>للمهام الخاصة والطارئة</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('ساعي خاص', 700)">700 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>خدمة 24 ساعة</h3>
+                        <p>للطلبات العاجلة ليلاً</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('خدمة 24 ساعة', 1000)">1000 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div>
+                        <h3>خدمة مخصصة</h3>
+                        <p>لأي خدمة غير مذكورة</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('خدمة مخصصة', 0)">اسأل عن السعر</button>
+                </div>
+            </div>
         </div>
     </section>
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
-            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+            <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - واتساب: 44869780</p>
         </div>
     </footer>
 
     <script>
-        // JavaScript بسيط داخل الصفحة
-        function orderService(serviceName) {
-            const message = `مرحباً، أريد طلب خدمة: ${serviceName}`;
-            const whatsappUrl = `https://wa.me/22212345678?text=${encodeURIComponent(message)}`;
+        function orderService(serviceName, price) {
+            const message = price > 0 ? 
+                `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU` :
+                `مرحباً، أريد الاستفسار عن خدمة: ${serviceName}`;
+                
+            const whatsappUrl = `https://wa.me/22244869780?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
         }
-        
-        // جعل الأزرار تعمل
-        document.querySelectorAll('.btn-primary').forEach(button => {
-            button.addEventListener('click', function() {
-                const serviceName = this.parentElement.querySelector('h2').textContent;
-                orderService(serviceName);
+
+        // تتبع الزوار
+        if (typeof(Storage) !== "undefined") {
+            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            visitors.push({
+                timestamp: new Date().toLocaleString('ar-SA'),
+                page: 'صفحة الخدمات',
+                referrer: document.referrer
             });
-        });
+            localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        }
     </script>
 </body>
-<script>
-// نظام تتبع الزوار الحقيقي
-if (typeof(Storage) !== "undefined") {
-    let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-    
-    const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
-    
-    const visitorData = {
-        timestamp: new Date().toLocaleString('ar-SA'),
-        page: pageName,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        ip: 'user-' + Math.random().toString(36).substr(2, 9) // IP مبسط للتتبع
-    };
-    
-    visitors.push(visitorData);
-    
-    // حفظ فقط آخر 1000 زيارة لتجنب امتلاء الذاكرة
-    if (visitors.length > 1000) {
-        visitors = visitors.slice(-1000);
-    }
-    
-    localStorage.setItem('website_visitors', JSON.stringify(visitors));
-}
-
-// نظام تتبع الطلبات الحقيقي
-window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
-    if (typeof(Storage) !== "undefined") {
-        let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-        
-        const orderData = {
-            customer: customerName,
-            service: serviceName,
-            price: price,
-            timestamp: new Date().toLocaleString('ar-SA'),
-            status: 'جديد',
-            id: Date.now()
-        };
-        
-        orders.push(orderData);
-        localStorage.setItem('customer_orders', JSON.stringify(orders));
-        
-        return true;
-    }
-    return false;
-};
-</script>
 </html>
