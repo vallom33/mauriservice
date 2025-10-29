@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - موريتانيا اكسبريس</title>
+    <title>لوحة التحكم - الإدارة</title>
     <style>
         * {
             margin: 0;
@@ -36,6 +36,13 @@
             color: white;
             text-decoration: none;
             margin-left: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.2);
         }
         
         .dashboard {
@@ -55,32 +62,22 @@
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
+            border-left: 4px solid #2c5aa0;
         }
         
         .stat-number {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #2c5aa0;
             display: block;
         }
         
-        .recent-activity {
+        .dashboard-section {
             background: white;
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
-        }
-        
-        .activity-list {
-            margin-top: 1rem;
-        }
-        
-        .activity-item {
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
         }
         
         .btn {
@@ -90,15 +87,16 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            margin: 0.25rem;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
         }
         
         .btn-danger {
             background: #dc3545;
-            color: white;
-        }
-        
-        .btn-success {
-            background: #28a745;
             color: white;
         }
         
@@ -118,6 +116,15 @@
             background: #f8f9fa;
             font-weight: bold;
         }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -125,15 +132,15 @@
         <h1>لوحة تحكم موريتانيا اكسبريس</h1>
         <div>
             <span>مرحباً، المدير</span>
-            <a href="index.html" class="btn btn-danger" style="margin-right: 1rem;">تسجيل الخروج</a>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
     
     <nav class="admin-nav">
-        <a href="#stats">الإحصائيات</a>
-        <a href="#visitors">الزوار</a>
-        <a href="#orders">الطلبات</a>
-        <a href="#settings">الإعدادات</a>
+        <a href="admin-dashboard.html" class="active">لوحة التحكم</a>
+        <a href="admin-visitors.html">الزوار</a>
+        <a href="admin-orders.html">الطلبات</a>
+        <a href="admin-settings.html">الإعدادات</a>
     </nav>
     
     <div class="dashboard">
@@ -151,142 +158,107 @@
                 <p>إجمالي الطلبات</p>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="revenue">0</span>
-                <p>الإيرادات (MRU)</p>
+                <span class="stat-number" id="totalRevenue">0 MRU</span>
+                <p>إجمالي الإيرادات</p>
             </div>
         </div>
         
-        <div class="recent-activity">
+        <div class="dashboard-section">
             <h2>آخر الزوار</h2>
-            <div class="activity-list" id="visitorsList">
-                <!-- سيتم ملؤها بالبيانات -->
+            <div id="recentVisitors">
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
             </div>
+            <a href="admin-visitors.html" class="btn btn-primary">عرض كل الزوار</a>
         </div>
         
-        <div class="recent-activity">
+        <div class="dashboard-section">
             <h2>آخر الطلبات</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>العميل</th>
-                        <th>الخدمة</th>
-                        <th>التاريخ</th>
-                        <th>الحالة</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="ordersTable">
-                    <!-- سيتم ملؤها بالبيانات -->
-                </tbody>
-            </table>
+            <div id="recentOrders">
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
+            </div>
+            <a href="admin-orders.html" class="btn btn-primary">عرض كل الطلبات</a>
         </div>
     </div>
 
     <script>
-        // نظام تتبع الزوار والإحصائيات
-        class Analytics {
+        // التحقق من تسجيل الدخول
+        if (!localStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin-login.html';
+        }
+        
+        // نظام الإحصائيات الحقيقي
+        class Dashboard {
             constructor() {
-                this.visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-                this.orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
                 this.init();
             }
             
             init() {
-                this.trackVisitor();
-                this.updateDashboard();
-                setInterval(() => this.updateDashboard(), 5000);
+                this.updateStats();
+                this.loadRecentVisitors();
+                this.loadRecentOrders();
             }
             
-            trackVisitor() {
-                const visitor = {
-                    id: Date.now(),
-                    timestamp: new Date().toLocaleString('ar-SA'),
-                    page: window.location.href,
-                    userAgent: navigator.userAgent
-                };
+            updateStats() {
+                const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+                const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
                 
-                this.visitors.push(visitor);
-                localStorage.setItem('website_visitors', JSON.stringify(this.visitors));
-            }
-            
-            updateDashboard() {
-                // تحديث الإحصائيات
-                document.getElementById('totalVisitors').textContent = this.visitors.length;
-                document.getElementById('todayVisitors').textContent = this.getTodayVisitors();
-                document.getElementById('totalOrders').textContent = this.orders.length;
-                document.getElementById('revenue').textContent = this.calculateRevenue();
+                // إجمالي الزوار
+                document.getElementById('totalVisitors').textContent = visitors.length;
                 
-                // تحديث قائمة الزوار
-                this.updateVisitorsList();
-                
-                // تحديث الطلبات
-                this.updateOrdersTable();
-            }
-            
-            getTodayVisitors() {
+                // زوار اليوم
                 const today = new Date().toDateString();
-                return this.visitors.filter(v => new Date(v.timestamp).toDateString() === today).length;
-            }
-            
-            calculateRevenue() {
-                return this.orders.reduce((total, order) => total + (order.price || 0), 0);
-            }
-            
-            updateVisitorsList() {
-                const list = document.getElementById('visitorsList');
-                const recentVisitors = this.visitors.slice(-10).reverse();
+                const todayVisitors = visitors.filter(v => new Date(v.timestamp).toDateString() === today);
+                document.getElementById('todayVisitors').textContent = todayVisitors.length;
                 
-                list.innerHTML = recentVisitors.map(visitor => `
-                    <div class="activity-item">
-                        <span>زائر جديد</span>
-                        <span>${visitor.timestamp}</span>
+                // إجمالي الطلبات
+                document.getElementById('totalOrders').textContent = orders.length;
+                
+                // إجمالي الإيرادات
+                const totalRevenue = orders.reduce((sum, order) => sum + (order.price || 0), 0);
+                document.getElementById('totalRevenue').textContent = totalRevenue + ' MRU';
+            }
+            
+            loadRecentVisitors() {
+                const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+                const recentVisitors = visitors.slice(-5).reverse();
+                
+                const html = recentVisitors.map(visitor => `
+                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                        <strong>${visitor.page}</strong>
+                        <div style="color: #666; font-size: 0.9rem;">${visitor.timestamp}</div>
                     </div>
-                `).join('');
+                `).join('') || '<p>لا توجد زيارات مسجلة بعد</p>';
+                
+                document.getElementById('recentVisitors').innerHTML = html;
             }
             
-            updateOrdersTable() {
-                const table = document.getElementById('ordersTable');
-                const sampleOrders = [
-                    { customer: 'محمد أحمد', service: 'شهادة ميلاد', date: '2024-01-15', status: 'مكتمل', price: 1500 },
-                    { customer: 'فاطمة عبد الله', service: 'رخصة قيادة', date: '2024-01-14', status: 'قيد التنفيذ', price: 5000 },
-                    { customer: 'سيدي ولد محمد', service: 'شهادة إقامة', date: '2024-01-13', status: 'مكتمل', price: 2000 }
-                ];
+            loadRecentOrders() {
+                const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                const recentOrders = orders.slice(-5).reverse();
                 
-                // دمج الطلبات الحقيقية مع العينات
-                const allOrders = [...this.orders, ...sampleOrders];
+                const html = recentOrders.map(order => `
+                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                        <strong>${order.service}</strong> - ${order.customer}
+                        <div style="color: #666; font-size: 0.9rem;">
+                            ${order.price} MRU - ${order.timestamp}
+                        </div>
+                    </div>
+                `).join('') || '<p>لا توجد طلبات مسجلة بعد</p>';
                 
-                table.innerHTML = allOrders.slice(-5).reverse().map(order => `
-                    <tr>
-                        <td>${order.customer}</td>
-                        <td>${order.service}</td>
-                        <td>${order.date}</td>
-                        <td>
-                            <span style="color: ${order.status === 'مكتمل' ? 'green' : 'orange'}">
-                                ${order.status}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-success">تفاصيل</button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-            
-            addOrder(order) {
-                this.orders.push({
-                    ...order,
-                    id: Date.now(),
-                    timestamp: new Date().toLocaleString('ar-SA')
-                });
-                localStorage.setItem('customer_orders', JSON.stringify(this.orders));
-                this.updateDashboard();
+                document.getElementById('recentOrders').innerHTML = html;
             }
         }
         
-        // بدء النظام عند تحميل الصفحة
+        // بدء النظام
         document.addEventListener('DOMContentLoaded', function() {
-            window.analytics = new Analytics();
+            new Dashboard();
         });
     </script>
 </body>
+
 </html>

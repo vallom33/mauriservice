@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الزوار - الإدارة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-nav {
+            background: #2c5aa0;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #2c5aa0;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>إدارة الزوار - موريتانيا اكسبريس</h1>
+        <div>
+            <span>مرحباً، المدير</span>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <a href="admin-dashboard.html">لوحة التحكم</a>
+        <a href="admin-visitors.html" class="active">الزوار</a>
+        <a href="admin-orders.html">الطلبات</a>
+        <a href="admin-settings.html">الإعدادات</a>
+    </nav>
+    
+    <div class="content">
+        <div class="stats-cards">
+            <div class="stat-card">
+                <span class="stat-number" id="totalVisitors">0</span>
+                <p>إجمالي الزوار</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="todayVisitors">0</span>
+                <p>زوار اليوم</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="uniqueVisitors">0</span>
+                <p>زوار فريدون</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>سجل الزوار</h2>
+            <div id="visitorsTable">
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
+            </div>
+            <button class="btn btn-danger" onclick="clearVisitors()" style="margin-top: 1rem;">مسح سجل الزوار</button>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من تسجيل الدخول
+        if (!localStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin-login.html';
+        }
+        
+        function clearVisitors() {
+            if (confirm('هل أنت متأكد من مسح سجل الزوار؟')) {
+                localStorage.removeItem('website_visitors');
+                loadVisitors();
+                updateStats();
+            }
+        }
+        
+        function updateStats() {
+            const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            
+            document.getElementById('totalVisitors').textContent = visitors.length;
+            
+            const today = new Date().toDateString();
+            const todayVisitors = visitors.filter(v => new Date(v.timestamp).toDateString() === today);
+            document.getElementById('todayVisitors').textContent = todayVisitors.length;
+            
+            // الزوار الفريدون (بناءً على الـ IP المبسط)
+            const uniqueIPs = [...new Set(visitors.map(v => v.ip))];
+            document.getElementById('uniqueVisitors').textContent = uniqueIPs.length;
+        }
+        
+        function loadVisitors() {
+            const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            const tbody = document.getElementById('visitorsTable');
+            
+            if (visitors.length === 0) {
+                tbody.innerHTML = '<p>لا توجد زيارات مسجلة</p>';
+                return;
+            }
+            
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ والوقت</th>
+                            <th>الصفحة</th>
+                            <th>المصدر</th>
+                            <th>معلومات المتصفح</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${visitors.slice().reverse().map(visitor => `
+                            <tr>
+                                <td>${visitor.timestamp}</td>
+                                <td>${visitor.page}</td>
+                                <td>${visitor.referrer || 'مباشر'}</td>
+                                <td style="font-size: 0.8rem; color: #666;">${visitor.userAgent}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            tbody.innerHTML = html;
+        }
+        
+        // تحميل البيانات عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            loadVisitors();
+        });
+    </script>
+</body>
+</html>

@@ -174,4 +174,51 @@
         });
     </script>
 </body>
+<script>
+// نظام تتبع الزوار الحقيقي
+if (typeof(Storage) !== "undefined") {
+    let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+    
+    const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
+    
+    const visitorData = {
+        timestamp: new Date().toLocaleString('ar-SA'),
+        page: pageName,
+        referrer: document.referrer,
+        userAgent: navigator.userAgent,
+        ip: 'user-' + Math.random().toString(36).substr(2, 9) // IP مبسط للتتبع
+    };
+    
+    visitors.push(visitorData);
+    
+    // حفظ فقط آخر 1000 زيارة لتجنب امتلاء الذاكرة
+    if (visitors.length > 1000) {
+        visitors = visitors.slice(-1000);
+    }
+    
+    localStorage.setItem('website_visitors', JSON.stringify(visitors));
+}
+
+// نظام تتبع الطلبات الحقيقي
+window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
+    if (typeof(Storage) !== "undefined") {
+        let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+        
+        const orderData = {
+            customer: customerName,
+            service: serviceName,
+            price: price,
+            timestamp: new Date().toLocaleString('ar-SA'),
+            status: 'جديد',
+            id: Date.now()
+        };
+        
+        orders.push(orderData);
+        localStorage.setItem('customer_orders', JSON.stringify(orders));
+        
+        return true;
+    }
+    return false;
+};
+</script>
 </html>
