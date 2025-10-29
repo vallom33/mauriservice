@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسعار - موريتانيا اكسبريس</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .pricing-plans {
+            padding: 80px 0;
+            background: var(--light-bg);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: var(--transition);
+            border: 2px solid #eee;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .pricing-header {
+            margin-bottom: 2rem;
+        }
+
+        .pricing-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .pricing-icon i {
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .price-comparison {
+            background: var(--white);
+            padding: 80px 0;
+        }
+
+        .comparison-table {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .table-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            font-weight: 600;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .table-row:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .service-name {
+            font-weight: 600;
+        }
+
+        .our-price {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .traditional-price {
+            color: #666;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <!-- نفس شريط التنقل -->
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1 data-i18n="pricingTitle">أسعارنا التنافسية</h1>
+            <p data-i18n="pricingSubtitle">أسعار شفافة بدون مفاجآت - جودة عالية بتكلفة معقولة</p>
+        </div>
+    </section>
+
+    <section class="pricing-plans">
+        <div class="container">
+            <div class="pricing-grid">
+                <!-- باقة الأساسية -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3 class="pricing-title" data-i18n="basicPackage">الباقة الأساسية</h3>
+                        <div class="pricing-price">1500 MRU</div>
+                        <p data-i18n="basicPackageDesc">لشهادات الميلاد والإقامة</p>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li data-i18n="feature1">استخراج وثيقة واحدة</li>
+                        <li data-i18n="feature2">تسليم خلال 48 ساعة</li>
+                        <li data-i18n="feature3">دعم عبر الواتساب</li>
+                        <li data-i18n="feature4">مراجعة المستندات</li>
+                    </ul>
+                    
+                    <button class="btn-primary" onclick="orderService('basic')" data-i18n="orderNow">اطلب الآن</button>
+                </div>
+
+                <!-- باقة متوسطة -->
+                <div class="pricing-card featured">
+                    <div class="pricing-header">
+                        <div class="pricing-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h3 class="pricing-title" data-i18n="standardPackage">الباقة المتوسطة</h3>
+                        <div class="pricing-price">5000 MRU</div>
+                        <p data-i18n="standardPackageDesc">لرخص القيادة والوثائق المتوسطة</p>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li data-i18n="feature5">رخصة قيادة كاملة</li>
+                        <li data-i18n="feature6">تسليم خلال 24 ساعة</li>
+                        <li data-i18n="feature7">دعم هاتفي مخصص</li>
+                        <li data-i18n="feature8">متابعة حتى التسليم</li>
+                    </ul>
+                    
+                    <button class="btn-primary" onclick="orderService('standard')" data-i18n="orderNow">اطلب الآن</button>
+                </div>
+
+                <!-- باقة متقدمة -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-icon">
+                            <i class="fas fa-passport"></i>
+                        </div>
+                        <h3 class="pricing-title" data-i18n="premiumPackage">الباقة المتقدمة</h3>
+                        <div class="pricing-price">15000 MRU</div>
+                        <p data-i18n="premiumPackageDesc">لجوازات السفر والوثائق المعقدة</p>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li data-i18n="feature9">جواز سفر كامل</li>
+                        <li data-i18n="feature10">تسليم عاجل 12 ساعة</li>
+                        <li data-i18n="feature11">دعم 24/7</li>
+                        <li data-i18n="feature12">خدمة استعجالية</li>
+                    </ul>
+                    
+                    <button class="btn-primary" onclick="orderService('premium')" data-i18n="orderNow">اطلب الآن</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="price-comparison">
+        <div class="container">
+            <h2 class="section-title" data-i18n="priceComparison">مقارنة الأسعار</h2>
+            
+            <div class="comparison-table">
+                <div class="table-header">
+                    <div data-i18n="service">الخدمة</div>
+                    <div data-i18n="ourPrice">سعرنا</div>
+                    <div data-i18n="traditionalPrice">السعر التقليدي</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="service-name" data-i18n="birthCertificate">شهادة ميلاد</div>
+                    <div class="our-price">1500 MRU</div>
+                    <div class="traditional-price">2000 MRU</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="service-name" data-i18n="drivingLicense">رخصة قيادة</div>
+                    <div class="our-price">5000 MRU</div>
+                    <div class="traditional-price">7000 MRU</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="service-name" data-i18n="residenceCertificate">شهادة إقامة</div>
+                    <div class="our-price">2000 MRU</div>
+                    <div class="traditional-price">3000 MRU</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="service-name" data-i18n="passportServices">جواز سفر</div>
+                    <div class="our-price">15000 MRU</div>
+                    <div class="traditional-price">20000 MRU</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- نفس الفوتر -->
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="موريتانيا اكسبريس - خدمات الاستخراج الرسمي">
+    <title>موريتانيا اكسبريس - خدمات الاستخراج</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-passport"></i>
+                <span>موريتانيا اكسبريس</span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active" data-i18n="home">الرئيسية</a>
+                <a href="services.html" class="nav-link" data-i18n="services">الخدمات</a>
+                <a href="pricing.html" class="nav-link" data-i18n="pricing">الأسعار</a>
+                <a href="about.html" class="nav-link" data-i18n="about">من نحن</a>
+                <a href="contact.html" class="nav-link" data-i18n="contact">اتصل بنا</a>
+                
+                <div class="nav-actions">
+                    <button id="languageSwitch" class="language-btn">
+                        <i class="fas fa-globe"></i>
+                        <span id="currentLang">FR</span>
+                    </button>
+                    <a href="admin-login.html" class="admin-btn">
+                        <i class="fas fa-user-cog"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- قسم الهيرو -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 data-i18n="heroTitle">ودع الطوابير للأبد</h1>
+            <p data-i18n="heroSubtitle">خدمات استخراج الوثائق الرسمية بسرعة واحترافية في نواكشوط</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="window.location.href='services.html'" data-i18n="orderNow">
+                    اطلب خدمتك الآن
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='pricing.html'" data-i18n="viewPrices">
+                    تعرف على الأسعار
+                </button>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <h3>500+</h3>
+                    <p data-i18n="happyClients">عميل راضي</p>
+                </div>
+                <div class="stat">
+                    <h3>1,500+</h3>
+                    <p data-i18n="documentsProcessed">وثيقة مستخرجة</p>
+                </div>
+                <div class="stat">
+                    <h3>24/7</h3>
+                    <p data-i18n="support">دعم عملاء</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-image">
+            <div class="floating-card">
+                <i class="fas fa-file-contract"></i>
+                <h4 data-i18n="birthCertificate">شهادة ميلاد</h4>
+                <p data-i18n="deliveryTime">تسليم في 24 ساعة</p>
+            </div>
+            <div class="floating-card">
+                <i class="fas fa-id-card"></i>
+                <h4 data-i18n="drivingLicense">رخصة قيادة</h4>
+                <p data-i18n="deliveryTime">تسليم في 24 ساعة</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الخدمات السريع -->
+    <section class="quick-services">
+        <div class="container">
+            <h2 class="section-title" data-i18n="ourServices">خدماتنا الأكثر طلباً</h2>
+            
+            <div class="services-grid">
+                <div class="service-card" onclick="window.location.href='services.html#birth'">
+                    <div class="service-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <h3 data-i18n="birthCertificate">شهادات الميلاد</h3>
+                    <p data-i18n="birthCertificateDesc">استخراج وتجديد شهادات الميلاد</p>
+                    <div class="service-price">
+                        <span class="price" data-i18n="startingFrom">ابتداءً من</span>
+                        <span class="amount">1500 MRU</span>
+                    </div>
+                    <button class="btn-order" data-i18n="orderNow">اطلب الآن</button>
+                </div>
+                
+                <div class="service-card" onclick="window.location.href='services.html#driving'">
+                    <div class="service-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h3 data-i18n="drivingLicense">رخص القيادة</h3>
+                    <p data-i18n="drivingLicenseDesc">تجديد واستخراج رخص القيادة</p>
+                    <div class="service-price">
+                        <span class="price" data-i18n="startingFrom">ابتداءً من</span>
+                        <span class="amount">5000 MRU</span>
+                    </div>
+                    <button class="btn-order" data-i18n="orderNow">اطلب الآن</button>
+                </div>
+                
+                <div class="service-card" onclick="window.location.href='services.html#residence'">
+                    <div class="service-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3 data-i18n="residenceCertificate">شهادات الإقامة</h3>
+                    <p data-i18n="residenceCertificateDesc">استخراج شهادات الإقامة الرسمية</p>
+                    <div class="service-price">
+                        <span class="price" data-i18n="startingFrom">ابتداءً من</span>
+                        <span class="amount">2000 MRU</span>
+                    </div>
+                    <button class="btn-order" data-i18n="orderNow">اطلب الآن</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم كيفية العمل -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title" data-i18n="howItWorks">كيف تعمل خدمتنا؟</h2>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <i class="fas fa-phone-alt"></i>
+                    <h3 data-i18n="step1Title">اتصل بنا</h3>
+                    <p data-i18n="step1Desc">اتصل أو راسلنا على الواتساب</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <i class="fas fa-file-upload"></i>
+                    <h3 data-i18n="step2Title">أرسل المستندات</h3>
+                    <p data-i18n="step2Desc">أرسل صور المستندات المطلوبة</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <i class="fas fa-cog"></i>
+                    <h3 data-i18n="step3Title">نحن ننجز المهمة</h3>
+                    <p data-i18n="step3Desc">نقوم باستخراج الوثيقة نيابة عنك</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <i class="fas fa-truck"></i>
+                    <h3 data-i18n="step4Title">التسليم</h3>
+                    <p data-i18n="step4Desc">نسلم لك الوثيقة في مكانك</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الاتصال السريع -->
+    <section class="quick-contact">
+        <div class="container">
+            <div class="contact-card">
+                <h2 data-i18n="readyToStart">مستعد للبدء؟</h2>
+                <p data-i18n="contactUsNow">اتصل بنا الآن واحصل على وثيقتك بدون عناء</p>
+                
+                <div class="contact-methods">
+                    <a href="https://wa.me/22244869780" class="whatsapp-btn" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        <span data-i18n="contactWhatsApp">واتساب: 44869780</span>
+                    </a>
+                    
+                    <a href="tel:+22212345678" class="phone-btn">
+                        <i class="fas fa-phone"></i>
+                        <span data-i18n="callUs">اتصال: 44869780</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>موريتانيا اكسبريس</h3>
+                    <p data-i18n="footerDesc">شركتك الموثوقة لاستخراج الوثائق الرسمية في موريتانيا</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 data-i18n="quickLinks">روابط سريعة</h4>
+                    <a href="services.html" data-i18n="services">الخدمات</a>
+                    <a href="pricing.html" data-i18n="pricing">الأسعار</a>
+                    <a href="about.html" data-i18n="about">من نحن</a>
+                    <a href="contact.html" data-i18n="contact">اتصل بنا</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 data-i18n="contactInfo">معلومات الاتصال</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> نواكشوط، موريتانيا</p>
+                    <p><i class="fas fa-phone"></i> 44869780</p>
+                    <p><i class="fas fa-envelope"></i> info@moritania-express.com</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/language.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

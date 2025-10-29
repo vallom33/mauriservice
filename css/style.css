@@ -1,0 +1,563 @@
+:root {
+    --primary-color: #2c5aa0;
+    --secondary-color: #1e3a8a;
+    --accent-color: #25D366;
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+    --white: #ffffff;
+    --border-radius: 10px;
+    --box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html[dir="rtl"] {
+    direction: rtl;
+}
+
+html[dir="ltr"] {
+    direction: ltr;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-bg);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* شريط التنقل */
+.navbar {
+    background: var(--white);
+    box-shadow: var(--box-shadow);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 1rem 0;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.nav-logo i {
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 600;
+    transition: var(--transition);
+    position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--primary-color);
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-color);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.language-btn,
+.admin-btn {
+    background: var(--light-bg);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.language-btn:hover,
+.admin-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.mobile-menu {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* قسم الهيرو */
+.hero {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    padding: 120px 0 80px;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.hero-content {
+    flex: 1;
+    padding: 0 2rem;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'Cairo', sans-serif;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: #1da851;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--white);
+    border: 2px solid var(--white);
+}
+
+.btn-secondary:hover {
+    background: var(--white);
+    color: var(--primary-color);
+}
+
+.hero-stats {
+    display: flex;
+    gap: 3rem;
+}
+
+.stat h3 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat p {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.hero-image {
+    flex: 1;
+    position: relative;
+    height: 500px;
+}
+
+.floating-card {
+    position: absolute;
+    background: var(--white);
+    color: var(--text-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    width: 200px;
+}
+
+.floating-card:nth-child(1) {
+    top: 20%;
+    right: 10%;
+}
+
+.floating-card:nth-child(2) {
+    bottom: 20%;
+    left: 10%;
+}
+
+.floating-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.floating-card h4 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* قسم الخدمات السريع */
+.quick-services {
+    padding: 80px 0;
+    background: var(--white);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.service-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    transition: var(--transition);
+    border: 1px solid #eee;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.service-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.service-icon i {
+    font-size: 2rem;
+    color: var(--white);
+}
+
+.service-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.service-card p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.service-price {
+    margin-bottom: 1.5rem;
+}
+
+.service-price .price {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.service-price .amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.btn-order {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+    font-family: 'Cairo', sans-serif;
+}
+
+.btn-order:hover {
+    background: var(--secondary-color);
+}
+
+/* قسم كيفية العمل */
+.how-it-works {
+    padding: 80px 0;
+    background: var(--light-bg);
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.step {
+    text-align: center;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    position: relative;
+}
+
+.step-number {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    background: var(--primary-color);
+    color: var(--white);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.step i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.step h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+/* قسم الاتصال السريع */
+.quick-contact {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.contact-card {
+    background: var(--white);
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-card h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.contact-card p {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.contact-methods {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.whatsapp-btn,
+.phone-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.whatsapp-btn {
+    background: var(--accent-color);
+    color: var(--white);
+}
+
+.phone-btn {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.whatsapp-btn:hover,
+.phone-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* الفوتر */
+.footer {
+    background: var(--secondary-color);
+    color: var(--white);
+    padding: 3rem 0 1rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3,
+.footer-section h4 {
+    margin-bottom: 1rem;
+}
+
+.footer-section a {
+    display: block;
+    color: #ccc;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+}
+
+.footer-section a:hover {
+    color: var(--white);
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-links a {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.social-links a:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: #ccc;
+}
+
+/* التجاوب مع الشاشات الصغيرة */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu {
+        display: block;
+    }
+    
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 100px 0 40px;
+    }
+    
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .hero-stats {
+        justify-content: center;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-methods {
+        flex-direction: column;
+    }
+    
+    .floating-card {
+        position: relative;
+        margin: 1rem auto;
+        right: auto;
+        left: auto;
+    }
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الخدمات - موريتانيا اكسبريس</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-passport"></i>
+                <span>موريتانيا اكسبريس</span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">الرئيسية</a>
+                <a href="services.html" class="nav-link active">الخدمات</a>
+                <a href="pricing.html" class="nav-link">الأسعار</a>
+                <a href="about.html" class="nav-link">من نحن</a>
+                <a href="contact.html" class="nav-link">اتصل بنا</a>
+                
+                <div class="nav-actions">
+                    <button id="languageSwitch" class="language-btn">
+                        <i class="fas fa-globe"></i>
+                        <span id="currentLang">FR</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1 data-i18n="servicesTitle">خدماتنا المتكاملة</h1>
+            <p data-i18n="servicesSubtitle">نقدم جميع خدمات الاستخراج الرسمي تحت سقف واحد</p>
+        </div>
+    </section>
+
+    <section class="services-detailed">
+        <div class="container">
+            <!-- شهادات الميلاد -->
+            <div class="service-detail" id="birth">
+                <div class="service-info">
+                    <h2 data-i18n="birthCertificate">شهادات الميلاد</h2>
+                    <p data-i18n="birthCertificateFullDesc">نقوم باستخراج وتجديد شهادات الميلاد من البلديات الموريتانية بأسرع وقت ممكن. نتعامل مع جميع البلديات في نواكشوط والولايات.</p>
+                    
+                    <div class="service-features">
+                        <h3 data-i18n="whatWeOffer">ما نقدمه:</h3>
+                        <ul>
+                            <li data-i18n="birthFeature1">استخراج شهادات ميلاد جديدة</li>
+                            <li data-i18n="birthFeature2">تجديد الشهادات القديمة</li>
+                            <li data-i18n="birthFeature3">تصحيح الأخطاء في الشهادات</li>
+                            <li data-i18n="birthFeature4">استخراج شهادات بدل فاقد</li>
+                        </ul>
+                    </div>
+
+                    <div class="required-documents">
+                        <h3 data-i18n="requiredDocuments">المستندات المطلوبة:</h3>
+                        <ul>
+                            <li data-i18n="birthDoc1">صورة البطاقة الشخصية</li>
+                            <li data-i18n="birthDoc2">شهادة الميلاد القديمة (للتجديد)</li>
+                            <li data-i18n="birthDoc3">معلومات الأبوين</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-actions">
+                        <div class="price-tag">
+                            <span class="price" data-i18n="startingFrom">ابتداءً من</span>
+                            <span class="amount">1500 MRU</span>
+                        </div>
+                        <button class="btn-primary" onclick="orderService('birth-certificate')" data-i18n="orderNow">اطلب الآن</button>
+                    </div>
+                </div>
+                <div class="service-image">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+            </div>
+
+            <!-- رخص القيادة -->
+            <div class="service-detail" id="driving">
+                <div class="service-info">
+                    <h2 data-i18n="drivingLicense">رخص القيادة</h2>
+                    <p data-i18n="drivingLicenseFullDesc">خدمة متكاملة لاستخراج وتجديد رخص القيادة بأنواعها المختلفة. نسهل عليك كل الإجراءات من الفحص الطبي حتى استلام الرخصة.</p>
+                    
+                    <div class="service-features">
+                        <h3 data-i18n="whatWeOffer">ما نقدمه:</h3>
+                        <ul>
+                            <li data-i18n="drivingFeature1">رخصة قيادة خصوصي</li>
+                            <li data-i18n="drivingFeature2">رخصة قيادة عمومي</li>
+                            <li data-i18n="drivingFeature3">رخصة قيادة دراجات نارية</li>
+                            <li data-i18n="drivingFeature4">تجديد الرخص المنتهية</li>
+                        </ul>
+                    </div>
+
+                    <div class="required-documents">
+                        <h3 data-i18n="requiredDocuments">المستندات المطلوبة:</h3>
+                        <ul>
+                            <li data-i18n="drivingDoc1">البطاقة الشخصية</li>
+                            <li data-i18n="drivingDoc2">صور شخصية</li>
+                            <li data-i18n="drivingDoc3">الفحص الطبي</li>
+                            <li data-i18n="drivingDoc4">رخصة القيادة القديمة (للتجديد)</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-actions">
+                        <div class="price-tag">
+                            <span class="price" data-i18n="startingFrom">ابتداءً من</span>
+                            <span class="amount">5000 MRU</span>
+                        </div>
+                        <button class="btn-primary" onclick="orderService('driving-license')" data-i18n="orderNow">اطلب الآن</button>
+                    </div>
+                </div>
+                <div class="service-image">
+                    <i class="fas fa-car"></i>
+                </div>
+            </div>
+
+            <!-- خدمات إضافية -->
+            <div class="additional-services">
+                <h2 data-i18n="additionalServices">خدمات إضافية</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3 data-i18n="residenceCertificate">شهادات الإقامة</h3>
+                        <p data-i18n="residenceCertificateDesc">استخراج شهادات الإقامة الرسمية</p>
+                        <span class="price">2000 MRU</span>
+                        <button class="btn-order" onclick="orderService('residence-certificate')" data-i18n="orderNow">اطلب الآن</button>
+                    </div>
+
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-passport"></i>
+                        </div>
+                        <h3 data-i18n="passportServices">خدمات الجوازات</h3>
+                        <p data-i18n="passportServicesDesc">استخراج وتجديد جوازات السفر</p>
+                        <span class="price">15000 MRU</span>
+                        <button class="btn-order" onclick="orderService('passport')" data-i18n="orderNow">اطلب الآن</button>
+                    </div>
+
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <h3 data-i18n="legalDocuments">وثائق قانونية</h3>
+                        <p data-i18n="legalDocumentsDesc">تصديق الوثائق والمستندات الرسمية</p>
+                        <span class="price">3000 MRU</span>
+                        <button class="btn-order" onclick="orderService('legal-docs')" data-i18n="orderNow">اطلب الآن</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- نفس الفوتر من index.html -->
+    <footer class="footer">
+        <!-- ... نفس كود الفوتر ... -->
+    </footer>
+
+    <script src="js/language.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
