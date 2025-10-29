@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الخدمات - موريتانيا اكسبريس</title>
+    <style>
+        /* CSS كامل هنا داخل الصفحة */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link.active {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .page-hero {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 100px 2rem 60px;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .service-detail {
+            background: white;
+            margin: 3rem auto;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .service-detail h2 {
+            color: #2c5aa0;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .footer {
+            background: #1e3a8a;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <i class="fas fa-passport"></i>
+            <span>موريتانيا اكسبريس</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <a href="services.html" class="nav-link active">الخدمات</a>
+            <a href="pricing.html" class="nav-link">الأسعار</a>
+            <a href="about.html" class="nav-link">من نحن</a>
+            <a href="contact.html" class="nav-link">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1>خدماتنا المتكاملة</h1>
+            <p>نقدم جميع خدمات الاستخراج الرسمي تحت سقف واحد</p>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="service-detail">
+            <h2>شهادات الميلاد</h2>
+            <p>نقوم باستخراج وتجديد شهادات الميلاد من البلديات الموريتانية بأسرع وقت ممكن. نتعامل مع جميع البلديات في نواكشوط والولايات.</p>
+            <button class="btn-primary">اطلب الخدمة - 1500 MRU</button>
+        </div>
+        
+        <div class="service-detail">
+            <h2>رخص القيادة</h2>
+            <p>خدمة متكاملة لاستخراج وتجديد رخص القيادة بأنواعها المختلفة. نسهل عليك كل الإجراءات من الفحص الطبي حتى استلام الرخصة.</p>
+            <button class="btn-primary">اطلب الخدمة - 5000 MRU</button>
+        </div>
+        
+        <div class="service-detail">
+            <h2>شهادات الإقامة</h2>
+            <p>استخراج شهادات الإقامة الرسمية للمواطنين والمقيمين في موريتانيا.</p>
+            <button class="btn-primary">اطلب الخدمة - 2000 MRU</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript بسيط داخل الصفحة
+        function orderService(serviceName) {
+            const message = `مرحباً، أريد طلب خدمة: ${serviceName}`;
+            const whatsappUrl = `https://wa.me/22212345678?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+        
+        // جعل الأزرار تعمل
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('click', function() {
+                const serviceName = this.parentElement.querySelector('h2').textContent;
+                orderService(serviceName);
+            });
+        });
+    </script>
+</body>
+</html>
