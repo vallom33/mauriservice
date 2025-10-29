@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الأسعار - موريتانيا للخدمات</title>
+    <title>الأسعار - Mauri-Services</title>
     <style>
         * {
             margin: 0;
@@ -72,153 +72,94 @@
             padding: 0 2rem;
         }
         
-        .pricing-plans {
-            padding: 80px 0;
-            background: #f8f9fa;
-        }
-
-        .pricing-grid {
+        .pricing-categories {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
-            margin-top: 3rem;
+            margin: 3rem 0;
         }
-
-        .pricing-card {
+        
+        .category-card {
             background: white;
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 2px solid #eee;
         }
-
-        .pricing-card.featured {
-            border-color: #2c5aa0;
-            transform: scale(1.05);
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
         }
-
-        .pricing-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .pricing-card.featured:hover {
-            transform: scale(1.05) translateY(-10px);
-        }
-
-        .pricing-header {
-            margin-bottom: 2rem;
-        }
-
-        .pricing-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+        
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            background: #2c5aa0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
-        }
-
-        .pricing-icon i {
-            font-size: 2rem;
             color: white;
+            font-size: 1.2rem;
         }
-
-        .pricing-title {
-            font-size: 1.5rem;
-            color: #2c5aa0;
-            margin-bottom: 0.5rem;
+        
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f5f5f5;
         }
-
-        .pricing-price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2c5aa0;
-            margin-bottom: 1rem;
-        }
-
-        .pricing-features {
-            list-style: none;
-            margin-bottom: 2rem;
-        }
-
-        .pricing-features li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .pricing-features li:last-child {
+        
+        .service-item:last-child {
             border-bottom: none;
         }
-
+        
+        .service-info h4 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .service-info p {
+            margin: 0.2rem 0 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .service-price {
+            font-weight: bold;
+            color: #2c5aa0;
+            font-size: 1.1rem;
+        }
+        
         .btn-primary {
             background: #2c5aa0;
             color: white;
             border: none;
-            padding: 1rem 2rem;
+            padding: 0.8rem 1.5rem;
             border-radius: 8px;
-            font-size: 1.1rem;
             cursor: pointer;
-            width: 100%;
+            font-size: 0.9rem;
             transition: background 0.3s ease;
         }
-
+        
         .btn-primary:hover {
             background: #1e3a8a;
         }
-
-        .price-comparison {
-            background: white;
-            padding: 80px 0;
-        }
-
-        .comparison-table {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .table-header {
-            background: #2c5aa0;
-            color: white;
+        
+        .price-note {
+            background: #e8f4ff;
             padding: 1.5rem;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
-            font-weight: 600;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: center;
+            border-right: 4px solid #2c5aa0;
         }
-
-        .table-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #eee;
-            align-items: center;
-        }
-
-        .table-row:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        .service-name {
-            font-weight: 600;
-        }
-
-        .our-price {
-            color: #2c5aa0;
-            font-weight: 700;
-        }
-
-        .traditional-price {
-            color: #666;
-            text-decoration: line-through;
-        }
-
+        
         .footer {
             background: #1e3a8a;
             color: white;
@@ -226,213 +167,239 @@
             text-align: center;
             margin-top: 4rem;
         }
-
-        @media (max-width: 768px) {
-            .pricing-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .pricing-card.featured {
-                transform: none;
-            }
-            
-            .pricing-card.featured:hover {
-                transform: translateY(-10px);
-            }
-            
-            .table-header,
-            .table-row {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-logo">
-            <i class="fas fa-passport"></i>
-            <span>موريتانيا للخدمات</span>
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
         </div>
         
         <div class="nav-links">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link">الخدمات</a>
             <a href="pricing.html" class="nav-link active">الأسعار</a>
-              <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="agents.html" class="nav-link">انضم كوكيل</a>
             <a href="about.html" class="nav-link">من نحن</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
-            <a href="admin-login.html" class="nav-link">الإدارة</a>
         </div>
     </nav>
 
     <section class="page-hero">
         <div class="container">
-            <h1>أسعارنا التنافسية</h1>
-            <p>أسعار شفافة بدون مفاجآت - جودة عالية بتكلفة معقولة</p>
+            <h1>أسعارنا الشفافة</h1>
+            <p>لا مفاجآت - أسعار واضحة ومباشرة لكل خدمة</p>
         </div>
     </section>
 
-    <section class="pricing-plans">
-        <div class="container">
-            <div class="pricing-grid">
-                <!-- باقة الأساسية -->
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <div class="pricing-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h3 class="pricing-title">الباقة الأساسية</h3>
-                        <div class="pricing-price">1500 MRU</div>
-                        <p>لشهادات الميلاد والإقامة</p>
-                    </div>
-                    
-                    <ul class="pricing-features">
-                        <li>استخراج وثيقة واحدة</li>
-                        <li>تسليم خلال 48 ساعة</li>
-                        <li>دعم عبر الواتساب</li>
-                        <li>مراجعة المستندات</li>
-                    </ul>
-                    
-                    <button class="btn-primary" onclick="orderService('شهادة ميلاد', 1500)">اطلب الآن</button>
-                </div>
+    <section class="container">
+        <div class="price-note">
+            <h3>💡 ملاحظة مهمة</h3>
+            <p>الأسعار قد تختلف قليلاً حسب المسافة والوقت والطلب. دائماً نؤكد السعر النهائي قبل البدء في الخدمة.</p>
+        </div>
 
-                <!-- باقة متوسطة -->
-                <div class="pricing-card featured">
-                    <div class="pricing-header">
-                        <div class="pricing-icon">
-                            <i class="fas fa-id-card"></i>
-                        </div>
-                        <h3 class="pricing-title">الباقة المتوسطة</h3>
-                        <div class="pricing-price">5000 MRU</div>
-                        <p>لرخص القيادة والوثائق المتوسطة</p>
-                    </div>
-                    
-                    <ul class="pricing-features">
-                        <li>رخصة قيادة كاملة</li>
-                        <li>تسليم خلال 24 ساعة</li>
-                        <li>دعم هاتفي مخصص</li>
-                        <li>متابعة حتى التسليم</li>
-                    </ul>
-                    
-                    <button class="btn-primary" onclick="orderService('رخصة قيادة', 5000)">اطلب الآن</button>
+        <div class="pricing-categories">
+            <!-- خدمات التوصيل -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🚗</div>
+                    <h2>خدمات التوصيل</h2>
                 </div>
-
-                <!-- باقة متقدمة -->
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <div class="pricing-icon">
-                            <i class="fas fa-passport"></i>
-                        </div>
-                        <h3 class="pricing-title">الباقة المتقدمة</h3>
-                        <div class="pricing-price">15000 MRU</div>
-                        <p>لجوازات السفر والوثائق المعقدة</p>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>توصيل مشتريات السوق</h4>
+                        <p>خضروات، فواكه، لحوم، شاي</p>
                     </div>
-                    
-                    <ul class="pricing-features">
-                        <li>جواز سفر كامل</li>
-                        <li>تسليم عاجل 12 ساعة</li>
-                        <li>دعم 24/7</li>
-                        <li>خدمة استعجالية</li>
-                    </ul>
-                    
-                    <button class="btn-primary" onclick="orderService('جواز سفر', 15000)">اطلب الآن</button>
+                    <div class="service-price">500 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>توصيل وجبات طعام</h4>
+                        <p>من المطاعم إلى منزلك</p>
+                    </div>
+                    <div class="service-price">400 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>توصيل طرود صغيرة</h4>
+                        <p>مستندات، أغراض شخصية</p>
+                    </div>
+                    <div class="service-price">400 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>توصيل طرد كبير</h4>
+                        <p>أثاث، أجهزة كهربائية</p>
+                    </div>
+                    <div class="service-price">800 MRU</div>
+                </div>
+            </div>
+
+            <!-- خدمات المستندات -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">📄</div>
+                    <h2>خدمات المستندات</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>طباعة مستندات</h4>
+                        <p>حتى 10 ورقات</p>
+                    </div>
+                    <div class="service-price">300 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>تصوير أوراق</h4>
+                        <p>حتى 10 نسخ</p>
+                    </div>
+                    <div class="service-price">200 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>ترجمة مستند</h4>
+                        <p>صفحة واحدة</p>
+                    </div>
+                    <div class="service-price">1000 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>توصيل مستندات</h4>
+                        <p>للدوائر الحكومية</p>
+                    </div>
+                    <div class="service-price">600 MRU</div>
+                </div>
+            </div>
+
+            <!-- خدمات الدفع -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">💳</div>
+                    <h2>خدمات الدفع</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>شحن رصيد</h4>
+                        <p>جميع شركات الاتصال</p>
+                    </div>
+                    <div class="service-price">200 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>دفع فاتورة كهرباء</h4>
+                        <p> SOMELEC</p>
+                    </div>
+                    <div class="service-price">300 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>دفع فاتورة ماء</p>
+                    <p> SOMEP</p>
+                    </div>
+                    <div class="service-price">300 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>شراء بطاقات</h4>
+                        <p>Netflix, Steam, إلخ</p>
+                    </div>
+                    <div class="service-price">500 MRU</div>
+                </div>
+            </div>
+
+            <!-- خدمات أخرى -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🔧</div>
+                    <h2>خدمات أخرى</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>خدمة سباكة بسيطة</h4>
+                        <p>إصلاح تسريبات</p>
+                    </div>
+                    <div class="service-price">1500 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>خدمة كهرباء بسيطة</h4>
+                        <p>إصلاح أعطال</p>
+                    </div>
+                    <div class="service-price">1200 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>مساعدة في إجراءات</h4>
+                        <p>توجيه وإرشاد</p>
+                    </div>
+                    <div class="service-price">500 MRU</div>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>خدمة مخصصة</h4>
+                        <p>لأي طلب خاص</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('خدمة مخصصة', 0)">اسأل عن السعر</button>
                 </div>
             </div>
         </div>
-    </section>
 
-    <section class="price-comparison">
-        <div class="container">
-            <h2 style="text-align: center; font-size: 2.5rem; color: #2c5aa0; margin-bottom: 3rem;">مقارنة الأسعار</h2>
-            
-            <div class="comparison-table">
-                <div class="table-header">
-                    <div>الخدمة</div>
-                    <div>سعرنا</div>
-                    <div>السعر التقليدي</div>
-                </div>
-                
-                <div class="table-row">
-                    <div class="service-name">شهادة ميلاد</div>
-                    <div class="our-price">1500 MRU</div>
-                    <div class="traditional-price">2000 MRU</div>
-                </div>
-                
-                <div class="table-row">
-                    <div class="service-name">رخصة قيادة</div>
-                    <div class="our-price">5000 MRU</div>
-                    <div class="traditional-price">7000 MRU</div>
-                </div>
-                
-                <div class="table-row">
-                    <div class="service-name">شهادة إقامة</div>
-                    <div class="our-price">2000 MRU</div>
-                    <div class="traditional-price">3000 MRU</div>
-                </div>
-                
-                <div class="table-row">
-                    <div class="service-name">جواز سفر</div>
-                    <div class="our-price">15000 MRU</div>
-                    <div class="traditional-price">20000 MRU</div>
-                </div>
-            </div>
+        <div class="price-note">
+            <h3>📞 كيف تطلب خدمة؟</h3>
+            <p>1. اختر الخدمة المطلوبة<br>
+               2. اتصل بنا على الواتساب<br>
+               3. نؤكد السعر والتفاصيل<br>
+               4. ننفذ الخدمة<br>
+               5. تدفع عند الاستلام</p>
+            <button class="btn-primary" onclick="window.open('https://wa.me/22244869780', '_blank')" style="margin-top: 1rem;">
+                تواصل معنا على الواتساب
+            </button>
         </div>
     </section>
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
-            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+            <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - واتساب: 44869780</p>
         </div>
     </footer>
 
     <script>
-        // نظام تتبع الزوار الحقيقي
-        if (typeof(Storage) !== "undefined") {
-            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            
-            const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
-            
-            const visitorData = {
-                timestamp: new Date().toLocaleString('ar-SA'),
-                page: pageName,
-                referrer: document.referrer,
-                userAgent: navigator.userAgent,
-                ip: 'user-' + Math.random().toString(36).substr(2, 9)
-            };
-            
-            visitors.push(visitorData);
-            
-            if (visitors.length > 1000) {
-                visitors = visitors.slice(-1000);
-            }
-            
-            localStorage.setItem('website_visitors', JSON.stringify(visitors));
-        }
-
-        // نظام تتبع الطلبات الحقيقي
         function orderService(serviceName, price) {
-            if (typeof(Storage) !== "undefined") {
-                let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+            const message = price > 0 ? 
+                `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU` :
+                `مرحباً، أريد الاستفسار عن خدمة: ${serviceName}`;
                 
-                const orderData = {
-                    customer: 'عميل جديد',
-                    service: serviceName,
-                    price: price,
-                    timestamp: new Date().toLocaleString('ar-SA'),
-                    status: 'جديد',
-                    id: Date.now()
-                };
-                
-                orders.push(orderData);
-                localStorage.setItem('customer_orders', JSON.stringify(orders));
-            }
-            
-            // توجيه إلى واتساب
-            const message = `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU`;
             const whatsappUrl = `https://wa.me/22244869780?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
+        }
+
+        // تتبع الزوار
+        if (typeof(Storage) !== "undefined") {
+            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            visitors.push({
+                timestamp: new Date().toLocaleString('ar-SA'),
+                page: 'صفحة الأسعار',
+                referrer: document.referrer
+            });
+            localStorage.setItem('website_visitors', JSON.stringify(visitors));
         }
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>انضم كوكيل - Mauri Services</title>
+    <title>انضم كوكيل - Mauri-Services</title>
     <style>
         * {
             margin: 0;
@@ -72,64 +72,35 @@
             padding: 0 2rem;
         }
         
-        .benefits-section {
-            padding: 80px 0;
-            background: white;
-        }
-        
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        
-        .benefit-card {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            border-left: 4px solid #2c5aa0;
-        }
-        
-        .benefit-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #2c5aa0;
-        }
-        
-        .application-section {
-            padding: 80px 0;
-            background: #f8f9fa;
-        }
-        
-        .application-form {
+        .simple-section {
             background: white;
             padding: 3rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
+            margin: 3rem auto;
+            text-align: center;
         }
         
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
             padding: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .benefit-icon {
+            width: 50px;
+            height: 50px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
         }
         
         .btn-primary {
@@ -140,7 +111,12 @@
             border-radius: 8px;
             font-size: 1.1rem;
             cursor: pointer;
-            width: 100%;
+            margin: 1rem;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
         }
         
         .footer {
@@ -155,156 +131,91 @@
 <body>
     <nav class="navbar">
         <div class="nav-logo">
-            <i class="fas fa-passport"></i>
-            <span>Mauri Services</span>
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
         </div>
         
         <div class="nav-links">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link">الخدمات</a>
             <a href="pricing.html" class="nav-link">الأسعار</a>
+            <a href="agents.html" class="nav-link active">انضم كوكيل</a>
             <a href="about.html" class="nav-link">من نحن</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
-            <a href="agents.html" class="nav-link active">انضم كوكيل</a>
         </div>
     </nav>
 
     <section class="page-hero">
         <div class="container">
             <h1>انضم إلى فريقنا</h1>
-            <p>كن جزءاً من شبكة وكلاء Mauri Services واربح معنا</p>
+            <p>اربح معنا كوسيط خدمات</p>
         </div>
     </section>
 
-    <section class="benefits-section">
-        <div class="container">
-            <h2 style="text-align: center; font-size: 2.5rem; color: #2c5aa0; margin-bottom: 1rem;">مميزات الانضمام إلينا</h2>
-            <p style="text-align: center; font-size: 1.2rem; color: #666; margin-bottom: 3rem;">فرصة رائعة لتحقيق دخل إضافي وتنمية مهاراتك</p>
+    <section class="container">
+        <div class="simple-section">
+            <h2>ابحث عن دخل إضافي؟</h2>
+            <p>انضم كوسيط خدمات واربح عمولة على كل طلب تنفذه</p>
             
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <div class="benefit-icon">💰</div>
+            <div class="benefit-item">
+                <div class="benefit-icon">💰</div>
+                <div style="text-align: right;">
                     <h3>عمولات مجزية</h3>
-                    <p>احصل على عمولة تصل إلى 30% من كل عملية بيع تقوم بها</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">🎓</div>
-                    <h3>تدريب مجاني</h3>
-                    <p>تدريب كامل على جميع الخدمات وأساليب العمل</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">📱</div>
-                    <h3>أدوات مجانية</h3>
-                    <p>احصل على جميع الأدوات والتطبيقات التي تحتاجها</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">🚀</div>
-                    <h3>دعم مستمر</h3>
-                    <p>فريق دعم فني وإداري متاح لمساعدتك دائماً</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">📈</div>
-                    <h3>تطور مستمر</h3>
-                    <p>فرص ترقية ومكافآت للأوائل في المبيعات</p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">🌍</div>
-                    <h3>مرونة في العمل</h3>
-                    <p>اعمل من أي مكان وفي الوقت الذي يناسبك</p>
+                    <p>احصل على نسبة من كل خدمة تنفذها</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section class="application-section">
-        <div class="container">
-            <h2 style="text-align: center; font-size: 2.5rem; color: #2c5aa0; margin-bottom: 3rem;">قدم طلب انضمام الآن</h2>
             
-            <div class="application-form">
-                <form id="agentApplication">
-                    <div class="form-group">
-                        <label for="fullName">الاسم الكامل</label>
-                        <input type="text" id="fullName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">رقم الهاتف</label>
-                        <input type="tel" id="phone" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">البريد الإلكتروني</label>
-                        <input type="email" id="email">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="city">المدينة/المنطقة</label>
-                        <input type="text" id="city" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="experience">الخبرة السابقة (إن وجدت)</label>
-                        <textarea id="experience" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="whyJoin">لماذا تريد الانضمام إلينا؟</label>
-                        <textarea id="whyJoin" rows="3" required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn-primary">إرسال الطلب</button>
-                </form>
+            <div class="benefit-item">
+                <div class="benefit-icon">⏰</div>
+                <div style="text-align: right;">
+                    <h3>مرونة في الوقت</h3>
+                    <p>اعمل في الأوقات التي تناسبك</p>
+                </div>
             </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">📍</div>
+                <div style="text-align: right;">
+                    <h3>عمل من منطقتك</h3>
+                    <p>لا حاجة للانتقال - اعمل من حيك</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <p><strong>المطلوب منك:</strong></p>
+                <p>📱 هاتف ذكي<br>
+                   🚲 وسيلة مواصلات<br>
+                   💬 قدرة على التواصل</p>
+            </div>
+            
+            <button class="btn-primary" onclick="contactUs()">
+                تواصل معنا للانضمام
+            </button>
         </div>
     </section>
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Mauri Services. جميع الحقوق محفوظة.</p>
-            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+            <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - واتساب: 44869780</p>
         </div>
     </footer>
 
     <script>
-        document.getElementById('agentApplication').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const fullName = document.getElementById('fullName').value;
-            const phone = document.getElementById('phone').value;
-            
-            const message = `مرحباً، أنا ${fullName} - ${phone}. أريد الانضمام كوكيل لـ Mauri Services`;
-            const whatsappUrl = `https://wa.me/22212345678?text=${encodeURIComponent(message)}`;
-            
+        function contactUs() {
+            const message = "مرحباً، أريد الانضمام كوسيط خدمات مع Mauri-Services";
+            const whatsappUrl = `https://wa.me/22244869780?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
-            alert('تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً.');
-            
-            // مسح النموذج
-            document.getElementById('agentApplication').reset();
-        });
+        }
 
-        // نظام تتبع الزوار
+        // تتبع الزوار
         if (typeof(Storage) !== "undefined") {
             let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            
-            const visitorData = {
+            visitors.push({
                 timestamp: new Date().toLocaleString('ar-SA'),
                 page: 'انضم كوكيل',
-                referrer: document.referrer,
-                userAgent: navigator.userAgent,
-                ip: 'user-' + Math.random().toString(36).substr(2, 9)
-            };
-            
-            visitors.push(visitorData);
-            
-            if (visitors.length > 1000) {
-                visitors = visitors.slice(-1000);
-            }
-            
+                referrer: document.referrer
+            });
             localStorage.setItem('website_visitors', JSON.stringify(visitors));
         }
     </script>

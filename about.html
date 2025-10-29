@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>من نحن - موريتانيا للخدمات</title>
+    <title>من نحن - Mauri-Services</title>
     <style>
         * {
             margin: 0;
@@ -74,65 +74,29 @@
         
         .about-section {
             background: white;
-            margin: 3rem auto;
             padding: 3rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 3rem auto;
         }
         
-        .about-section h2 {
-            color: #2c5aa0;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        
-        .stats {
+        .values-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
             margin: 3rem 0;
         }
         
-        .stat-item {
+        .value-card {
             text-align: center;
             padding: 2rem;
             background: #f8f9fa;
             border-radius: 10px;
         }
         
-        .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #2c5aa0;
-            display: block;
-        }
-        
-        .team {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        
-        .team-member {
-            text-align: center;
-            padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .member-avatar {
-            width: 100px;
-            height: 100px;
-            background: #2c5aa0;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
+        .value-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
         
         .footer {
@@ -147,128 +111,105 @@
 <body>
     <nav class="navbar">
         <div class="nav-logo">
-            <i class="fas fa-passport"></i>
-            <span> Mauri-Services</span>
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
         </div>
         
         <div class="nav-links">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link">الخدمات</a>
             <a href="pricing.html" class="nav-link">الأسعار</a>
-              <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="agents.html" class="nav-link">انضم كوكيل</a>
             <a href="about.html" class="nav-link active">من نحن</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
-            <a href="admin-login.html" class="nav-link">الإدارة</a>
         </div>
     </nav>
 
     <section class="page-hero">
         <div class="container">
-            <h1>من نحن</h1>
-            <p>شركتك الموثوقة لاستخراج الوثائق الرسمية في موريتانيا</p>
+            <h1>منصة خدمات متكاملة</h1>
+            <p>نسهل حياتك اليومية في نواكشوط</p>
         </div>
     </section>
 
     <section class="container">
         <div class="about-section">
-            <h2>قصتنا</h2>
-            <p>تأسست موريتانيا اكسبريس في عام 2024 بهدف واحد: تبسيط عملية استخراج الوثائق الرسمية للمواطنين الموريتانيين. نحن نؤمن بأن الوقت ثمين، ولا يجب إضاعته في الطوابير الطويلة.</p>
+            <h2 style="text-align: center; color: #2c5aa0; margin-bottom: 2rem;">قصتنا البسيطة</h2>
             
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-number">500+</span>
-                    <p>عميل راضي</p>
+            <p style="font-size: 1.1rem; line-height: 1.8; text-align: center; margin-bottom: 2rem;">
+                بدأنا كفكرة بسيطة: <strong>لماذا نضيع الوقت في الطوابير والمهام اليومية؟</strong><br>
+                فقررنا إنشاء منصة توفر كل الخدمات التي تحتاجها في مكان واحد.
+            </p>
+            
+            <div style="background: #e8f4ff; padding: 2rem; border-radius: 10px; margin: 2rem 0;">
+                <h3 style="color: #2c5aa0; text-align: center;">ماذا نقدم؟</h3>
+                <p style="text-align: center; margin-top: 1rem;">
+                    ✅ توصيل مشتريات السوق<br>
+                    ✅ خدمات المستندات والطباعة<br>
+                    ✅ دفع الفواتير وشحن الرصيد<br>
+                    ✅ توصيل الطرود<br>
+                    ✅ خدمات منزلية بسيطة<br>
+                    ✅ وأي خدمة أخرى تحتاجها!
+                </p>
+            </div>
+
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🎯</div>
+                    <h3>واقعيون</h3>
+                    <p>نعد فقط بما نستطيع تنفيذه</p>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">1,500+</span>
-                    <p>وثيقة مستخرجة</p>
+                
+                <div class="value-card">
+                    <div class="value-icon">💬</div>
+                    <h3>شفافون</h3>
+                    <p>أسعار واضحة بدون مفاجآت</p>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">24/7</span>
-                    <p>دعم عملاء</p>
+                
+                <div class="value-card">
+                    <div class="value-icon">⚡</div>
+                    <h3>سريعون</h3>
+                    <p>ننفذ الخدمات في أسرع وقت</p>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">98%</span>
-                    <p>نسبة الرضا</p>
+                
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h3>موثوقون</h3>
+                    <p>نحافظ على وعودنا</p>
                 </div>
             </div>
-            
-            <h2>فريقنا</h2>
-            <div class="team">
-                <div class="team-member">
-                    <div class="member-avatar">👨‍💼</div>
-                    <h3>محمد أحمد</h3>
-                    <p>المدير التنفيذي</p>
-                    <p>خبرة 10 سنوات في القطاع الحكومي</p>
-                </div>
-                <div class="team-member">
-                    <div class="member-avatar">👩‍💻</div>
-                    <h3>فاطمة عبد الله</h3>
-                    <p>مديرة العمليات</p>
-                    <p>متخصصة في الإجراءات الحكومية</p>
-                </div>
-                <div class="team-member">
-                    <div class="member-avatar">👨‍🔧</div>
-                    <h3>سيدي ولد محمد</h3>
-                    <p>منسق الخدمات</p>
-                    <p>خبرة في التعامل مع البلديات</p>
-                </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <h3 style="color: #2c5aa0;">كيف نعمل؟</h3>
+                <p style="margin-top: 1rem;">
+                    1. تتصل بنا على الواتساب<br>
+                    2. نتفق على السعر والتفاصيل<br>
+                    3. ننفذ الخدمة<br>
+                    4. تدفع عند التسليم<br>
+                    <strong>بساطة وشفافية</strong>
+                </p>
             </div>
         </div>
     </section>
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
-            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+            <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - واتساب: 44869780</p>
         </div>
     </footer>
-</body>
-<script>
-// نظام تتبع الزوار الحقيقي
-if (typeof(Storage) !== "undefined") {
-    let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-    
-    const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
-    
-    const visitorData = {
-        timestamp: new Date().toLocaleString('ar-SA'),
-        page: pageName,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        ip: 'user-' + Math.random().toString(36).substr(2, 9) // IP مبسط للتتبع
-    };
-    
-    visitors.push(visitorData);
-    
-    // حفظ فقط آخر 1000 زيارة لتجنب امتلاء الذاكرة
-    if (visitors.length > 1000) {
-        visitors = visitors.slice(-1000);
-    }
-    
-    localStorage.setItem('website_visitors', JSON.stringify(visitors));
-}
 
-// نظام تتبع الطلبات الحقيقي
-window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
-    if (typeof(Storage) !== "undefined") {
-        let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-        
-        const orderData = {
-            customer: customerName,
-            service: serviceName,
-            price: price,
-            timestamp: new Date().toLocaleString('ar-SA'),
-            status: 'جديد',
-            id: Date.now()
-        };
-        
-        orders.push(orderData);
-        localStorage.setItem('customer_orders', JSON.stringify(orders));
-        
-        return true;
-    }
-    return false;
-};
-</script>
+    <script>
+        // تتبع الزوار
+        if (typeof(Storage) !== "undefined") {
+            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            visitors.push({
+                timestamp: new Date().toLocaleString('ar-SA'),
+                page: 'من نحن',
+                referrer: document.referrer
+            });
+            localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        }
+    </script>
+</body>
 </html>
