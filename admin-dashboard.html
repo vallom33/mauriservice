@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - موريتانيا اكسبريس</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-nav {
+            background: #2c5aa0;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+        }
+        
+        .dashboard {
+            padding: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
+        .recent-activity {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .activity-list {
+            margin-top: 1rem;
+        }
+        
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>لوحة تحكم موريتانيا اكسبريس</h1>
+        <div>
+            <span>مرحباً، المدير</span>
+            <a href="index.html" class="btn btn-danger" style="margin-right: 1rem;">تسجيل الخروج</a>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <a href="#stats">الإحصائيات</a>
+        <a href="#visitors">الزوار</a>
+        <a href="#orders">الطلبات</a>
+        <a href="#settings">الإعدادات</a>
+    </nav>
+    
+    <div class="dashboard">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number" id="totalVisitors">0</span>
+                <p>إجمالي الزوار</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="todayVisitors">0</span>
+                <p>زوار اليوم</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="totalOrders">0</span>
+                <p>إجمالي الطلبات</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="revenue">0</span>
+                <p>الإيرادات (MRU)</p>
+            </div>
+        </div>
+        
+        <div class="recent-activity">
+            <h2>آخر الزوار</h2>
+            <div class="activity-list" id="visitorsList">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </div>
+        
+        <div class="recent-activity">
+            <h2>آخر الطلبات</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>العميل</th>
+                        <th>الخدمة</th>
+                        <th>التاريخ</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTable">
+                    <!-- سيتم ملؤها بالبيانات -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // نظام تتبع الزوار والإحصائيات
+        class Analytics {
+            constructor() {
+                this.visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+                this.orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                this.init();
+            }
+            
+            init() {
+                this.trackVisitor();
+                this.updateDashboard();
+                setInterval(() => this.updateDashboard(), 5000);
+            }
+            
+            trackVisitor() {
+                const visitor = {
+                    id: Date.now(),
+                    timestamp: new Date().toLocaleString('ar-SA'),
+                    page: window.location.href,
+                    userAgent: navigator.userAgent
+                };
+                
+                this.visitors.push(visitor);
+                localStorage.setItem('website_visitors', JSON.stringify(this.visitors));
+            }
+            
+            updateDashboard() {
+                // تحديث الإحصائيات
+                document.getElementById('totalVisitors').textContent = this.visitors.length;
+                document.getElementById('todayVisitors').textContent = this.getTodayVisitors();
+                document.getElementById('totalOrders').textContent = this.orders.length;
+                document.getElementById('revenue').textContent = this.calculateRevenue();
+                
+                // تحديث قائمة الزوار
+                this.updateVisitorsList();
+                
+                // تحديث الطلبات
+                this.updateOrdersTable();
+            }
+            
+            getTodayVisitors() {
+                const today = new Date().toDateString();
+                return this.visitors.filter(v => new Date(v.timestamp).toDateString() === today).length;
+            }
+            
+            calculateRevenue() {
+                return this.orders.reduce((total, order) => total + (order.price || 0), 0);
+            }
+            
+            updateVisitorsList() {
+                const list = document.getElementById('visitorsList');
+                const recentVisitors = this.visitors.slice(-10).reverse();
+                
+                list.innerHTML = recentVisitors.map(visitor => `
+                    <div class="activity-item">
+                        <span>زائر جديد</span>
+                        <span>${visitor.timestamp}</span>
+                    </div>
+                `).join('');
+            }
+            
+            updateOrdersTable() {
+                const table = document.getElementById('ordersTable');
+                const sampleOrders = [
+                    { customer: 'محمد أحمد', service: 'شهادة ميلاد', date: '2024-01-15', status: 'مكتمل', price: 1500 },
+                    { customer: 'فاطمة عبد الله', service: 'رخصة قيادة', date: '2024-01-14', status: 'قيد التنفيذ', price: 5000 },
+                    { customer: 'سيدي ولد محمد', service: 'شهادة إقامة', date: '2024-01-13', status: 'مكتمل', price: 2000 }
+                ];
+                
+                // دمج الطلبات الحقيقية مع العينات
+                const allOrders = [...this.orders, ...sampleOrders];
+                
+                table.innerHTML = allOrders.slice(-5).reverse().map(order => `
+                    <tr>
+                        <td>${order.customer}</td>
+                        <td>${order.service}</td>
+                        <td>${order.date}</td>
+                        <td>
+                            <span style="color: ${order.status === 'مكتمل' ? 'green' : 'orange'}">
+                                ${order.status}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-success">تفاصيل</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            addOrder(order) {
+                this.orders.push({
+                    ...order,
+                    id: Date.now(),
+                    timestamp: new Date().toLocaleString('ar-SA')
+                });
+                localStorage.setItem('customer_orders', JSON.stringify(this.orders));
+                this.updateDashboard();
+            }
+        }
+        
+        // بدء النظام عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            window.analytics = new Analytics();
+        });
+    </script>
+</body>
+</html>

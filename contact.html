@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اتصل بنا - موريتانيا اكسبريس</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link.active {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .page-hero {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 100px 2rem 60px;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .contact-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 3rem auto;
+        }
+        
+        .contact-info {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .contact-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #2c5aa0;
+            outline: none;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .footer {
+            background: #1e3a8a;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <i class="fas fa-passport"></i>
+            <span>موريتانيا اكسبريس</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <a href="services.html" class="nav-link">الخدمات</a>
+            <a href="pricing.html" class="nav-link">الأسعار</a>
+            <a href="about.html" class="nav-link">من نحن</a>
+            <a href="contact.html" class="nav-link active">اتصل بنا</a>
+            <a href="admin-login.html" class="nav-link">الإدارة</a>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1>اتصل بنا</h1>
+            <p>نحن هنا لمساعدتك في أي وقت</p>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="contact-section">
+            <div class="contact-info">
+                <h2>معلومات الاتصال</h2>
+                
+                <div class="contact-method">
+                    <div class="contact-icon">📞</div>
+                    <div>
+                        <h3>هاتف</h3>
+                        <p>12345678</p>
+                    </div>
+                </div>
+                
+                <div class="contact-method">
+                    <div class="contact-icon">💬</div>
+                    <div>
+                        <h3>واتساب</h3>
+                        <p>12345678</p>
+                    </div>
+                </div>
+                
+                <div class="contact-method">
+                    <div class="contact-icon">📧</div>
+                    <div>
+                        <h3>بريد إلكتروني</h3>
+                        <p>info@moritania-express.com</p>
+                    </div>
+                </div>
+                
+                <div class="contact-method">
+                    <div class="contact-icon">📍</div>
+                    <div>
+                        <h3>العنوان</h3>
+                        <p>نواكشوط، موريتانيا</p>
+                    </div>
+                </div>
+                
+                <div class="contact-method">
+                    <div class="contact-icon">🕒</div>
+                    <div>
+                        <h3>ساعات العمل</h3>
+                        <p>24/7 - خدمة على مدار الساعة</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-form">
+                <h2>أرسل رسالة</h2>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">الاسم الكامل</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">رقم الهاتف</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="service">نوع الخدمة</label>
+                        <select id="service" required>
+                            <option value="">اختر الخدمة</option>
+                            <option value="birth-certificate">شهادة ميلاد</option>
+                            <option value="driving-license">رخصة قيادة</option>
+                            <option value="residence-certificate">شهادة إقامة</option>
+                            <option value="other">استفسار عام</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">الرسالة</label>
+                        <textarea id="message" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">إرسال الرسالة</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const service = document.getElementById('service').value;
+            
+            const serviceNames = {
+                'birth-certificate': 'شهادة ميلاد',
+                'driving-license': 'رخصة قيادة',
+                'residence-certificate': 'شهادة إقامة',
+                'other': 'استفسار عام'
+            };
+            
+            const message = `مرحباً، أنا ${name}. أريد الاستفسار عن خدمة: ${serviceNames[service]}`;
+            const whatsappUrl = `https://wa.me/22212345678?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            alert('سيتم توجيهك إلى واتساب لإكمال الطلب');
+        });
+    </script>
+</body>
+</html>

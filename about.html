@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>من نحن - موريتانيا اكسبريس</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link.active {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .page-hero {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 100px 2rem 60px;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .about-section {
+            background: white;
+            margin: 3rem auto;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .about-section h2 {
+            color: #2c5aa0;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
+        .team {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .team-member {
+            text-align: center;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .footer {
+            background: #1e3a8a;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <i class="fas fa-passport"></i>
+            <span>موريتانيا اكسبريس</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <a href="services.html" class="nav-link">الخدمات</a>
+            <a href="pricing.html" class="nav-link">الأسعار</a>
+            <a href="about.html" class="nav-link active">من نحن</a>
+            <a href="contact.html" class="nav-link">اتصل بنا</a>
+            <a href="admin-login.html" class="nav-link">الإدارة</a>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1>من نحن</h1>
+            <p>شركتك الموثوقة لاستخراج الوثائق الرسمية في موريتانيا</p>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="about-section">
+            <h2>قصتنا</h2>
+            <p>تأسست موريتانيا اكسبريس في عام 2024 بهدف واحد: تبسيط عملية استخراج الوثائق الرسمية للمواطنين الموريتانيين. نحن نؤمن بأن الوقت ثمين، ولا يجب إضاعته في الطوابير الطويلة.</p>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <p>عميل راضي</p>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1,500+</span>
+                    <p>وثيقة مستخرجة</p>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <p>دعم عملاء</p>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <p>نسبة الرضا</p>
+                </div>
+            </div>
+            
+            <h2>فريقنا</h2>
+            <div class="team">
+                <div class="team-member">
+                    <div class="member-avatar">👨‍💼</div>
+                    <h3>محمد أحمد</h3>
+                    <p>المدير التنفيذي</p>
+                    <p>خبرة 10 سنوات في القطاع الحكومي</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👩‍💻</div>
+                    <h3>فاطمة عبد الله</h3>
+                    <p>مديرة العمليات</p>
+                    <p>متخصصة في الإجراءات الحكومية</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👨‍🔧</div>
+                    <h3>سيدي ولد محمد</h3>
+                    <p>منسق الخدمات</p>
+                    <p>خبرة في التعامل مع البلديات</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 موريتانيا اكسبريس. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+        </div>
+    </footer>
+</body>
+</html>

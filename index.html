@@ -9,6 +9,37 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
+<script>
+// تتبع الزوار تلقائياً
+if (typeof(Storage) !== "undefined") {
+    let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+    
+    const visitorData = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString('ar-SA'),
+        page: 'الصفحة الرئيسية',
+        referrer: document.referrer
+    };
+    
+    visitors.push(visitorData);
+    localStorage.setItem('website_visitors', JSON.stringify(visitors));
+    
+    // عند طلب خدمة، سجل الطلب
+    window.trackOrder = function(serviceName, price) {
+        let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+        
+        orders.push({
+            customer: 'عميل جديد',
+            service: serviceName,
+            price: price,
+            timestamp: new Date().toLocaleString('ar-SA'),
+            status: 'جديد'
+        });
+        
+        localStorage.setItem('customer_orders', JSON.stringify(orders));
+    };
+}
+</script>
 <body>
     <!-- شريط التنقل -->
     <nav class="navbar">
