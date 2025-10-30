@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اتصل بنا - موريتانيا للخدمات</title>
+    <title>اتصل بنا - Mauri-Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -19,34 +20,40 @@
         
         .navbar {
             background: white;
-            padding: 1rem 2rem;
+            padding: 1rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         
         .nav-logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #2c5aa0;
         }
         
+        .nav-logo i {
+            font-size: 1.3rem;
+        }
+        
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 0.5rem;
         }
         
         .nav-link {
             text-decoration: none;
             color: #333;
             font-weight: 500;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 5px;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
         .nav-link.active {
@@ -54,50 +61,65 @@
             color: white;
         }
         
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #2c5aa0;
+            cursor: pointer;
+        }
+        
         .page-hero {
             background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
             color: white;
-            padding: 100px 2rem 60px;
+            padding: 60px 1rem 40px;
             text-align: center;
         }
         
         .page-hero h1 {
-            font-size: 3rem;
+            font-size: 1.8rem;
             margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .page-hero p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
+            max-width: 100%;
+            padding: 0 1rem;
         }
         
         .contact-section {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin: 3rem auto;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin: 2rem auto;
         }
         
         .contact-info {
             background: white;
-            padding: 3rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .contact-form {
             background: white;
-            padding: 3rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .contact-method {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             padding: 1rem;
             background: #f8f9fa;
             border-radius: 10px;
@@ -112,6 +134,12 @@
             align-items: center;
             justify-content: center;
             color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .contact-details {
+            flex: 1;
         }
         
         .form-group {
@@ -122,6 +150,7 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            color: #333;
         }
         
         .form-group input,
@@ -132,6 +161,7 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
+            transition: border-color 0.3s ease;
         }
         
         .form-group input:focus,
@@ -150,19 +180,93 @@
             font-size: 1.1rem;
             cursor: pointer;
             width: 100%;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
         }
         
         .footer {
             background: #1e3a8a;
             color: white;
-            padding: 3rem 2rem;
+            padding: 2rem 1rem;
             text-align: center;
-            margin-top: 4rem;
+            margin-top: 3rem;
         }
         
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                left: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                border-radius: 0 0 10px 10px;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .page-hero h1 {
+                font-size: 1.6rem;
+            }
+            
+            .contact-method {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.8rem;
+            }
+            
+            .contact-details {
+                text-align: center;
+            }
+        }
+        
+        @media (min-width: 768px) {
             .contact-section {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .navbar {
+                padding: 1rem 2rem;
+            }
+            
+            .page-hero {
+                padding: 80px 2rem 60px;
+            }
+            
+            .page-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 2rem;
+            }
+            
+            .contact-info,
+            .contact-form {
+                padding: 2.5rem;
+            }
+            
+            .contact-section {
+                gap: 3rem;
+                margin: 3rem auto;
             }
         }
     </style>
@@ -170,18 +274,21 @@
 <body>
     <nav class="navbar">
         <div class="nav-logo">
-            <i class="fas fa-passport"></i>
-            <span>موريتانيا اكسبريس</span>
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
         </div>
         
-        <div class="nav-links">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link">الخدمات</a>
             <a href="pricing.html" class="nav-link">الأسعار</a>
-              <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="agents.html" class="nav-link">انضم كوكيل</a>
             <a href="about.html" class="nav-link">من نحن</a>
             <a href="contact.html" class="nav-link active">اتصل بنا</a>
-            <a href="admin-login.html" class="nav-link">الإدارة</a>
         </div>
     </nav>
 
@@ -195,35 +302,35 @@
     <section class="container">
         <div class="contact-section">
             <div class="contact-info">
-                <h2>معلومات الاتصال</h2>
+                <h2 style="color: #2c5aa0; margin-bottom: 1.5rem;">معلومات الاتصال</h2>
                 
                 <div class="contact-method">
                     <div class="contact-icon">📞</div>
-                    <div>
+                    <div class="contact-details">
                         <h3>هاتف</h3>
-                        <p>12345678</p>
+                        <p>44869780</p>
                     </div>
                 </div>
                 
                 <div class="contact-method">
                     <div class="contact-icon">💬</div>
-                    <div>
+                    <div class="contact-details">
                         <h3>واتساب</h3>
-                        <p>12345678</p>
+                        <p>44869780</p>
                     </div>
                 </div>
                 
                 <div class="contact-method">
                     <div class="contact-icon">📧</div>
-                    <div>
+                    <div class="contact-details">
                         <h3>بريد إلكتروني</h3>
-                        <p>info@moritania-express.com</p>
+                        <p>mauriservices33@gmail.com</p>
                     </div>
                 </div>
                 
                 <div class="contact-method">
                     <div class="contact-icon">📍</div>
-                    <div>
+                    <div class="contact-details">
                         <h3>العنوان</h3>
                         <p>نواكشوط، موريتانيا</p>
                     </div>
@@ -231,7 +338,7 @@
                 
                 <div class="contact-method">
                     <div class="contact-icon">🕒</div>
-                    <div>
+                    <div class="contact-details">
                         <h3>ساعات العمل</h3>
                         <p>24/7 - خدمة على مدار الساعة</p>
                     </div>
@@ -239,32 +346,34 @@
             </div>
             
             <div class="contact-form">
-                <h2>أرسل رسالة</h2>
+                <h2 style="color: #2c5aa0; margin-bottom: 1.5rem;">أرسل رسالة</h2>
                 <form id="contactForm">
                     <div class="form-group">
                         <label for="name">الاسم الكامل</label>
-                        <input type="text" id="name" required>
+                        <input type="text" id="name" required placeholder="أدخل اسمك الكامل">
                     </div>
                     
                     <div class="form-group">
                         <label for="phone">رقم الهاتف</label>
-                        <input type="tel" id="phone" required>
+                        <input type="tel" id="phone" required placeholder="أدخل رقم هاتفك">
                     </div>
                     
                     <div class="form-group">
                         <label for="service">نوع الخدمة</label>
                         <select id="service" required>
                             <option value="">اختر الخدمة</option>
-                            <option value="birth-certificate">شهادة ميلاد</option>
-                            <option value="driving-license">رخصة قيادة</option>
-                            <option value="residence-certificate">شهادة إقامة</option>
+                            <option value="delivery">توصيل مشتريات</option>
+                            <option value="documents">خدمات المستندات</option>
+                            <option value="payment">خدمات الدفع</option>
+                            <option value="home">خدمات منزلية</option>
+                            <option value="government">خدمات حكومية</option>
                             <option value="other">استفسار عام</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="message">الرسالة</label>
-                        <textarea id="message" rows="5" required></textarea>
+                        <textarea id="message" rows="5" required placeholder="اكتب رسالتك هنا..."></textarea>
                     </div>
                     
                     <button type="submit" class="btn-primary">إرسال الرسالة</button>
@@ -275,78 +384,95 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 موريتانيا للخدمات. جميع الحقوق محفوظة.</p>
-            <p>نواكشوط، موريتانيا - هاتف: 12345678</p>
+            <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - واتساب: 44869780</p>
         </div>
     </footer>
 
     <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navbar')) {
+                navLinks.classList.remove('active');
+            }
+        });
+
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
             const service = document.getElementById('service').value;
+            const message = document.getElementById('message').value;
             
             const serviceNames = {
-                'birth-certificate': 'شهادة ميلاد',
-                'driving-license': 'رخصة قيادة',
-                'residence-certificate': 'شهادة إقامة',
+                'delivery': 'توصيل مشتريات',
+                'documents': 'خدمات المستندات',
+                'payment': 'خدمات الدفع',
+                'home': 'خدمات منزلية',
+                'government': 'خدمات حكومية',
                 'other': 'استفسار عام'
             };
             
-            const message = `مرحباً، أنا ${name}. أريد الاستفسار عن خدمة: ${serviceNames[service]}`;
-            const whatsappUrl = `https://wa.me/22212345678?text=${encodeURIComponent(message)}`;
+            const fullMessage = `مرحباً، أنا ${name}\nرقم الهاتف: ${phone}\nأريد الاستفسار عن خدمة: ${serviceNames[service]}\nالرسالة: ${message}`;
+            const whatsappUrl = `https://wa.me/22244869780?text=${encodeURIComponent(fullMessage)}`;
             
             window.open(whatsappUrl, '_blank');
             alert('سيتم توجيهك إلى واتساب لإكمال الطلب');
         });
+
+        // تتبع الزوار
+        if (typeof(Storage) !== "undefined") {
+            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+            
+            const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
+            
+            const visitorData = {
+                timestamp: new Date().toLocaleString('ar-SA'),
+                page: pageName,
+                referrer: document.referrer,
+                userAgent: navigator.userAgent,
+                ip: 'user-' + Math.random().toString(36).substr(2, 9)
+            };
+            
+            visitors.push(visitorData);
+            
+            if (visitors.length > 1000) {
+                visitors = visitors.slice(-1000);
+            }
+            
+            localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        }
+
+        // نظام تتبع الطلبات الحقيقي
+        window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
+            if (typeof(Storage) !== "undefined") {
+                let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                
+                const orderData = {
+                    customer: customerName,
+                    service: serviceName,
+                    price: price,
+                    timestamp: new Date().toLocaleString('ar-SA'),
+                    status: 'جديد',
+                    id: Date.now()
+                };
+                
+                orders.push(orderData);
+                localStorage.setItem('customer_orders', JSON.stringify(orders));
+                
+                return true;
+            }
+            return false;
+        };
     </script>
 </body>
-<script>
-// نظام تتبع الزوار الحقيقي
-if (typeof(Storage) !== "undefined") {
-    let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-    
-    const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
-    
-    const visitorData = {
-        timestamp: new Date().toLocaleString('ar-SA'),
-        page: pageName,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        ip: 'user-' + Math.random().toString(36).substr(2, 9) // IP مبسط للتتبع
-    };
-    
-    visitors.push(visitorData);
-    
-    // حفظ فقط آخر 1000 زيارة لتجنب امتلاء الذاكرة
-    if (visitors.length > 1000) {
-        visitors = visitors.slice(-1000);
-    }
-    
-    localStorage.setItem('website_visitors', JSON.stringify(visitors));
-}
-
-// نظام تتبع الطلبات الحقيقي
-window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
-    if (typeof(Storage) !== "undefined") {
-        let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-        
-        const orderData = {
-            customer: customerName,
-            service: serviceName,
-            price: price,
-            timestamp: new Date().toLocaleString('ar-SA'),
-            status: 'جديد',
-            id: Date.now()
-        };
-        
-        orders.push(orderData);
-        localStorage.setItem('customer_orders', JSON.stringify(orders));
-        
-        return true;
-    }
-    return false;
-};
-</script>
 </html>

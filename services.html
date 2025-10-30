@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الخدمات - Mauri-Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -19,34 +20,40 @@
         
         .navbar {
             background: white;
-            padding: 1rem 2rem;
+            padding: 1rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         
         .nav-logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #2c5aa0;
         }
         
+        .nav-logo i {
+            font-size: 1.3rem;
+        }
+        
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 0.5rem;
         }
         
         .nav-link {
             text-decoration: none;
             color: #333;
             font-weight: 500;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 5px;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
         .nav-link.active {
@@ -54,36 +61,51 @@
             color: white;
         }
         
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #2c5aa0;
+            cursor: pointer;
+        }
+        
         .page-hero {
             background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
             color: white;
-            padding: 100px 2rem 60px;
+            padding: 60px 1rem 40px;
             text-align: center;
         }
         
         .page-hero h1 {
-            font-size: 3rem;
+            font-size: 1.8rem;
             margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .page-hero p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
+            max-width: 100%;
+            padding: 0 1rem;
         }
         
         .services-categories {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
         }
         
         .category-card {
             background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .category-header {
@@ -91,18 +113,21 @@
             align-items: center;
             gap: 1rem;
             margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
         }
         
         .category-icon {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: #2c5aa0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
         
         .service-item {
@@ -111,28 +136,120 @@
             align-items: center;
             padding: 1rem 0;
             border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         
         .service-item:last-child {
             border-bottom: none;
         }
         
+        .service-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
         .btn-primary {
             background: #2c5aa0;
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
+            transition: background 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
         }
         
         .footer {
             background: #1e3a8a;
             color: white;
-            padding: 3rem 2rem;
+            padding: 2rem 1rem;
             text-align: center;
-            margin-top: 4rem;
+            margin-top: 3rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                left: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                border-radius: 0 0 10px 10px;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .page-hero h1 {
+                font-size: 1.6rem;
+            }
+            
+            .category-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.8rem;
+            }
+            
+            .service-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+            
+            .service-info {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .btn-primary {
+                width: 100%;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .services-categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .services-categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .navbar {
+                padding: 1rem 2rem;
+            }
+            
+            .page-hero {
+                padding: 80px 2rem 60px;
+            }
+            
+            .page-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 2rem;
+            }
         }
     </style>
 </head>
@@ -143,7 +260,11 @@
             <span>Mauri-Services</span>
         </div>
         
-        <div class="nav-links">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link active">الخدمات</a>
             <a href="pricing.html" class="nav-link">الأسعار</a>
@@ -170,7 +291,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>توصيل مشتريات السوق</h3>
                         <p>خضروات، فواكه، لحوم، شاي</p>
                     </div>
@@ -178,7 +299,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>توصيل وجبات طعام</h3>
                         <p>من المطاعم إلى منزلك</p>
                     </div>
@@ -186,7 +307,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>توصيل طرود</h3>
                         <p>أي شيء، في أي مكان</p>
                     </div>
@@ -202,7 +323,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>طباعة مستندات</h3>
                         <p>طباعة أي مستند تحتاجه</p>
                     </div>
@@ -210,7 +331,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>تصوير أوراق</h3>
                         <p>تصوير وثائق وبطاقات</p>
                     </div>
@@ -218,7 +339,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>ترجمة مستندات</h3>
                         <p>فرنسي - عربي والعكس</p>
                     </div>
@@ -234,7 +355,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>شحن رصيد</h3>
                         <p>شحن رصيد جميع الشركات</p>
                     </div>
@@ -242,7 +363,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>دفع فواتير</h3>
                         <p>كهرباء، ماء، إنترنت</p>
                     </div>
@@ -250,7 +371,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>شراء بطاقات</h3>
                         <p>Netflix, Steam, Google Play</p>
                     </div>
@@ -266,7 +387,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>سباكة</h3>
                         <p>إصلاح تسريبات وتركيبات</p>
                     </div>
@@ -274,7 +395,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>كهرباء</h3>
                         <p>إصلاح أعطال كهربائية</p>
                     </div>
@@ -282,7 +403,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>نجارة</h3>
                         <p>إصلاح أثاث وتركيبات</p>
                     </div>
@@ -298,7 +419,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>مساعدة في الوثائق</h3>
                         <p>إرشاد لإكمال الإجراءات</p>
                     </div>
@@ -306,7 +427,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>توصيل مستندات</h3>
                         <p>توصيل أوراق للدوائر</p>
                     </div>
@@ -314,7 +435,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>استشارات إجرائية</h3>
                         <p>نصائح للإجراءات الرسمية</p>
                     </div>
@@ -330,7 +451,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>خدمة ساعي خاص</h3>
                         <p>للمهام الخاصة والطارئة</p>
                     </div>
@@ -338,7 +459,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>خدمة 24 ساعة</h3>
                         <p>للطلبات العاجلة ليلاً</p>
                     </div>
@@ -346,7 +467,7 @@
                 </div>
                 
                 <div class="service-item">
-                    <div>
+                    <div class="service-info">
                         <h3>خدمة مخصصة</h3>
                         <p>لأي خدمة غير مذكورة</p>
                     </div>
@@ -364,6 +485,21 @@
     </footer>
 
     <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navbar')) {
+                navLinks.classList.remove('active');
+            }
+        });
+
         function orderService(serviceName, price) {
             const message = price > 0 ? 
                 `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU` :
