@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحرير المحتوى - Mauri Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-nav {
+            background: #2c5aa0;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .service-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #2c5aa0;
+            color: #2c5aa0;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>تحرير المحتوى - Mauri Services</h1>
+        <div>
+            <span>مرحباً، المدير</span>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <a href="admin-dashboard.html">لوحة التحكم</a>
+        <a href="admin-visitors.html">الزوار</a>
+        <a href="admin-orders.html">الطلبات</a>
+        <a href="admin-messages.html">الرسائل</a>
+        <a href="admin-content.html" class="active">المحتوى</a>
+        <a href="admin-agents.html">الوكلاء</a>
+        <a href="admin-settings.html">الإعدادات</a>
+    </nav>
+    
+    <div class="content">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="openTab('services')">الخدمات</button>
+            <button class="tab-btn" onclick="openTab('pricing')">الأسعار</button>
+            <button class="tab-btn" onclick="openTab('website')">إعدادات الموقع</button>
+        </div>
+        
+        <!-- تبويب الخدمات -->
+        <div id="services" class="tab-content active">
+            <div class="section">
+                <h2>إدارة الخدمات</h2>
+                <div id="servicesList">
+                    <!-- سيتم ملؤها بالخدمات -->
+                </div>
+                <button class="btn btn-success" onclick="addNewService()">+ إضافة خدمة جديدة</button>
+            </div>
+        </div>
+        
+        <!-- تبويب الأسعار -->
+        <div id="pricing" class="tab-content">
+            <div class="section">
+                <h2>إدارة الأسعار</h2>
+                <div id="pricingList">
+                    <!-- سيتم ملؤها بالأسعار -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- تبويب إعدادات الموقع -->
+        <div id="website" class="tab-content">
+            <div class="section">
+                <h2>إعدادات الموقع</h2>
+                <div class="form-group">
+                    <label>اسم الموقع:</label>
+                    <input type="text" id="siteName" value="Mauri-Services">
+                </div>
+                <div class="form-group">
+                    <label>وصف الموقع:</label>
+                    <textarea id="siteDescription" rows="3">منصة الخدمات المتكاملة في موريتانيا</textarea>
+                </div>
+                <div class="form-group">
+                    <label>رقم الواتساب:</label>
+                    <input type="text" id="whatsappNumber" value="22244869780">
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="siteEmail" value="mauriservices33@gmail.com">
+                </div>
+                <button class="btn btn-primary" onclick="saveSiteSettings()">حفظ الإعدادات</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من تسجيل الدخول
+        if (!localStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin-login.html';
+        }
+        
+        function openTab(tabName) {
+            // إخفاء كل المحتويات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إلغاء تنشيط كل الأزرار
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // إظهار المحتوى المطلوب
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // نظام إدارة المحتوى
+        class ContentManager {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                this.loadServices();
+                this.loadPricing();
+                this.loadSiteSettings();
+            }
+            
+            loadServices() {
+                let services = JSON.parse(localStorage.getItem('website_services')) || this.getDefaultServices();
+                
+                const html = services.map((service, index) => `
+                    <div class="service-item">
+                        <div class="form-group">
+                            <label>اسم الخدمة:</label>
+                            <input type="text" value="${service.name}" onchange="updateService(${index}, 'name', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>وصف الخدمة:</label>
+                            <textarea onchange="updateService(${index}, 'description', this.value)">${service.description}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>السعر (MRU):</label>
+                            <input type="number" value="${service.price}" onchange="updateService(${index}, 'price', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>الأيقونة:</label>
+                            <input type="text" value="${service.icon}" onchange="updateService(${index}, 'icon', this.value)">
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteService(${index})">حذف الخدمة</button>
+                    </div>
+                `).join('');
+                
+                document.getElementById('servicesList').innerHTML = html;
+            }
+            
+            loadPricing() {
+                let services = JSON.parse(localStorage.getItem('website_services')) || this.getDefaultServices();
+                
+                const html = services.map(service => `
+                    <div class="service-item">
+                        <h3>${service.name}</h3>
+                        <p>${service.description}</p>
+                        <p><strong>السعر: ${service.price} MRU</strong></p>
+                    </div>
+                `).join('');
+                
+                document.getElementById('pricingList').innerHTML = html;
+            }
+            
+            loadSiteSettings() {
+                const settings = JSON.parse(localStorage.getItem('website_settings')) || {};
+                
+                document.getElementById('siteName').value = settings.siteName || 'Mauri-Services';
+                document.getElementById('siteDescription').value = settings.siteDescription || 'منصة الخدمات المتكاملة في موريتانيا';
+                document.getElementById('whatsappNumber').value = settings.whatsappNumber || '22244869780';
+                document.getElementById('siteEmail').value = settings.siteEmail || 'mauriservices33@gmail.com';
+            }
+            
+            getDefaultServices() {
+                return [
+                    {
+                        name: "توصيل المشتريات",
+                        description: "خضروات، فواكه، لحوم، شاي - من السوق إلى باب منزلك",
+                        price: 100,
+                        icon: "🛒"
+                    },
+                    {
+                        name: "خدمات المستندات", 
+                        description: "طباعة، تصوير، ترجمة، وتوصيل المستندات الرسمية",
+                        price: 200,
+                        icon: "📄"
+                    },
+                    {
+                        name: "خدمة البحث عن المعلومات",
+                        description: "أبحاث، دراسات، أسعار، منتجات - نوفر لك أي معلومات تحتاجها",
+                        price: 200,
+                        icon: "🔍"
+                    }
+                ];
+            }
+        }
+        
+        function updateService(index, field, value) {
+            let services = JSON.parse(localStorage.getItem('website_services')) || [];
+            services[index][field] = value;
+            localStorage.setItem('website_services', JSON.stringify(services));
+        }
+        
+        function deleteService(index) {
+            if (confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
+                let services = JSON.parse(localStorage.getItem('website_services')) || [];
+                services.splice(index, 1);
+                localStorage.setItem('website_services', JSON.stringify(services));
+                new ContentManager().loadServices();
+            }
+        }
+        
+        function addNewService() {
+            let services = JSON.parse(localStorage.getItem('website_services')) || [];
+            services.push({
+                name: "خدمة جديدة",
+                description: "وصف الخدمة الجديدة",
+                price: 100,
+                icon: "✨"
+            });
+            localStorage.setItem('website_services', JSON.stringify(services));
+            new ContentManager().loadServices();
+        }
+        
+        function saveSiteSettings() {
+            const settings = {
+                siteName: document.getElementById('siteName').value,
+                siteDescription: document.getElementById('siteDescription').value,
+                whatsappNumber: document.getElementById('whatsappNumber').value,
+                siteEmail: document.getElementById('siteEmail').value
+            };
+            
+            localStorage.setItem('website_settings', JSON.stringify(settings));
+            alert('✅ تم حفظ الإعدادات بنجاح');
+        }
+        
+        // بدء النظام
+        document.addEventListener('DOMContentLoaded', function() {
+            new ContentManager();
+        });
+    </script>
+</body>
+</html>

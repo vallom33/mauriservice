@@ -6,6 +6,10 @@
     <title>اتصل بنا - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c5aa0">
+    
     <!-- الأيقونات الجديدة -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
@@ -203,6 +207,57 @@
             margin-top: 3rem;
         }
         
+        /* Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #2c5aa0;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .install-prompt.show {
+            display: flex;
+        }
+        
+        .install-btn {
+            background: white;
+            color: #2c5aa0;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-prompt {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -290,6 +345,18 @@
     </style>
 </head>
 <body>
+    <!-- تثبيت التطبيق -->
+    <div class="install-prompt" id="installPrompt">
+        <div>
+            <strong>تثبيت التطبيق</strong>
+            <p>ثبت Mauri-Services على هاتفك لتجربة أفضل</p>
+        </div>
+        <div>
+            <button class="install-btn" id="installBtn">تثبيت</button>
+            <button class="close-prompt" id="closePrompt">✕</button>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-logo">
             <i class="fas fa-concierge-bell"></i>
@@ -326,7 +393,7 @@
                     <div class="contact-icon">📞</div>
                     <div class="contact-details">
                         <h3>هاتف</h3>
-                        <p>44869780</p>
+                        <p>31573340</p>
                     </div>
                 </div>
                 
@@ -334,7 +401,7 @@
                     <div class="contact-icon">💬</div>
                     <div class="contact-details">
                         <h3>واتساب</h3>
-                        <p>44869780</p>
+                        <p>31573340</p>
                     </div>
                 </div>
                 
@@ -385,6 +452,7 @@
                             <option value="payment">خدمات الدفع</option>
                             <option value="home">خدمات منزلية</option>
                             <option value="government">خدمات حكومية</option>
+                            <option value="information">خدمة البحث عن المعلومات</option>
                             <option value="other">استفسار عام</option>
                         </select>
                     </div>
@@ -403,7 +471,7 @@
     <footer class="footer">
         <div class="container">
             <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
-            <p>نواكشوط، موريتانيا - واتساب: 44869780</p>
+            <p>نواكشوط، موريتانيا - واتساب: 31573340</p>
         </div>
     </footer>
 
@@ -423,6 +491,7 @@
             }
         });
 
+        // نظام إرسال الرسائل الموحد
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -437,14 +506,38 @@
                 'payment': 'خدمات الدفع',
                 'home': 'خدمات منزلية',
                 'government': 'خدمات حكومية',
+                'information': 'خدمة البحث عن المعلومات',
                 'other': 'استفسار عام'
             };
             
-            const fullMessage = `مرحباً، أنا ${name}\nرقم الهاتف: ${phone}\nأريد الاستفسار عن خدمة: ${serviceNames[service]}\nالرسالة: ${message}`;
-            const whatsappUrl = `https://wa.me/22244869780?text=${encodeURIComponent(fullMessage)}`;
+            // 1. حفظ الرسالة في النظام
+            const messageData = {
+                name: name,
+                phone: phone,
+                service: serviceNames[service],
+                message: message,
+                timestamp: new Date().toLocaleString('ar-SA'),
+                read: false,
+                id: Date.now()
+            };
             
+            let messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
+            messages.push(messageData);
+            localStorage.setItem('customer_messages', JSON.stringify(messages));
+            
+            // 2. إرسال عبر واتساب
+            const whatsappMessage = `رسالة جديدة من ${name} (${phone})\nالخدمة: ${serviceNames[service]}\nالرسالة: ${message}`;
+            const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(whatsappMessage)}`;
             window.open(whatsappUrl, '_blank');
-            alert('سيتم توجيهك إلى واتساب لإكمال الطلب');
+            
+            // 3. إظهار تأكيد للمستخدم
+            alert('✅ تم إرسال رسالتك! سنتواصل معك قريباً.');
+            
+            // 4. إعادة تعيين النموذج
+            this.reset();
+            
+            // 5. تتبع الحدث
+            console.log('📨 تم تسجيل رسالة جديدة في النظام:', messageData);
         });
 
         // تتبع الزوار
@@ -491,6 +584,50 @@
             }
             return false;
         };
+
+        // PWA Installation
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const closePrompt = document.getElementById('closePrompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install prompt after 3 seconds
+            setTimeout(() => {
+                installPrompt.classList.add('show');
+            }, 3000);
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installPrompt.classList.remove('show');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        closePrompt.addEventListener('click', () => {
+            installPrompt.classList.remove('show');
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
     </script>
 </body>
 </html>

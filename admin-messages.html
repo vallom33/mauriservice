@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الرسائل - Mauri Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-nav {
+            background: #2c5aa0;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .message-unread {
+            background: #fff3e0;
+        }
+        
+        .message-read {
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>إدارة الرسائل - Mauri Services</h1>
+        <div>
+            <span>مرحباً، المدير</span>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <a href="admin-dashboard.html">لوحة التحكم</a>
+        <a href="admin-visitors.html">الزوار</a>
+        <a href="admin-orders.html">الطلبات</a>
+        <a href="admin-messages.html" class="active">الرسائل</a>
+        <a href="admin-content.html">المحتوى</a>
+        <a href="admin-agents.html">الوكلاء</a>
+        <a href="admin-settings.html">الإعدادات</a>
+    </nav>
+    
+    <div class="content">
+        <div class="section">
+            <h2>جميع الرسائل</h2>
+            <div id="messagesTable">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من تسجيل الدخول
+        if (!localStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin-login.html';
+        }
+        
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
+            const table = document.getElementById('messagesTable');
+            
+            if (messages.length === 0) {
+                table.innerHTML = '<p>لا توجد رسائل بعد</p>';
+                return;
+            }
+            
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الهاتف</th>
+                            <th>الخدمة</th>
+                            <th>الرسالة</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${messages.slice().reverse().map((message, index) => `
+                            <tr class="${message.read ? 'message-read' : 'message-unread'}">
+                                <td><strong>${message.name}</strong></td>
+                                <td>${message.phone}</td>
+                                <td>${message.service}</td>
+                                <td>${message.message}</td>
+                                <td>${message.timestamp}</td>
+                                <td>
+                                    ${message.read ? 'مقروء' : '<span style="color: red">جديد</span>'}
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="markAsRead(${messages.length - 1 - index})">تعيين كمقروء</button>
+                                    <button class="btn btn-danger" onclick="deleteMessage(${messages.length - 1 - index})">حذف</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            table.innerHTML = html;
+        }
+        
+        function markAsRead(index) {
+            let messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
+            if (messages[index]) {
+                messages[index].read = true;
+                localStorage.setItem('customer_messages', JSON.stringify(messages));
+                loadMessages();
+            }
+        }
+        
+        function deleteMessage(index) {
+            if (confirm('هل أنت متأكد من حذف هذه الرسالة؟')) {
+                let messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
+                messages.splice(index, 1);
+                localStorage.setItem('customer_messages', JSON.stringify(messages));
+                loadMessages();
+            }
+        }
+        
+        // تحميل البيانات عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMessages();
+        });
+    </script>
+</body>
+</html>

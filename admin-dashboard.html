@@ -125,13 +125,49 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        .notification-badge {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
     <header class="admin-header">
-        <h1>لوحة تحكم موريتانيا اكسبريس</h1>
+        <h1>لوحة تحكم Mauri-Services</h1>
         <div>
-            <span>well !</span>
+            <span id="adminName">مرحباً، المدير</span>
+            <span class="notification-badge" id="notificationCount">0</span>
             <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
@@ -140,11 +176,37 @@
         <a href="admin-dashboard.html" class="active">لوحة التحكم</a>
         <a href="admin-visitors.html">الزوار</a>
         <a href="admin-orders.html">الطلبات</a>
+        <a href="admin-messages.html">الرسائل</a>
+        <a href="admin-content.html">المحتوى</a>
         <a href="admin-agents.html">الوكلاء</a>
         <a href="admin-settings.html">الإعدادات</a>
     </nav>
     
     <div class="dashboard">
+        <!-- الإجراءات السريعة -->
+        <div class="quick-actions">
+            <div class="action-card" onclick="window.location.href='admin-content.html'">
+                <div class="action-icon">✏️</div>
+                <h3>تعديل المحتوى</h3>
+                <p>تعديل الخدمات والأسعار</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='admin-orders.html'">
+                <div class="action-icon">📦</div>
+                <h3>الطلبات الجديدة</h3>
+                <p id="newOrdersCount">0 طلب جديد</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='admin-messages.html'">
+                <div class="action-icon">💬</div>
+                <h3>الرسائل</h3>
+                <p id="newMessagesCount">0 رسالة جديدة</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='admin-settings.html'">
+                <div class="action-icon">⚙️</div>
+                <h3>الإعدادات</h3>
+                <p>إعدادات الموقع</p>
+            </div>
+        </div>
+
         <div class="stats-grid">
             <div class="stat-card">
                 <span class="stat-number" id="totalVisitors">0</span>
@@ -179,6 +241,14 @@
             </div>
             <a href="admin-orders.html" class="btn btn-primary">عرض كل الطلبات</a>
         </div>
+
+        <div class="dashboard-section">
+            <h2>آخر الرسائل</h2>
+            <div id="recentMessages">
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
+            </div>
+            <a href="admin-messages.html" class="btn btn-primary">عرض كل الرسائل</a>
+        </div>
     </div>
 
     <script>
@@ -196,17 +266,29 @@
         class Dashboard {
             constructor() {
                 this.init();
+                this.startRealtimeUpdates();
             }
             
             init() {
                 this.updateStats();
                 this.loadRecentVisitors();
                 this.loadRecentOrders();
+                this.loadRecentMessages();
+                this.updateNotifications();
+            }
+
+            startRealtimeUpdates() {
+                // تحديث البيانات كل 10 ثواني
+                setInterval(() => {
+                    this.updateStats();
+                    this.updateNotifications();
+                }, 10000);
             }
             
             updateStats() {
                 const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
                 const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
                 
                 // إجمالي الزوار
                 document.getElementById('totalVisitors').textContent = visitors.length;
@@ -222,6 +304,24 @@
                 // إجمالي الإيرادات
                 const totalRevenue = orders.reduce((sum, order) => sum + (order.price || 0), 0);
                 document.getElementById('totalRevenue').textContent = totalRevenue + ' MRU';
+
+                // تحديث العدادات
+                const newOrders = orders.filter(order => order.status === 'جديد' || !order.status).length;
+                const newMessages = messages.filter(msg => !msg.read).length;
+                
+                document.getElementById('newOrdersCount').textContent = newOrders + ' طلب جديد';
+                document.getElementById('newMessagesCount').textContent = newMessages + ' رسالة جديدة';
+            }
+
+            updateNotifications() {
+                const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
+                
+                const newOrders = orders.filter(order => order.status === 'جديد' || !order.status).length;
+                const newMessages = messages.filter(msg => !msg.read).length;
+                
+                const totalNotifications = newOrders + newMessages;
+                document.getElementById('notificationCount').textContent = totalNotifications;
             }
             
             loadRecentVisitors() {
@@ -231,7 +331,10 @@
                 const html = recentVisitors.map(visitor => `
                     <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
                         <strong>${visitor.page}</strong>
-                        <div style="color: #666; font-size: 0.9rem;">${visitor.timestamp}</div>
+                        <div style="color: #666; font-size: 0.9rem;">
+                            ${visitor.timestamp} 
+                            ${visitor.location ? ` - ${visitor.location}` : ''}
+                        </div>
                     </div>
                 `).join('') || '<p>لا توجد زيارات مسجلة بعد</p>';
                 
@@ -247,11 +350,31 @@
                         <strong>${order.service}</strong> - ${order.customer}
                         <div style="color: #666; font-size: 0.9rem;">
                             ${order.price} MRU - ${order.timestamp}
+                            <span style="color: ${order.status === 'جديد' ? '#dc3545' : '#28a745'}">
+                                • ${order.status || 'جديد'}
+                            </span>
                         </div>
                     </div>
                 `).join('') || '<p>لا توجد طلبات مسجلة بعد</p>';
                 
                 document.getElementById('recentOrders').innerHTML = html;
+            }
+
+            loadRecentMessages() {
+                const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
+                const recentMessages = messages.slice(-5).reverse();
+                
+                const html = recentMessages.map(message => `
+                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                        <strong>${message.name}</strong> - ${message.phone}
+                        <div style="color: #666; font-size: 0.9rem;">
+                            ${message.service} - ${message.timestamp}
+                            ${!message.read ? ' <span style="color: red">● جديد</span>' : ''}
+                        </div>
+                    </div>
+                `).join('') || '<p>لا توجد رسائل بعد</p>';
+                
+                document.getElementById('recentMessages').innerHTML = html;
             }
         }
         
@@ -261,5 +384,4 @@
         });
     </script>
 </body>
-
 </html>
