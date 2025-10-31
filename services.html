@@ -6,6 +6,10 @@
     <title>الخدمات - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c5aa0">
+    
     <!-- الأيقونات الجديدة -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
@@ -181,6 +185,57 @@
             margin-top: 3rem;
         }
         
+        /* Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #2c5aa0;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .install-prompt.show {
+            display: flex;
+        }
+        
+        .install-btn {
+            background: white;
+            color: #2c5aa0;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-prompt {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -272,6 +327,18 @@
     </style>
 </head>
 <body>
+    <!-- تثبيت التطبيق -->
+    <div class="install-prompt" id="installPrompt">
+        <div>
+            <strong>تثبيت التطبيق</strong>
+            <p>ثبت Mauri-Services على هاتفك لتجربة أفضل</p>
+        </div>
+        <div>
+            <button class="install-btn" id="installBtn">تثبيت</button>
+            <button class="close-prompt" id="closePrompt">✕</button>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-logo">
             <i class="fas fa-concierge-bell"></i>
@@ -313,7 +380,7 @@
                         <h3>توصيل مشتريات السوق</h3>
                         <p>خضروات، فواكه، لحوم، شاي</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('توصيل مشتريات سوق', 500)">500 MRU</button>
+                    <button class="btn-primary" onclick="orderService('توصيل مشتريات سوق', 100)">100 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -321,7 +388,7 @@
                         <h3>توصيل وجبات طعام</h3>
                         <p>من المطاعم إلى منزلك</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('توصيل وجبات طعام', 400)">400 MRU</button>
+                    <button class="btn-primary" onclick="orderService('توصيل وجبات طعام', 150)">150 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -329,7 +396,7 @@
                         <h3>توصيل طرود</h3>
                         <p>أي شيء، في أي مكان</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('توصيل طرود', 400)">400 MRU</button>
+                    <button class="btn-primary" onclick="orderService('توصيل طرود', 100)">100 MRU</button>
                 </div>
             </div>
 
@@ -345,7 +412,7 @@
                         <h3>طباعة مستندات</h3>
                         <p>طباعة أي مستند تحتاجه</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('طباعة مستندات', 300)">300 MRU</button>
+                    <button class="btn-primary" onclick="orderService('طباعة مستندات', 150)">150 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -361,7 +428,7 @@
                         <h3>ترجمة مستندات</h3>
                         <p>فرنسي - عربي والعكس</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('ترجمة مستندات', 1000)">1000 MRU</button>
+                    <button class="btn-primary" onclick="orderService('ترجمة مستندات', 50)">50 MRU</button>
                 </div>
             </div>
 
@@ -385,7 +452,7 @@
                         <h3>دفع فواتير</h3>
                         <p>كهرباء، ماء، إنترنت</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('دفع فواتير', 300)">300 MRU</button>
+                    <button class="btn-primary" onclick="orderService('دفع فواتير', 100)">100 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -393,7 +460,7 @@
                         <h3>شراء بطاقات</h3>
                         <p>Netflix, Steam, Google Play</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('شراء بطاقات', 500)">500 MRU</button>
+                    <button class="btn-primary" onclick="orderService('شراء بطاقات', 200)">200 MRU</button>
                 </div>
             </div>
 
@@ -409,7 +476,7 @@
                         <h3>سباكة</h3>
                         <p>إصلاح تسريبات وتركيبات</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('خدمة سباكة', 1500)">1500 MRU</button>
+                    <button class="btn-primary" onclick="orderService('خدمة سباكة', 1000)">1000 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -441,7 +508,7 @@
                         <h3>مساعدة في الوثائق</h3>
                         <p>إرشاد لإكمال الإجراءات</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('مساعدة وثائق', 800)">800 MRU</button>
+                    <button class="btn-primary" onclick="orderService('مساعدة وثائق', 500)">500 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -449,7 +516,7 @@
                         <h3>توصيل مستندات</h3>
                         <p>توصيل أوراق للدوائر</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('توصيل مستندات حكومية', 600)">600 MRU</button>
+                    <button class="btn-primary" onclick="orderService('توصيل مستندات حكومية', 300)">300 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -457,7 +524,47 @@
                         <h3>استشارات إجرائية</h3>
                         <p>نصائح للإجراءات الرسمية</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('استشارات إجرائية', 500)">500 MRU</button>
+                    <button class="btn-primary" onclick="orderService('استشارات إجرائية', 50)">50 MRU</button>
+                </div>
+            </div>
+
+            <!-- خدمات المعلومات والبحث -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🔍</div>
+                    <h2>خدمات المعلومات والبحث</h2>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h3>بحث عن معلومات عامة</h3>
+                        <p>أي موضوع تحتاج معلومات عنه</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('بحث عن معلومات عامة', 200)">200 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h3>بحث عن أسعار المنتجات</h3>
+                        <p>مقارنة أسعار محلية ودولية</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('بحث عن أسعار المنتجات', 300)">300 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h3>بحث أكاديمي</h3>
+                        <p>معلومات للدراسة والأبحاث</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('بحث أكاديمي', 500)">500 MRU</button>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-info">
+                        <h3>بحث عن فرص عمل</h3>
+                        <p>وظائف شاغرة ومتطلباتها</p>
+                    </div>
+                    <button class="btn-primary" onclick="orderService('بحث عن فرص عمل', 400)">400 MRU</button>
                 </div>
             </div>
 
@@ -473,7 +580,7 @@
                         <h3>خدمة ساعي خاص</h3>
                         <p>للمهام الخاصة والطارئة</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('ساعي خاص', 700)">700 MRU</button>
+                    <button class="btn-primary" onclick="orderService('ساعي خاص', 200)">200 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -481,7 +588,7 @@
                         <h3>خدمة 24 ساعة</h3>
                         <p>للطلبات العاجلة ليلاً</p>
                     </div>
-                    <button class="btn-primary" onclick="orderService('خدمة 24 ساعة', 1000)">1000 MRU</button>
+                    <button class="btn-primary" onclick="orderService('خدمة 24 ساعة', 100)">100 MRU</button>
                 </div>
                 
                 <div class="service-item">
@@ -536,6 +643,50 @@
                 referrer: document.referrer
             });
             localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const closePrompt = document.getElementById('closePrompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install prompt after 3 seconds
+            setTimeout(() => {
+                installPrompt.classList.add('show');
+            }, 3000);
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installPrompt.classList.remove('show');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        closePrompt.addEventListener('click', () => {
+            installPrompt.classList.remove('show');
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
         }
     </script>
 </body>

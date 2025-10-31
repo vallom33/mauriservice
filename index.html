@@ -7,6 +7,10 @@
     <title>Mauri-Services - منصة الخدمات المتكاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c5aa0">
+    
     <!-- الأيقونات الجديدة -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
@@ -241,6 +245,57 @@
             margin: 0 auto 1rem;
         }
         
+        /* Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #2c5aa0;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .install-prompt.show {
+            display: flex;
+        }
+        
+        .install-btn {
+            background: white;
+            color: #2c5aa0;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-prompt {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -352,6 +407,18 @@
     </style>
 </head>
 <body>
+    <!-- تثبيت التطبيق -->
+    <div class="install-prompt" id="installPrompt">
+        <div>
+            <strong>تثبيت التطبيق</strong>
+            <p>ثبت Mauri-Services على هاتفك لتجربة أفضل</p>
+        </div>
+        <div>
+            <button class="install-btn" id="installBtn">تثبيت</button>
+            <button class="close-prompt" id="closePrompt">✕</button>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-logo">
             <i class="fas fa-concierge-bell"></i>
@@ -384,7 +451,7 @@
             
             <div class="hero-stats">
                 <div class="stat">
-                    <h3>50+</h3>
+                    <h3>20+</h3>
                     <p>خدمة متاحة</p>
                 </div>
                 <div class="stat">
@@ -407,28 +474,28 @@
                 <div class="service-icon">🛒</div>
                 <h3>توصيل المشتريات</h3>
                 <p>خضروات، فواكه، لحوم، شاي - من السوق إلى باب منزلك</p>
-                <button class="btn-primary" onclick="orderService('توصيل مشتريات', 500)">اطلب الآن - 500 MRU</button>
+                <button class="btn-primary" onclick="orderService('توصيل مشتريات', 100)">اطلب الآن - 100 MRU</button>
             </div>
             
             <div class="service-card">
                 <div class="service-icon">📄</div>
                 <h3>خدمات المستندات</h3>
                 <p>طباعة، تصوير، ترجمة، وتوصيل المستندات الرسمية</p>
-                <button class="btn-primary" onclick="orderService('خدمات مستندات', 300)">اطلب الآن - 300 MRU</button>
+                <button class="btn-primary" onclick="orderService('خدمات مستندات', 200)">اطلب الآن - 200 MRU</button>
             </div>
             
             <div class="service-card">
                 <div class="service-icon">🚗</div>
                 <h3>توصيل الطرود</h3>
                 <p>توصيل أي شيء، في أي مكان، في أي وقت داخل نواكشوط</p>
-                <button class="btn-primary" onclick="orderService('توصيل طرود', 400)">اطلب الآن - 400 MRU</button>
+                <button class="btn-primary" onclick="orderService('توصيل طرود', 150)">اطلب الآن - 150 MRU</button>
             </div>
             
             <div class="service-card">
                 <div class="service-icon">🏛️</div>
                 <h3>خدمات حكومية</h3>
                 <p>مساعدة في إجراءات الوثائق الرسمية والمستندات</p>
-                <button class="btn-primary" onclick="orderService('خدمات حكومية', 1000)">اطلب الآن - 1000 MRU</button>
+                <button class="btn-primary" onclick="orderService('خدمات حكومية', 500)">اطلب الآن - 500 MRU</button>
             </div>
             
             <div class="service-card">
@@ -439,10 +506,10 @@
             </div>
             
             <div class="service-card">
-                <div class="service-icon">🔧</div>
-                <h3>خدمات منزلية</h3>
-                <p>سباكة، كهرباء، نجارة - توصيل الحرفيين لبيتك</p>
-                <button class="btn-primary" onclick="orderService('خدمات منزلية', 1500)">اطلب الآن - 1500 MRU</button>
+                <div class="service-icon">🔍</div>
+                <h3>خدمة البحث عن المعلومات</h3>
+                <p>أبحاث، دراسات، أسعار، منتجات - نوفر لك أي معلومات تحتاجها</p>
+                <button class="btn-primary" onclick="orderService('خدمة البحث عن المعلومات', 200)">اطلب الآن - 200 MRU</button>
             </div>
         </div>
     </section>
@@ -531,6 +598,50 @@
                 referrer: document.referrer
             });
             localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const closePrompt = document.getElementById('closePrompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install prompt after 3 seconds
+            setTimeout(() => {
+                installPrompt.classList.add('show');
+            }, 3000);
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installPrompt.classList.remove('show');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        closePrompt.addEventListener('click', () => {
+            installPrompt.classList.remove('show');
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
         }
     </script>
 </body>
