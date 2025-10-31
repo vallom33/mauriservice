@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم - الإدارة</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -164,7 +169,7 @@
 </head>
 <body>
     <header class="admin-header">
-        <h1>لوحة تحكم Mauri-Services</h1>
+        <h1>لوحة تحكم Mauri-Services - Firebase</h1>
         <div>
             <span id="adminName">مرحباً، المدير</span>
             <span class="notification-badge" id="notificationCount">0</span>
@@ -177,7 +182,6 @@
         <a href="admin-visitors.html">الزوار</a>
         <a href="admin-orders.html">الطلبات</a>
         <a href="admin-messages.html">الرسائل</a>
-        <a href="admin-content.html">المحتوى</a>
         <a href="admin-agents.html">الوكلاء</a>
         <a href="admin-settings.html">الإعدادات</a>
     </nav>
@@ -185,11 +189,6 @@
     <div class="dashboard">
         <!-- الإجراءات السريعة -->
         <div class="quick-actions">
-            <div class="action-card" onclick="window.location.href='admin-content.html'">
-                <div class="action-icon">✏️</div>
-                <h3>تعديل المحتوى</h3>
-                <p>تعديل الخدمات والأسعار</p>
-            </div>
             <div class="action-card" onclick="window.location.href='admin-orders.html'">
                 <div class="action-icon">📦</div>
                 <h3>الطلبات الجديدة</h3>
@@ -200,10 +199,10 @@
                 <h3>الرسائل</h3>
                 <p id="newMessagesCount">0 رسالة جديدة</p>
             </div>
-            <div class="action-card" onclick="window.location.href='admin-settings.html'">
-                <div class="action-icon">⚙️</div>
-                <h3>الإعدادات</h3>
-                <p>إعدادات الموقع</p>
+            <div class="action-card" onclick="window.location.href='admin-agents.html'">
+                <div class="action-icon">👥</div>
+                <h3>طلبات الوكلاء</h3>
+                <p id="newAgentsCount">0 طلب جديد</p>
             </div>
         </div>
 
@@ -221,17 +220,9 @@
                 <p>إجمالي الطلبات</p>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="totalRevenue">0 MRU</span>
-                <p>إجمالي الإيرادات</p>
+                <span class="stat-number" id="totalMessages">0</span>
+                <p>إجمالي الرسائل</p>
             </div>
-        </div>
-        
-        <div class="dashboard-section">
-            <h2>آخر الزوار</h2>
-            <div id="recentVisitors">
-                <!-- سيتم ملؤها بالبيانات الحقيقية -->
-            </div>
-            <a href="admin-visitors.html" class="btn btn-primary">عرض كل الزوار</a>
         </div>
         
         <div class="dashboard-section">
@@ -249,9 +240,30 @@
             </div>
             <a href="admin-messages.html" class="btn btn-primary">عرض كل الرسائل</a>
         </div>
+
+        <div class="dashboard-section">
+            <h2>طلبات الانضمام كوكلاء</h2>
+            <div id="recentAgents">
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
+            </div>
+            <a href="admin-agents.html" class="btn btn-primary">عرض كل الطلبات</a>
+        </div>
     </div>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // التحقق من تسجيل الدخول
         if (!localStorage.getItem('adminLoggedIn')) {
             window.location.href = 'admin-login.html';
@@ -262,125 +274,171 @@
             window.location.href = 'admin-login.html';
         }
         
-        // نظام الإحصائيات الحقيقي
-        class Dashboard {
+        // نظام الإحصائيات مع Firebase
+        class FirebaseDashboard {
             constructor() {
                 this.init();
-                this.startRealtimeUpdates();
             }
             
-            init() {
-                this.updateStats();
-                this.loadRecentVisitors();
-                this.loadRecentOrders();
-                this.loadRecentMessages();
-                this.updateNotifications();
-            }
-
-            startRealtimeUpdates() {
-                // تحديث البيانات كل 10 ثواني
-                setInterval(() => {
-                    this.updateStats();
-                    this.updateNotifications();
-                }, 10000);
+            async init() {
+                await this.loadStats();
+                await this.loadRecentData();
+                this.setupRealtimeListeners();
             }
             
-            updateStats() {
-                const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-                const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-                const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
-                
-                // إجمالي الزوار
-                document.getElementById('totalVisitors').textContent = visitors.length;
-                
-                // زوار اليوم
-                const today = new Date().toDateString();
-                const todayVisitors = visitors.filter(v => new Date(v.timestamp).toDateString() === today);
-                document.getElementById('todayVisitors').textContent = todayVisitors.length;
-                
-                // إجمالي الطلبات
-                document.getElementById('totalOrders').textContent = orders.length;
-                
-                // إجمالي الإيرادات
-                const totalRevenue = orders.reduce((sum, order) => sum + (order.price || 0), 0);
-                document.getElementById('totalRevenue').textContent = totalRevenue + ' MRU';
-
-                // تحديث العدادات
-                const newOrders = orders.filter(order => order.status === 'جديد' || !order.status).length;
-                const newMessages = messages.filter(msg => !msg.read).length;
-                
-                document.getElementById('newOrdersCount').textContent = newOrders + ' طلب جديد';
-                document.getElementById('newMessagesCount').textContent = newMessages + ' رسالة جديدة';
-            }
-
-            updateNotifications() {
-                const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-                const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
-                
-                const newOrders = orders.filter(order => order.status === 'جديد' || !order.status).length;
-                const newMessages = messages.filter(msg => !msg.read).length;
-                
-                const totalNotifications = newOrders + newMessages;
-                document.getElementById('notificationCount').textContent = totalNotifications;
-            }
-            
-            loadRecentVisitors() {
-                const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-                const recentVisitors = visitors.slice(-5).reverse();
-                
-                const html = recentVisitors.map(visitor => `
-                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
-                        <strong>${visitor.page}</strong>
-                        <div style="color: #666; font-size: 0.9rem;">
-                            ${visitor.timestamp} 
-                            ${visitor.location ? ` - ${visitor.location}` : ''}
-                        </div>
-                    </div>
-                `).join('') || '<p>لا توجد زيارات مسجلة بعد</p>';
-                
-                document.getElementById('recentVisitors').innerHTML = html;
+            async loadStats() {
+                try {
+                    // جلب إحصائيات الزوار
+                    const visitorsSnapshot = await db.collection('visitors').get();
+                    const totalVisitors = visitorsSnapshot.size;
+                    
+                    // زوار اليوم
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const todayVisitors = visitorsSnapshot.docs.filter(doc => 
+                        doc.data().timestamp.toDate() >= today
+                    ).length;
+                    
+                    // جلب الطلبات
+                    const ordersSnapshot = await db.collection('orders').get();
+                    const totalOrders = ordersSnapshot.size;
+                    const newOrders = ordersSnapshot.docs.filter(doc => 
+                        doc.data().status === 'جديد'
+                    ).length;
+                    
+                    // جلب الرسائل
+                    const messagesSnapshot = await db.collection('messages').get();
+                    const totalMessages = messagesSnapshot.size;
+                    const newMessages = messagesSnapshot.docs.filter(doc => 
+                        !doc.data().read
+                    ).length;
+                    
+                    // جلب طلبات الوكلاء
+                    const agentsSnapshot = await db.collection('agents').get();
+                    const newAgents = agentsSnapshot.docs.filter(doc => 
+                        doc.data().status === 'جديد'
+                    ).length;
+                    
+                    // تحديث الواجهة
+                    document.getElementById('totalVisitors').textContent = totalVisitors;
+                    document.getElementById('todayVisitors').textContent = todayVisitors;
+                    document.getElementById('totalOrders').textContent = totalOrders;
+                    document.getElementById('totalMessages').textContent = totalMessages;
+                    
+                    document.getElementById('newOrdersCount').textContent = newOrders + ' طلب جديد';
+                    document.getElementById('newMessagesCount').textContent = newMessages + ' رسالة جديدة';
+                    document.getElementById('newAgentsCount').textContent = newAgents + ' طلب جديد';
+                    
+                    document.getElementById('notificationCount').textContent = newOrders + newMessages + newAgents;
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الإحصائيات:', error);
+                }
             }
             
-            loadRecentOrders() {
-                const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-                const recentOrders = orders.slice(-5).reverse();
-                
-                const html = recentOrders.map(order => `
-                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
-                        <strong>${order.service}</strong> - ${order.customer}
-                        <div style="color: #666; font-size: 0.9rem;">
-                            ${order.price} MRU - ${order.timestamp}
-                            <span style="color: ${order.status === 'جديد' ? '#dc3545' : '#28a745'}">
-                                • ${order.status || 'جديد'}
-                            </span>
-                        </div>
-                    </div>
-                `).join('') || '<p>لا توجد طلبات مسجلة بعد</p>';
-                
-                document.getElementById('recentOrders').innerHTML = html;
+            async loadRecentData() {
+                try {
+                    // آخر 5 طلبات
+                    const ordersSnapshot = await db.collection('orders')
+                        .orderBy('timestamp', 'desc')
+                        .limit(5)
+                        .get();
+                    
+                    const ordersHtml = ordersSnapshot.docs.map(doc => {
+                        const data = doc.data();
+                        return `
+                            <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>${data.service}</strong> - ${data.customer}
+                                <div style="color: #666; font-size: 0.9rem;">
+                                    ${data.price} MRU - ${data.timestamp.toDate().toLocaleString('ar-SA')}
+                                    <span style="color: ${data.status === 'جديد' ? '#dc3545' : '#28a745'}">
+                                        • ${data.status}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('') || '<p>لا توجد طلبات</p>';
+                    
+                    document.getElementById('recentOrders').innerHTML = ordersHtml;
+                    
+                    // آخر 5 رسائل
+                    const messagesSnapshot = await db.collection('messages')
+                        .orderBy('timestamp', 'desc')
+                        .limit(5)
+                        .get();
+                    
+                    const messagesHtml = messagesSnapshot.docs.map(doc => {
+                        const data = doc.data();
+                        return `
+                            <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>${data.name}</strong> - ${data.phone}
+                                <div style="color: #666; font-size: 0.9rem;">
+                                    ${data.service} - ${data.timestamp.toDate().toLocaleString('ar-SA')}
+                                    ${!data.read ? ' <span style="color: red">● جديد</span>' : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('') || '<p>لا توجد رسائل</p>';
+                    
+                    document.getElementById('recentMessages').innerHTML = messagesHtml;
+                    
+                    // آخر 5 طلبات وكلاء
+                    const agentsSnapshot = await db.collection('agents')
+                        .orderBy('timestamp', 'desc')
+                        .limit(5)
+                        .get();
+                    
+                    const agentsHtml = agentsSnapshot.docs.map(doc => {
+                        const data = doc.data();
+                        return `
+                            <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                                <strong>${data.name}</strong> - ${data.phone}
+                                <div style="color: #666; font-size: 0.9rem;">
+                                    ${data.timestamp.toDate().toLocaleString('ar-SA')}
+                                    <span style="color: ${data.status === 'جديد' ? 'red' : 'green'}">• ${data.status}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('') || '<p>لا توجد طلبات</p>';
+                    
+                    document.getElementById('recentAgents').innerHTML = agentsHtml;
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل البيانات:', error);
+                }
             }
-
-            loadRecentMessages() {
-                const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
-                const recentMessages = messages.slice(-5).reverse();
+            
+            setupRealtimeListeners() {
+                // تحديث فوري عند إضافة بيانات جديدة
+                db.collection('orders')
+                    .orderBy('timestamp', 'desc')
+                    .limit(5)
+                    .onSnapshot(() => {
+                        this.loadRecentData();
+                        this.loadStats();
+                    });
                 
-                const html = recentMessages.map(message => `
-                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
-                        <strong>${message.name}</strong> - ${message.phone}
-                        <div style="color: #666; font-size: 0.9rem;">
-                            ${message.service} - ${message.timestamp}
-                            ${!message.read ? ' <span style="color: red">● جديد</span>' : ''}
-                        </div>
-                    </div>
-                `).join('') || '<p>لا توجد رسائل بعد</p>';
+                db.collection('messages')
+                    .orderBy('timestamp', 'desc')
+                    .limit(5)
+                    .onSnapshot(() => {
+                        this.loadRecentData();
+                        this.loadStats();
+                    });
                 
-                document.getElementById('recentMessages').innerHTML = html;
+                db.collection('agents')
+                    .orderBy('timestamp', 'desc')
+                    .limit(5)
+                    .onSnapshot(() => {
+                        this.loadRecentData();
+                        this.loadStats();
+                    });
             }
         }
         
         // بدء النظام
         document.addEventListener('DOMContentLoaded', function() {
-            new Dashboard();
+            new FirebaseDashboard();
         });
     </script>
 </body>

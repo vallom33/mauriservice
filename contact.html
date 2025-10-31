@@ -6,6 +6,10 @@
     <title>اتصل بنا - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c5aa0">
@@ -453,6 +457,7 @@
                             <option value="home">خدمات منزلية</option>
                             <option value="government">خدمات حكومية</option>
                             <option value="information">خدمة البحث عن المعلومات</option>
+                            <option value="agent">انضم كوكيل</option>
                             <option value="other">استفسار عام</option>
                         </select>
                     </div>
@@ -476,6 +481,20 @@
     </footer>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Mobile menu functionality
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
@@ -491,8 +510,8 @@
             }
         });
 
-        // نظام إرسال الرسائل الموحد
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        // نظام إرسال الرسائل مع Firebase
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const name = document.getElementById('name').value;
@@ -507,83 +526,70 @@
                 'home': 'خدمات منزلية',
                 'government': 'خدمات حكومية',
                 'information': 'خدمة البحث عن المعلومات',
+                'agent': 'انضم كوكيل',
                 'other': 'استفسار عام'
             };
             
-            // 1. حفظ الرسالة في النظام
-            const messageData = {
-                name: name,
-                phone: phone,
-                service: serviceNames[service],
-                message: message,
-                timestamp: new Date().toLocaleString('ar-SA'),
-                read: false,
-                id: Date.now()
-            };
-            
-            let messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
-            messages.push(messageData);
-            localStorage.setItem('customer_messages', JSON.stringify(messages));
-            
-            // 2. إرسال عبر واتساب
-            const whatsappMessage = `رسالة جديدة من ${name} (${phone})\nالخدمة: ${serviceNames[service]}\nالرسالة: ${message}`;
-            const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(whatsappMessage)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            // 3. إظهار تأكيد للمستخدم
-            alert('✅ تم إرسال رسالتك! سنتواصل معك قريباً.');
-            
-            // 4. إعادة تعيين النموذج
-            this.reset();
-            
-            // 5. تتبع الحدث
-            console.log('📨 تم تسجيل رسالة جديدة في النظام:', messageData);
-        });
-
-        // تتبع الزوار
-        if (typeof(Storage) !== "undefined") {
-            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            
-            const pageName = document.title.split(' - ')[0] || 'صفحة غير معروفة';
-            
-            const visitorData = {
-                timestamp: new Date().toLocaleString('ar-SA'),
-                page: pageName,
-                referrer: document.referrer,
-                userAgent: navigator.userAgent,
-                ip: 'user-' + Math.random().toString(36).substr(2, 9)
-            };
-            
-            visitors.push(visitorData);
-            
-            if (visitors.length > 1000) {
-                visitors = visitors.slice(-1000);
-            }
-            
-            localStorage.setItem('website_visitors', JSON.stringify(visitors));
-        }
-
-        // نظام تتبع الطلبات الحقيقي
-        window.trackOrder = function(serviceName, price, customerName = 'عميل جديد') {
-            if (typeof(Storage) !== "undefined") {
-                let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-                
-                const orderData = {
-                    customer: customerName,
-                    service: serviceName,
-                    price: price,
-                    timestamp: new Date().toLocaleString('ar-SA'),
-                    status: 'جديد',
-                    id: Date.now()
+            try {
+                // 1. حفظ في Firebase
+                const messageData = {
+                    name: name,
+                    phone: phone,
+                    service: serviceNames[service],
+                    message: message,
+                    timestamp: new Date(),
+                    read: false,
+                    type: 'message'
                 };
                 
-                orders.push(orderData);
-                localStorage.setItem('customer_orders', JSON.stringify(orders));
+                await db.collection('messages').add(messageData);
                 
-                return true;
+                // 2. إذا كان طلب انضمام كوكيل
+                if (service === 'agent') {
+                    const agentData = {
+                        name: name,
+                        phone: phone,
+                        message: message,
+                        timestamp: new Date(),
+                        status: 'جديد',
+                        type: 'agent_request'
+                    };
+                    await db.collection('agents').add(agentData);
+                }
+                
+                // 3. إرسال إلى واتساب
+                const whatsappMessage = `🆕 رسالة جديدة من الموقع\n👤 الاسم: ${name}\n📞 الهاتف: ${phone}\n📋 الخدمة: ${serviceNames[service]}\n💬 الرسالة: ${message}`;
+                const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(whatsappMessage)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                // 4. تأكيد للمستخدم
+                alert('✅ تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
+                
+                // 5. إعادة تعيين النموذج
+                this.reset();
+                
+            } catch (error) {
+                console.error('❌ خطأ في حفظ الرسالة:', error);
+                alert('⚠️ حدث خطأ في الإرسال. يرجى المحاولة مرة أخرى.');
             }
-            return false;
-        };
+        });
+
+        // تتبع الزوار في Firebase
+        async function trackVisitor() {
+            try {
+                await db.collection('visitors').add({
+                    page: 'اتصل بنا',
+                    timestamp: new Date(),
+                    referrer: document.referrer || 'مباشر',
+                    userAgent: navigator.userAgent
+                });
+            } catch (error) {
+                console.log('⚠️ لا يمكن تتبع الزائر في Firebase');
+            }
+        }
+
+        // تتبع الزوار عند تحميل الصفحة
+        trackVisitor();
 
         // PWA Installation
         let deferredPrompt;

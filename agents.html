@@ -6,6 +6,10 @@
     <title>انضم كوكيل - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <!-- الأيقونات الجديدة -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
@@ -331,6 +335,20 @@
     </footer>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Mobile menu functionality
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
@@ -346,22 +364,40 @@
             }
         });
 
-        function contactUs() {
+        async function contactUs() {
             const message = "مرحباً، أريد الانضمام كوسيط خدمات مع Mauri-Services";
             const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
+            
+            // حفظ طلب الانضمام في Firebase
+            try {
+                await db.collection('agent_requests').add({
+                    type: 'agent_contact',
+                    timestamp: new Date(),
+                    status: 'جديد'
+                });
+                console.log('✅ تم حفظ طلب الانضمام في Firebase');
+            } catch (error) {
+                console.error('❌ خطأ في حفظ طلب الانضمام:', error);
+            }
         }
 
-        // تتبع الزوار
-        if (typeof(Storage) !== "undefined") {
-            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            visitors.push({
-                timestamp: new Date().toLocaleString('ar-SA'),
-                page: 'انضم كوكيل',
-                referrer: document.referrer
-            });
-            localStorage.setItem('website_visitors', JSON.stringify(visitors));
+        // تتبع الزوار في Firebase
+        async function trackVisitor() {
+            try {
+                await db.collection('visitors').add({
+                    page: 'انضم كوكيل',
+                    timestamp: new Date(),
+                    referrer: document.referrer || 'مباشر',
+                    userAgent: navigator.userAgent
+                });
+            } catch (error) {
+                console.log('⚠️ لا يمكن تتبع الزائر في Firebase');
+            }
         }
+
+        // تتبع الزوار عند تحميل الصفحة
+        trackVisitor();
     </script>
 </body>
 </html>
