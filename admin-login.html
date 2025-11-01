@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - الإدارة</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -85,6 +91,7 @@
             text-align: center;
             color: #2c5aa0;
             text-decoration: none;
+            margin-top: 1rem;
         }
         
         .error-message {
@@ -92,6 +99,24 @@
             text-align: center;
             margin-top: 1rem;
             display: none;
+        }
+        
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .forgot-password a {
+            color: #2c5aa0;
+            text-decoration: none;
+            cursor: pointer;
         }
         
         .demo-credentials {
@@ -108,74 +133,160 @@
     <div class="login-container">
         <div class="login-header">
             <h1>تسجيل الدخول</h1>
-            <p>لوحة إدارة موريتانيا للخدمات</p>
+            <p>لوحة إدارة Mauri-Services</p>
         </div>
         
-        
+        <div class="demo-credentials">
+            <strong>بيانات تجريبية:</strong><br>
+            البريد: admin@mauriservices.com<br>
+            كلمة المرور: admin123
+        </div>
         
         <form id="loginForm">
             <div class="form-group">
-                <label for="username">اسم المستخدم</label>
-                <input type="text" id="username" required value="admin">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" required placeholder="admin@mauriservices.com">
             </div>
             
             <div class="form-group">
                 <label for="password">كلمة المرور</label>
-                <input type="password" id="password" required value="admin123">
+                <input type="password" id="password" required placeholder="كلمة المرور">
+            </div>
+            
+            <div class="forgot-password">
+                <a onclick="showForgotPassword()">نسيت كلمة المرور؟</a>
             </div>
             
             <button type="submit" class="login-btn">تسجيل الدخول</button>
-            <div class="error-message" id="errorMessage">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
         </form>
         
         <a href="index.html" class="back-link">العودة للرئيسية</a>
     </div>
 
+    <!-- نسيان كلمة المرور -->
+    <div id="forgotPasswordModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
+            <h3>استعادة كلمة المرور</h3>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="resetEmail" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+            <button onclick="resetPassword()" class="login-btn">إرسال رابط الاستعادة</button>
+            <button onclick="hideForgotPassword()" style="background: #6c757d; margin-top: 0.5rem;" class="login-btn">إلغاء</button>
+        </div>
+    </div>
+
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
             
-            // بيانات الدخول
-            const validCredentials = [
-                { username: 'admin', password: 'admin123' },
-                { username: 'omar', password: 'omar' }
-            ];
-            
-            const isValid = validCredentials.some(cred => 
-                cred.username === username && cred.password === password
-            );
-            
-            if (isValid) {
-                localStorage.setItem('adminLoggedIn', 'true');
-                window.location.href = 'admin-dashboard.html';
-            } else {
-                document.getElementById('errorMessage').style.display = 'block';
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // التحقق من دور المستخدم
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    successMessage.style.display = 'block';
+                    successMessage.textContent = '✅ تم تسجيل الدخول بنجاح!';
+                    errorMessage.style.display = 'none';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1000);
+                } else {
+                    await auth.signOut();
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = '❌ ليس لديك صلاحية الدخول للوحة التحكم';
+                }
+                
+            } catch (error) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = '❌ ' + this.getErrorMessage(error.code);
             }
         });
 
-        // نظام تتبع الزوار
-        if (typeof(Storage) !== "undefined") {
-            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            
-            const visitorData = {
-                timestamp: new Date().toLocaleString('ar-SA'),
-                page: 'تسجيل الدخول - الإدارة',
-                referrer: document.referrer,
-                userAgent: navigator.userAgent,
-                ip: 'user-' + Math.random().toString(36).substr(2, 9)
+        function getErrorMessage(errorCode) {
+            const messages = {
+                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+                'auth/user-disabled': 'هذا الحساب معطل',
+                'auth/user-not-found': 'لم يتم العثور على المستخدم',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة',
+                'auth/too-many-requests': 'محاولات كثيرة جداً، حاول لاحقاً'
             };
+            return messages[errorCode] || 'حدث خطأ غير متوقع';
+        }
+
+        function showForgotPassword() {
+            document.getElementById('forgotPasswordModal').style.display = 'flex';
+        }
+
+        function hideForgotPassword() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+        }
+
+        async function resetPassword() {
+            const email = document.getElementById('resetEmail').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
             
-            visitors.push(visitorData);
-            
-            if (visitors.length > 1000) {
-                visitors = visitors.slice(-1000);
+            if (!email) {
+                errorMessage.textContent = '❌ يرجى إدخال البريد الإلكتروني';
+                return;
             }
             
-            localStorage.setItem('website_visitors', JSON.stringify(visitors));
+            try {
+                await auth.sendPasswordResetEmail(email);
+                successMessage.style.display = 'block';
+                successMessage.textContent = '✅ تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني';
+                errorMessage.style.display = 'none';
+                hideForgotPassword();
+            } catch (error) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = '❌ ' + getErrorMessage(error.code);
+            }
         }
+
+        // إنشاء حساب مدير افتراضي (للاستخدام الأول فقط)
+        async function createDefaultAdmin() {
+            try {
+                // هذا للاستخدام الأول فقط - قم بتعليقه بعد الاستخدام
+                // const userCredential = await auth.createUserWithEmailAndPassword('admin@mauriservices.com', 'admin123');
+                // await db.collection('users').doc(userCredential.user.uid).set({
+                //     name: 'مدير النظام',
+                //     email: 'admin@mauriservices.com',
+                //     role: 'admin',
+                //     createdAt: new Date()
+                // });
+                // console.log('✅ تم إنشاء المدير الافتراضي');
+            } catch (error) {
+                console.log('المدير موجود بالفعل');
+            }
+        }
+
+        // استدعاء الدالة مرة واحدة لإنشاء المدير
+        // createDefaultAdmin();
     </script>
 </body>
 </html>

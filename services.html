@@ -6,6 +6,11 @@
     <title>الخدمات - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c5aa0">
@@ -55,6 +60,7 @@
         
         .nav-links {
             display: flex;
+            align-items: center;
             gap: 0.5rem;
         }
         
@@ -106,6 +112,50 @@
             padding: 0 1rem;
         }
         
+        /* أنماط البحث والتصفية */
+        .search-filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #2c5aa0;
+            background: white;
+            color: #2c5aa0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: #2c5aa0;
+            color: white;
+        }
+        
         .services-categories {
             display: grid;
             grid-template-columns: 1fr;
@@ -118,6 +168,11 @@
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
         }
         
         .category-header {
@@ -150,6 +205,14 @@
             border-bottom: 1px solid #eee;
             flex-wrap: wrap;
             gap: 0.5rem;
+            transition: background 0.3s ease;
+        }
+        
+        .service-item:hover {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0 -0.5rem;
         }
         
         .service-item:last-child {
@@ -161,6 +224,23 @@
             min-width: 200px;
         }
         
+        .service-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .service-popular {
+            background: #ffd700;
+            color: #333;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
         .btn-primary {
             background: #2c5aa0;
             color: white;
@@ -169,12 +249,24 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             white-space: nowrap;
         }
         
         .btn-primary:hover {
             background: #1e3a8a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #2c5aa0;
+            border: 2px solid #2c5aa0;
+        }
+        
+        .btn-outline:hover {
+            background: #2c5aa0;
+            color: white;
         }
         
         .footer {
@@ -185,55 +277,45 @@
             margin-top: 3rem;
         }
         
-        /* Install Prompt */
-        .install-prompt {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: #2c5aa0;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            animation: slideUp 0.3s ease;
-        }
-        
-        .install-prompt.show {
-            display: flex;
-        }
-        
-        .install-btn {
+        /* أنماط المصادقة */
+        .auth-section {
             background: white;
-            color: #2c5aa0;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .user-welcome {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-right: 4px solid #4caf50;
+        }
+        
+        /* إحصائيات سريعة */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
             font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .close-prompt {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-        
-        @keyframes slideUp {
-            from {
-                transform: translateY(100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            color: #2c5aa0;
+            display: block;
         }
         
         /* Mobile Responsive */
@@ -293,6 +375,14 @@
             .btn-primary {
                 width: 100%;
             }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .filter-buttons {
+                justify-content: center;
+            }
         }
         
         @media (min-width: 768px) {
@@ -327,18 +417,6 @@
     </style>
 </head>
 <body>
-    <!-- تثبيت التطبيق -->
-    <div class="install-prompt" id="installPrompt">
-        <div>
-            <strong>تثبيت التطبيق</strong>
-            <p>ثبت Mauri-Services على هاتفك لتجربة أفضل</p>
-        </div>
-        <div>
-            <button class="install-btn" id="installBtn">تثبيت</button>
-            <button class="close-prompt" id="closePrompt">✕</button>
-        </div>
-    </div>
-
     <nav class="navbar">
         <div class="nav-logo">
             <i class="fas fa-concierge-bell"></i>
@@ -356,6 +434,7 @@
             <a href="agents.html" class="nav-link">انضم كوكيل</a>
             <a href="about.html" class="nav-link">من نحن</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
+            <div id="authElements"></div>
         </div>
     </nav>
 
@@ -367,249 +446,213 @@
     </section>
 
     <section class="container">
-        <div class="services-categories">
-            <!-- خدمات التوصيل -->
-            <div class="category-card">
-                <div class="category-header">
-                    <div class="category-icon">🚗</div>
-                    <h2>خدمات التوصيل</h2>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>توصيل مشتريات السوق</h3>
-                        <p>خضروات، فواكه، لحوم، شاي</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('توصيل مشتريات سوق', 100)">100 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>توصيل وجبات طعام</h3>
-                        <p>من المطاعم إلى منزلك</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('توصيل وجبات طعام', 150)">150 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>توصيل طرود</h3>
-                        <p>أي شيء، في أي مكان</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('توصيل طرود', 100)">100 MRU</button>
-                </div>
+        <!-- قسم المصادقة -->
+        <div class="auth-section" id="authSection">
+            <div id="userWelcome" class="user-welcome" style="display: none;">
+                <h3>مرحباً بك! <span id="userName"></span></h3>
+                <p>يمكنك الآن طلب الخدمات وتتبع طلباتك</p>
             </div>
+            <div id="authButtons"></div>
+        </div>
 
-            <!-- خدمات المستندات -->
-            <div class="category-card">
-                <div class="category-header">
-                    <div class="category-icon">📄</div>
-                    <h2>خدمات المستندات</h2>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>طباعة مستندات</h3>
-                        <p>طباعة أي مستند تحتاجه</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('طباعة مستندات', 150)">150 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>تصوير أوراق</h3>
-                        <p>تصوير وثائق وبطاقات</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('تصوير أوراق', 200)">200 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>ترجمة مستندات</h3>
-                        <p>فرنسي - عربي والعكس</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('ترجمة مستندات', 50)">50 MRU</button>
-                </div>
+        <!-- إحصائيات سريعة -->
+        <div class="quick-stats" id="quickStats">
+            <div class="stat-item">
+                <span class="stat-number" id="totalServices">20+</span>
+                <span>خدمة متاحة</span>
             </div>
+            <div class="stat-item">
+                <span class="stat-number" id="completedOrders">0</span>
+                <span>طلب منفذ</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span>دعم عملاء</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span>رضا عملاء</span>
+            </div>
+        </div>
 
-            <!-- خدمات الدفع -->
-            <div class="category-card">
-                <div class="category-header">
-                    <div class="category-icon">💳</div>
-                    <h2>خدمات الدفع</h2>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>شحن رصيد</h3>
-                        <p>شحن رصيد جميع الشركات</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('شحن رصيد', 200)">200 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>دفع فواتير</h3>
-                        <p>كهرباء، ماء، إنترنت</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('دفع فواتير', 100)">100 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>شراء بطاقات</h3>
-                        <p>Netflix, Steam, Google Play</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('شراء بطاقات', 200)">200 MRU</button>
-                </div>
+        <!-- البحث والتصفية -->
+        <div class="search-filter-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="ابحث عن خدمة...">
+                <button class="btn-primary" onclick="searchServices()">
+                    <i class="fas fa-search"></i> بحث
+                </button>
             </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterServices('all')">الكل</button>
+                <button class="filter-btn" onclick="filterServices('delivery')">توصيل</button>
+                <button class="filter-btn" onclick="filterServices('documents')">مستندات</button>
+                <button class="filter-btn" onclick="filterServices('payment')">دفع</button>
+                <button class="filter-btn" onclick="filterServices('home')">منزلية</button>
+                <button class="filter-btn" onclick="filterServices('government')">حكومية</button>
+                <button class="filter-btn" onclick="filterServices('information')">معلومات</button>
+            </div>
+        </div>
 
-            <!-- خدمات منزلية -->
-            <div class="category-card">
-                <div class="category-header">
-                    <div class="category-icon">🔧</div>
-                    <h2>خدمات منزلية</h2>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>سباكة</h3>
-                        <p>إصلاح تسريبات وتركيبات</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('خدمة سباكة', 1000)">1000 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>كهرباء</h3>
-                        <p>إصلاح أعطال كهربائية</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('خدمة كهرباء', 1200)">1200 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>نجارة</h3>
-                        <p>إصلاح أثاث وتركيبات</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('خدمة نجارة', 1000)">1000 MRU</button>
-                </div>
-            </div>
-
-            <!-- خدمات حكومية -->
-            <div class="category-card">
-                <div class="category-header">
-                    <div class="category-icon">🏛️</div>
-                    <h2>خدمات حكومية</h2>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>مساعدة في الوثائق</h3>
-                        <p>إرشاد لإكمال الإجراءات</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('مساعدة وثائق', 500)">500 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>توصيل مستندات</h3>
-                        <p>توصيل أوراق للدوائر</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('توصيل مستندات حكومية', 300)">300 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>استشارات إجرائية</h3>
-                        <p>نصائح للإجراءات الرسمية</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('استشارات إجرائية', 50)">50 MRU</button>
-                </div>
-            </div>
-
-            <!-- خدمات المعلومات والبحث -->
-            <div class="category-card">
-                <div class="category-header">
-                    <div class="category-icon">🔍</div>
-                    <h2>خدمات المعلومات والبحث</h2>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>بحث عن معلومات عامة</h3>
-                        <p>أي موضوع تحتاج معلومات عنه</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('بحث عن معلومات عامة', 200)">200 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>بحث عن أسعار المنتجات</h3>
-                        <p>مقارنة أسعار محلية ودولية</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('بحث عن أسعار المنتجات', 300)">300 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>بحث أكاديمي</h3>
-                        <p>معلومات للدراسة والأبحاث</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('بحث أكاديمي', 500)">500 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>بحث عن فرص عمل</h3>
-                        <p>وظائف شاغرة ومتطلباتها</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('بحث عن فرص عمل', 400)">400 MRU</button>
-                </div>
-            </div>
-
-            <!-- خدمات إضافية -->
-            <div class="category-card">
-                <div class="category-header">
-                    <div class="category-icon">✨</div>
-                    <h2>خدمات إضافية</h2>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>خدمة ساعي خاص</h3>
-                        <p>للمهام الخاصة والطارئة</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('ساعي خاص', 200)">200 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>خدمة 24 ساعة</h3>
-                        <p>للطلبات العاجلة ليلاً</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('خدمة 24 ساعة', 100)">100 MRU</button>
-                </div>
-                
-                <div class="service-item">
-                    <div class="service-info">
-                        <h3>خدمة مخصصة</h3>
-                        <p>لأي خدمة غير مذكورة</p>
-                    </div>
-                    <button class="btn-primary" onclick="orderService('خدمة مخصصة', 0)">اسأل عن السعر</button>
-                </div>
-            </div>
+        <div class="services-categories" id="servicesContainer">
+            <!-- سيتم تعبئة الخدمات ديناميكياً -->
         </div>
     </section>
 
     <footer class="footer">
         <div class="container">
             <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
-            <p>نواكشوط، موريتانيا - واتساب: 44869780</p>
+            <p>نواكشوط، موريتانيا - واتساب: 31573340</p>
         </div>
     </footer>
 
+    <!-- نموذج تفاصيل الخدمة -->
+    <div id="serviceModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 id="modalServiceName">اسم الخدمة</h3>
+                <button onclick="closeServiceModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            <div id="modalServiceContent">
+                <!-- محتوى الخدمة -->
+            </div>
+            <button onclick="orderSelectedService()" class="btn-primary" style="width: 100%; margin-top: 1rem;">
+                طلب الخدمة
+            </button>
+        </div>
+    </div>
+
+    <!-- نماذج المصادقة (نفسها من contact.html) -->
+    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
+            <h3>تسجيل الدخول</h3>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="loginEmail" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور">
+            </div>
+            <button onclick="loginUser()" class="btn-primary">تسجيل الدخول</button>
+            <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer;">إنشاء حساب جديد</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
+            <h3>إنشاء حساب جديد</h3>
+            <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" id="signupName" placeholder="أدخل اسمك الكامل">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" id="signupPhone" placeholder="أدخل رقم هاتفك">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="signupEmail" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="signupPassword" placeholder="أدخل كلمة المرور (6 أحرف على الأقل)">
+            </div>
+            <button onclick="signupUser()" class="btn-primary">إنشاء حساب</button>
+            <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
+        </div>
+    </div>
+
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // بيانات الخدمات
+        const servicesData = {
+            delivery: {
+                title: "خدمات التوصيل",
+                icon: "🚗",
+                services: [
+                    { name: "توصيل مشتريات السوق", description: "خضروات، فواكه، لحوم، شاي", price: 100, popular: true, type: "delivery" },
+                    { name: "توصيل وجبات طعام", description: "من المطاعم إلى منزلك", price: 150, popular: true, type: "delivery" },
+                    { name: "توصيل طرود", description: "أي شيء، في أي مكان", price: 100, popular: false, type: "delivery" }
+                ]
+            },
+            documents: {
+                title: "خدمات المستندات",
+                icon: "📄",
+                services: [
+                    { name: "طباعة مستندات", description: "طباعة أي مستند تحتاجه", price: 150, popular: false, type: "documents" },
+                    { name: "تصوير أوراق", description: "تصوير وثائق وبطاقات", price: 200, popular: true, type: "documents" },
+                    { name: "ترجمة مستندات", description: "فرنسي - عربي والعكس", price: 50, popular: false, type: "documents" }
+                ]
+            },
+            payment: {
+                title: "خدمات الدفع",
+                icon: "💳",
+                services: [
+                    { name: "شحن رصيد", description: "شحن رصيد جميع الشركات", price: 200, popular: true, type: "payment" },
+                    { name: "دفع فواتير", description: "كهرباء، ماء، إنترنت", price: 100, popular: true, type: "payment" },
+                    { name: "شراء بطاقات", description: "Netflix, Steam, Google Play", price: 200, popular: false, type: "payment" }
+                ]
+            },
+            home: {
+                title: "خدمات منزلية",
+                icon: "🔧",
+                services: [
+                    { name: "سباكة", description: "إصلاح تسريبات وتركيبات", price: 1000, popular: false, type: "home" },
+                    { name: "كهرباء", description: "إصلاح أعطال كهربائية", price: 1200, popular: false, type: "home" },
+                    { name: "نجارة", description: "إصلاح أثاث وتركيبات", price: 1000, popular: false, type: "home" }
+                ]
+            },
+            government: {
+                title: "خدمات حكومية",
+                icon: "🏛️",
+                services: [
+                    { name: "مساعدة في الوثائق", description: "إرشاد لإكمال الإجراءات", price: 500, popular: true, type: "government" },
+                    { name: "توصيل مستندات", description: "توصيل أوراق للدوائر", price: 300, popular: false, type: "government" },
+                    { name: "استشارات إجرائية", description: "نصائح للإجراءات الرسمية", price: 50, popular: false, type: "government" }
+                ]
+            },
+            information: {
+                title: "خدمات المعلومات والبحث",
+                icon: "🔍",
+                services: [
+                    { name: "بحث عن معلومات عامة", description: "أي موضوع تحتاج معلومات عنه", price: 200, popular: false, type: "information" },
+                    { name: "بحث عن أسعار المنتجات", description: "مقارنة أسعار محلية ودولية", price: 300, popular: true, type: "information" },
+                    { name: "بحث أكاديمي", description: "معلومات للدراسة والأبحاث", price: 500, popular: false, type: "information" },
+                    { name: "بحث عن فرص عمل", description: "وظائف شاغرة ومتطلباتها", price: 400, popular: true, type: "information" }
+                ]
+            },
+            additional: {
+                title: "خدمات إضافية",
+                icon: "✨",
+                services: [
+                    { name: "خدمة ساعي خاص", description: "للمهام الخاصة والطارئة", price: 200, popular: false, type: "additional" },
+                    { name: "خدمة 24 ساعة", description: "للطلبات العاجلة ليلاً", price: 100, popular: true, type: "additional" },
+                    { name: "خدمة مخصصة", description: "لأي خدمة غير مذكورة", price: 0, popular: false, type: "additional" }
+                ]
+            }
+        };
+
+        let currentService = null;
+        let currentFilter = 'all';
+        let currentSearch = '';
+
         // Mobile menu functionality
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
@@ -618,76 +661,312 @@
             navLinks.classList.toggle('active');
         });
         
-        // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.navbar')) {
                 navLinks.classList.remove('active');
             }
         });
 
-        function orderService(serviceName, price) {
-            const message = price > 0 ? 
-                `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU` :
-                `مرحباً، أريد الاستفسار عن خدمة: ${serviceName}`;
-                
-            const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-        }
-
-        // تتبع الزوار
-        if (typeof(Storage) !== "undefined") {
-            let visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            visitors.push({
-                timestamp: new Date().toLocaleString('ar-SA'),
-                page: 'صفحة الخدمات',
-                referrer: document.referrer
-            });
-            localStorage.setItem('website_visitors', JSON.stringify(visitors));
-        }
-
-        // PWA Installation
-        let deferredPrompt;
-        const installPrompt = document.getElementById('installPrompt');
-        const installBtn = document.getElementById('installBtn');
-        const closePrompt = document.getElementById('closePrompt');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show install prompt after 3 seconds
-            setTimeout(() => {
-                installPrompt.classList.add('show');
-            }, 3000);
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServices();
+            setupSearch();
+            loadUserStats();
         });
 
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installPrompt.classList.remove('show');
-                }
-                deferredPrompt = null;
+        // نظام المصادقة
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showUserWelcome(user);
+            } else {
+                showAuthButtons();
             }
         });
 
-        closePrompt.addEventListener('click', () => {
-            installPrompt.classList.remove('show');
-        });
+        function showUserWelcome(user) {
+            document.getElementById('userWelcome').style.display = 'block';
+            document.getElementById('userName').textContent = user.displayName || user.email;
+            document.getElementById('authButtons').innerHTML = `
+                <button onclick="logoutUser()" class="btn-outline">تسجيل الخروج</button>
+            `;
+        }
 
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
+        function showAuthButtons() {
+            document.getElementById('userWelcome').style.display = 'none';
+            document.getElementById('authButtons').innerHTML = `
+                <button onclick="showLoginModal()" class="btn-primary" style="padding: 0.5rem 1rem;">تسجيل الدخول</button>
+                <button onclick="showSignupModal()" class="btn-outline" style="padding: 0.5rem 1rem;">إنشاء حساب</button>
+            `;
+        }
+
+        // تحميل الخدمات
+        function loadServices() {
+            const container = document.getElementById('servicesContainer');
+            let html = '';
+
+            for (const [categoryKey, category] of Object.entries(servicesData)) {
+                if (currentFilter !== 'all' && categoryKey !== currentFilter) continue;
+
+                const filteredServices = category.services.filter(service => 
+                    service.name.includes(currentSearch) || 
+                    service.description.includes(currentSearch)
+                );
+
+                if (filteredServices.length === 0) continue;
+
+                html += `
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-icon">${category.icon}</div>
+                            <h2>${category.title}</h2>
+                        </div>
+                        ${filteredServices.map(service => `
+                            <div class="service-item">
+                                <div class="service-info">
+                                    <h3>${service.name}</h3>
+                                    <p>${service.description}</p>
+                                    <div class="service-meta">
+                                        ${service.popular ? '<span class="service-popular">🔥 الأكثر طلباً</span>' : ''}
+                                        <span>⏱️ 1-4 ساعات</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn-primary" onclick="showServiceDetails('${categoryKey}', '${service.name}')">
+                                        ${service.price > 0 ? service.price + ' MRU' : 'اسأل عن السعر'}
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html || '<div class="category-card"><p>⚠️ لم يتم العثور على خدمات تطابق بحثك</p></div>';
+        }
+
+        // إظهار تفاصيل الخدمة
+        function showServiceDetails(categoryKey, serviceName) {
+            const category = servicesData[categoryKey];
+            const service = category.services.find(s => s.name === serviceName);
+            
+            if (!service) return;
+
+            currentService = service;
+
+            document.getElementById('modalServiceName').textContent = service.name;
+            document.getElementById('modalServiceContent').innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <p><strong>الوصف:</strong> ${service.description}</p>
+                    <p><strong>السعر:</strong> ${service.price > 0 ? service.price + ' MRU' : 'يحدد حسب الطلب'}</p>
+                    <p><strong>وقت التنفيذ:</strong> 1-4 ساعات</p>
+                    <p><strong>طريقة الدفع:</strong> نقداً عند الاستلام</p>
+                </div>
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                    <h4>🔄 كيف تعمل الخدمة:</h4>
+                    <ol style="margin-right: 1rem;">
+                        <li>تأكيد الطلب عبر الواتساب</li>
+                        <li>تنفيذ الخدمة من قبل وكيلنا</li>
+                        <li>التسليم والدفع عند الاستلام</li>
+                    </ol>
+                </div>
+            `;
+
+            document.getElementById('serviceModal').style.display = 'flex';
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceModal').style.display = 'none';
+            currentService = null;
+        }
+
+        // طلب الخدمة
+        async function orderSelectedService() {
+            if (!currentService) return;
+
+            const user = auth.currentUser;
+            
+            if (!user) {
+                alert('⚠️ يرجى تسجيل الدخول أولاً لطلب الخدمة');
+                closeServiceModal();
+                showLoginModal();
+                return;
+            }
+
+            try {
+                // حفظ الطلب في Firebase
+                const orderData = {
+                    service: currentService.name,
+                    description: currentService.description,
+                    price: currentService.price,
+                    customerId: user.uid,
+                    customerName: user.displayName || 'عميل',
+                    customerEmail: user.email,
+                    timestamp: new Date(),
+                    status: 'جديد',
+                    type: 'service_order'
+                };
+
+                await db.collection('orders').add(orderData);
+
+                // إرسال إلى واتساب
+                const message = `🆕 طلب خدمة جديد\n👤 العميل: ${user.displayName || user.email}\n📞 الهاتف: ${user.phoneNumber || 'غير متوفر'}\n📋 الخدمة: ${currentService.name}\n💰 السعر: ${currentService.price > 0 ? currentService.price + ' MRU' : 'يحدد لاحقاً'}`;
+                const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+
+                alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك قريباً.');
+                closeServiceModal();
+
+                // تحديث الإحصائيات
+                loadUserStats();
+
+            } catch (error) {
+                console.error('❌ خطأ في حفظ الطلب:', error);
+                alert('⚠️ حدث خطأ في إرسال الطلب. يرجى المحاولة مرة أخرى.');
+            }
+        }
+
+        // البحث والتصفية
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                currentSearch = this.value;
+                loadServices();
             });
         }
+
+        function searchServices() {
+            const searchInput = document.getElementById('searchInput');
+            currentSearch = searchInput.value;
+            loadServices();
+        }
+
+        function filterServices(filter) {
+            currentFilter = filter;
+            
+            // تحديث أزرار التصفية
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadServices();
+        }
+
+        // تحميل إحصائيات المستخدم
+        async function loadUserStats() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            try {
+                const ordersSnapshot = await db.collection('orders')
+                    .where('customerId', '==', user.uid)
+                    .where('status', '==', 'مكتمل')
+                    .get();
+
+                document.getElementById('completedOrders').textContent = ordersSnapshot.size;
+            } catch (error) {
+                console.log('⚠️ لا يمكن تحميل الإحصائيات');
+            }
+        }
+
+        // دوال المصادقة (نفسها من contact.html)
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function showSignupModal() {
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+
+        function hideSignupModal() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                hideLoginModal();
+            } catch (error) {
+                alert('❌ ' + getErrorMessage(error.code));
+            }
+        }
+
+        async function signupUser() {
+            const name = document.getElementById('signupName').value;
+            const phone = document.getElementById('signupPhone').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            if (password.length < 6) {
+                alert('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({
+                    displayName: name
+                });
+
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    role: 'user',
+                    createdAt: new Date(),
+                    status: 'active'
+                });
+
+                hideSignupModal();
+                alert('✅ تم إنشاء حسابك بنجاح!');
+            } catch (error) {
+                alert('❌ ' + getErrorMessage(error.code));
+            }
+        }
+
+        async function logoutUser() {
+            try {
+                await auth.signOut();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        function getErrorMessage(errorCode) {
+            const messages = {
+                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
+                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+                'auth/weak-password': 'كلمة المرور ضعيفة',
+                'auth/user-not-found': 'لم يتم العثور على المستخدم',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة'
+            };
+            return messages[errorCode] || 'حدث خطأ غير متوقع';
+        }
+
+        // تتبع الزوار في Firebase
+        async function trackVisitor() {
+            try {
+                await db.collection('visitors').add({
+                    page: 'الخدمات',
+                    timestamp: new Date(),
+                    referrer: document.referrer || 'direct',
+                    userAgent: navigator.userAgent,
+                    screenResolution: `${screen.width}x${screen.height}`
+                });
+            } catch (error) {
+                console.log('⚠️ لا يمكن تتبع الزائر في Firebase');
+            }
+        }
+
+        // تتبع الزوار عند تحميل الصفحة
+        trackVisitor();
     </script>
 </body>
 </html>

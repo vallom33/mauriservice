@@ -8,6 +8,7 @@
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     
     <!-- الأيقونات الجديدة -->
@@ -55,6 +56,7 @@
         
         .nav-links {
             display: flex;
+            align-items: center;
             gap: 0.5rem;
         }
         
@@ -106,41 +108,123 @@
             padding: 0 1rem;
         }
         
-        .simple-section {
+        .agent-section {
             background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin: 2rem auto;
             text-align: center;
         }
         
-        .benefit-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin: 1.5rem 0;
-            padding: 1rem;
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .benefit-card {
             background: #f8f9fa;
-            border-radius: 10px;
-            text-align: right;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #2c5aa0;
+            transition: transform 0.3s ease;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
         }
         
         .benefit-icon {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background: #2c5aa0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
-            flex-shrink: 0;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
         }
         
-        .benefit-content {
-            flex: 1;
+        .commission-calculator {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .calculator-input {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .calculator-input input {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            width: 120px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .calculator-result {
+            background: rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .requirement-item {
+            background: #e8f4ff;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #2c5aa0;
+        }
+        
+        .stats-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
         }
         
         .btn-primary {
@@ -152,13 +236,31 @@
             font-size: 1.1rem;
             cursor: pointer;
             margin: 1rem 0;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             width: 100%;
             max-width: 300px;
         }
         
         .btn-primary:hover {
             background: #1e3a8a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
         }
         
         .footer {
@@ -169,12 +271,30 @@
             margin-top: 3rem;
         }
         
-        .requirements {
-            background: #e8f4ff;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1.5rem 0;
-            border-right: 4px solid #2c5aa0;
+        /* أنماط المصادقة */
+        .auth-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .user-welcome {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-right: 4px solid #4caf50;
+        }
+        
+        .agent-status {
+            background: #fff3cd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-right: 4px solid #ffc107;
         }
         
         /* Mobile Responsive */
@@ -214,14 +334,12 @@
                 margin-bottom: 1rem !important;
             }
             
-            .benefit-item {
+            .calculator-input {
                 flex-direction: column;
-                text-align: center;
-                gap: 0.8rem;
             }
             
-            .benefit-content {
-                text-align: center;
+            .benefits-grid {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -244,7 +362,7 @@
                 padding: 0 2rem;
             }
             
-            .simple-section {
+            .agent-section {
                 padding: 3rem;
                 margin: 3rem auto;
             }
@@ -273,57 +391,139 @@
             <a href="agents.html" class="nav-link active">انضم كوكيل</a>
             <a href="about.html" class="nav-link">من نحن</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
+            <div id="authElements"></div>
         </div>
     </nav>
 
     <section class="page-hero">
         <div class="container">
             <h1>انضم إلى فريقنا</h1>
-            <p>اربح معنا كوسيط خدمات</p>
+            <p>اربح معنا كوسيط خدمات وابني مستقبلك المهني</p>
         </div>
     </section>
 
     <section class="container">
-        <div class="simple-section">
+        <!-- قسم المصادقة -->
+        <div class="auth-section" id="authSection">
+            <div id="userWelcome" class="user-welcome" style="display: none;">
+                <h3>مرحباً بك! <span id="userName"></span></h3>
+                <p>يمكنك الآن التقديم للانضمام كوسيط خدمات</p>
+            </div>
+            <div id="agentStatus" class="agent-status" style="display: none;">
+                <h4>📋 حالة طلب الانضمام: <span id="statusText">جارٍ المراجعة</span></h4>
+                <p id="statusMessage">سيتم مراجعة طلبك خلال 24 ساعة</p>
+            </div>
+            <div id="authButtons"></div>
+        </div>
+
+        <div class="agent-section">
             <h2 style="color: #2c5aa0; margin-bottom: 1rem;">ابحث عن دخل إضافي؟</h2>
-            <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">انضم كوسيط خدمات واربح عمولة على كل طلب تنفذه</p>
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666;">
+                انضم كوسيط خدمات واربح عمولة على كل طلب تنفذه. ابدأ رحلتك نحو الاستقلال المالي اليوم!
+            </p>
             
-            <div class="benefit-item">
-                <div class="benefit-icon">💰</div>
-                <div class="benefit-content">
-                    <h3>عمولات مجزية</h3>
-                    <p>احصل على نسبة من كل خدمة تنفذها</p>
+            <!-- إحصائيات سريعة -->
+            <div class="stats-section">
+                <h3 style="text-align: center; margin-bottom: 1rem;">📊 إحصائيات وكلائنا</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalAgents">0</span>
+                        <span>وكيل نشط</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalEarnings">0</span>
+                        <span>MRU أرباح</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="completedOrders">0</span>
+                        <span>طلب منفذ</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4.8</span>
+                        <span>تقييم ⭐</span>
+                    </div>
                 </div>
             </div>
-            
-            <div class="benefit-item">
-                <div class="benefit-icon">⏰</div>
-                <div class="benefit-content">
-                    <h3>مرونة في الوقت</h3>
-                    <p>اعمل في الأوقات التي تناسبك</p>
+
+            <!-- المزايا -->
+            <h3 style="color: #2c5aa0; margin: 2rem 0 1rem;">🎁 مزايا الانضمام إلينا</h3>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">💰</div>
+                    <h4>عمولات مجزية</h4>
+                    <p>احصل على نسبة 25% - 40% من كل خدمة تنفذها</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">⏰</div>
+                    <h4>مرونة في الوقت</h4>
+                    <p>اعمل في الأوقات التي تناسبك دون تقيد بجدول ثابت</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📍</div>
+                    <h4>عمل من منطقتك</h4>
+                    <p>لا حاجة للانتقال - اعمل من حيك ومنطقتك</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📈</div>
+                    <h4>تطور مستمر</h4>
+                    <p>فرص لزيادة دخلك مع تطور مهاراتك</p>
                 </div>
             </div>
-            
-            <div class="benefit-item">
-                <div class="benefit-icon">📍</div>
-                <div class="benefit-content">
-                    <h3>عمل من منطقتك</h3>
-                    <p>لا حاجة للانتقال - اعمل من حيك</p>
+
+            <!-- حاسبة الأرباح -->
+            <div class="commission-calculator">
+                <h3 style="text-align: center; margin-bottom: 1rem;">🧮 حاسبة الأرباح</h3>
+                <div class="calculator-input">
+                    <span>عدد الطلبات اليومية:</span>
+                    <input type="number" id="dailyOrders" value="5" min="1" max="50">
+                    <span>متوسط سعر الخدمة:</span>
+                    <input type="number" id="avgPrice" value="200" min="50" max="1000">
+                </div>
+                <div class="calculator-result">
+                    <h4>💰 الأرباح الشهرية المتوقعة: <span id="monthlyEarnings">0</span> MRU</h4>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        بناءً على متوسط عمولة 30% وعمل 26 يوم في الشهر
+                    </p>
                 </div>
             </div>
-            
-            <div class="requirements">
-                <p style="font-weight: bold; margin-bottom: 1rem; color: #2c5aa0;">المطلوب منك:</p>
-                <p style="line-height: 1.8;">
-                    📱 هاتف ذكي<br>
-                    🚲 وسيلة مواصلات<br>
-                    💬 قدرة على التواصل
+
+            <!-- المتطلبات -->
+            <h3 style="color: #2c5aa0; margin: 2rem 0 1rem;">📋 متطلبات الانضمام</h3>
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <h4>📱 هاتف ذكي</h4>
+                    <p>اتصال بالإنترنت وتطبيقات التواصل</p>
+                </div>
+                
+                <div class="requirement-item">
+                    <h4>🚲 وسيلة مواصلات</h4>
+                    <p>دراجة نارية، سيارة، أو دراجة هوائية</p>
+                </div>
+                
+                <div class="requirement-item">
+                    <h4>💬 قدرة على التواصل</h4>
+                    <p>مهارات تواصل جيدة مع العملاء</p>
+                </div>
+                
+                <div class="requirement-item">
+                    <h4>📄 وثائق شخصية</h4>
+                    <p>بطاقة تعريف سارية المفعول</p>
+                </div>
+            </div>
+
+            <!-- نموذج التقديم -->
+            <div id="applicationForm">
+                <h3 style="color: #2c5aa0; margin: 2rem 0 1rem;">📝 قدم طلب الانضمام الآن</h3>
+                <button class="btn-success" onclick="showApplicationModal()" id="applyButton">
+                    🚀 قدم طلب الانضمام
+                </button>
+                <p style="color: #666; margin-top: 1rem;">
+                    سيتم مراجعة طلبك خلال 24 ساعة وسنتصل بك لتأكيد التفاصيل
                 </p>
             </div>
-            
-            <button class="btn-primary" onclick="contactUs()">
-                تواصل معنا للانضمام
-            </button>
         </div>
     </section>
 
@@ -333,6 +533,102 @@
             <p>نواكشوط، موريتانيا - واتساب: 31573340</p>
         </div>
     </footer>
+
+    <!-- نموذج التقديم -->
+    <div id="applicationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>📝 طلب الانضمام كوسيط</h3>
+                <button onclick="closeApplicationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            
+            <form id="agentApplicationForm">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">الاسم الكامل</label>
+                    <input type="text" id="applicantName" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">رقم الهاتف</label>
+                    <input type="tel" id="applicantPhone" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">العنوان</label>
+                    <input type="text" id="applicantAddress" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;" placeholder="المنطقة/الحي">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">وسيلة المواصلات</label>
+                    <select id="applicantTransport" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                        <option value="">اختر وسيلة المواصلات</option>
+                        <option value="motorcycle">دراجة نارية</option>
+                        <option value="car">سيارة</option>
+                        <option value="bicycle">دراجة هوائية</option>
+                        <option value="walking">سيراً على الأقدام</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">الخبرة السابقة (اختياري)</label>
+                    <textarea id="applicantExperience" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; height: 80px;" placeholder="أي خبرة سابقة في مجال التوصيل أو الخدمات..."></textarea>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">لماذا تريد الانضمام إلينا؟</label>
+                    <textarea id="applicantMotivation" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; height: 80px;" placeholder="أخبرنا عن دوافعك للانضمام..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-success" style="width: 100%;">
+                    📨 إرسال الطلب
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نماذج المصادقة -->
+    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
+            <h3>تسجيل الدخول</h3>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">البريد الإلكتروني</label>
+                <input type="email" id="loginEmail" placeholder="أدخل بريدك الإلكتروني" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">كلمة المرور</label>
+                <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <button onclick="loginUser()" class="btn-primary">تسجيل الدخول</button>
+            <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer;">إنشاء حساب جديد</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
+            <h3>إنشاء حساب جديد</h3>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">الاسم الكامل</label>
+                <input type="text" id="signupName" placeholder="أدخل اسمك الكامل" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">رقم الهاتف</label>
+                <input type="tel" id="signupPhone" placeholder="أدخل رقم هاتفك" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">البريد الإلكتروني</label>
+                <input type="email" id="signupEmail" placeholder="أدخل بريدك الإلكتروني" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">كلمة المرور</label>
+                <input type="password" id="signupPassword" placeholder="أدخل كلمة المرور (6 أحرف على الأقل)" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <button onclick="signupUser()" class="btn-primary">إنشاء حساب</button>
+            <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
+        </div>
+    </div>
 
     <script>
         // تهيئة Firebase
@@ -344,10 +640,12 @@
             messagingSenderId: "324986363643",
             appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
         };
-        
-        // Initialize Firebase
+
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.firestore();
+
+        let userApplication = null;
 
         // Mobile menu functionality
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -357,29 +655,283 @@
             navLinks.classList.toggle('active');
         });
         
-        // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.navbar')) {
                 navLinks.classList.remove('active');
             }
         });
 
-        async function contactUs() {
-            const message = "مرحباً، أريد الانضمام كوسيط خدمات مع Mauri-Services";
-            const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            // حفظ طلب الانضمام في Firebase
-            try {
-                await db.collection('agent_requests').add({
-                    type: 'agent_contact',
-                    timestamp: new Date(),
-                    status: 'جديد'
-                });
-                console.log('✅ تم حفظ طلب الانضمام في Firebase');
-            } catch (error) {
-                console.error('❌ خطأ في حفظ طلب الانضمام:', error);
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEarningsCalculator();
+            loadAgentsStats();
+        });
+
+        // نظام المصادقة
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                await showUserWelcome(user);
+                await checkUserApplication(user);
+            } else {
+                showAuthButtons();
             }
+        });
+
+        async function showUserWelcome(user) {
+            document.getElementById('userWelcome').style.display = 'block';
+            document.getElementById('userName').textContent = user.displayName || user.email;
+            document.getElementById('authButtons').innerHTML = `
+                <button onclick="logoutUser()" class="btn-primary" style="padding: 0.5rem 1rem;">تسجيل الخروج</button>
+            `;
+        }
+
+        function showAuthButtons() {
+            document.getElementById('userWelcome').style.display = 'none';
+            document.getElementById('agentStatus').style.display = 'none';
+            document.getElementById('authButtons').innerHTML = `
+                <button onclick="showLoginModal()" class="btn-primary" style="padding: 0.5rem 1rem;">تسجيل الدخول</button>
+                <button onclick="showSignupModal()" class="btn-outline" style="padding: 0.5rem 1rem;">إنشاء حساب</button>
+            `;
+        }
+
+        // التحقق من طلب المستخدم
+        async function checkUserApplication(user) {
+            try {
+                const applicationsSnapshot = await db.collection('agent_applications')
+                    .where('userId', '==', user.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(1)
+                    .get();
+
+                if (!applicationsSnapshot.empty) {
+                    userApplication = applicationsSnapshot.docs[0].data();
+                    userApplication.id = applicationsSnapshot.docs[0].id;
+                    
+                    showApplicationStatus(userApplication);
+                } else {
+                    document.getElementById('agentStatus').style.display = 'none';
+                    document.getElementById('applyButton').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error checking application:', error);
+            }
+        }
+
+        function showApplicationStatus(application) {
+            const statusElement = document.getElementById('agentStatus');
+            const statusText = document.getElementById('statusText');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            statusElement.style.display = 'block';
+            document.getElementById('applyButton').style.display = 'none';
+            
+            const statusConfig = {
+                'pending': { text: '⏳ قيد المراجعة', message: 'جاري مراجعة طلبك، سيتم الرد خلال 24 ساعة', color: '#fff3cd' },
+                'approved': { text: '✅ مقبول', message: 'مبروك! تم قبول طلبك. سنتواصل معك قريباً', color: '#d4edda' },
+                'rejected': { text: '❌ مرفوض', message: 'نعتذر، لم يتم قبول طلبك حالياً', color: '#f8d7da' },
+                'under_review': { text: '🔍 قيد التدقيق', message: 'طلبك قيد التدقيق الإضافي', color: '#cce7ff' }
+            };
+            
+            const config = statusConfig[application.status] || statusConfig.pending;
+            statusText.textContent = config.text;
+            statusMessage.textContent = application.message || config.message;
+            statusElement.style.background = config.color;
+        }
+
+        // حاسبة الأرباح
+        function setupEarningsCalculator() {
+            const dailyOrdersInput = document.getElementById('dailyOrders');
+            const avgPriceInput = document.getElementById('avgPrice');
+            
+            function calculateEarnings() {
+                const dailyOrders = parseInt(dailyOrdersInput.value) || 0;
+                const avgPrice = parseInt(avgPriceInput.value) || 0;
+                const commissionRate = 0.3; // 30%
+                const workingDays = 26;
+                
+                const monthlyEarnings = Math.round(dailyOrders * avgPrice * commissionRate * workingDays);
+                document.getElementById('monthlyEarnings').textContent = monthlyEarnings.toLocaleString();
+            }
+            
+            dailyOrdersInput.addEventListener('input', calculateEarnings);
+            avgPriceInput.addEventListener('input', calculateEarnings);
+            
+            calculateEarnings(); // حساب أولي
+        }
+
+        // تحميل إحصائيات الوكلاء
+        async function loadAgentsStats() {
+            try {
+                // إحصائيات الوكلاء
+                const agentsSnapshot = await db.collection('users')
+                    .where('role', '==', 'agent')
+                    .where('status', '==', 'active')
+                    .get();
+                
+                document.getElementById('totalAgents').textContent = agentsSnapshot.size;
+
+                // إحصائيات الأرباح (محاكاة)
+                const totalEarnings = agentsSnapshot.size * 15000; // متوسط أرباح
+                document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString();
+
+                // عدد الطلبات المكتملة
+                const ordersSnapshot = await db.collection('orders')
+                    .where('status', '==', 'مكتمل')
+                    .get();
+                
+                document.getElementById('completedOrders').textContent = ordersSnapshot.size;
+
+            } catch (error) {
+                console.log('⚠️ لا يمكن تحميل الإحصائيات');
+            }
+        }
+
+        // إظهار نموذج التقديم
+        function showApplicationModal() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert('⚠️ يرجى تسجيل الدخول أولاً لتقديم طلب الانضمام');
+                showLoginModal();
+                return;
+            }
+            
+            document.getElementById('applicationModal').style.display = 'flex';
+            
+            // تعبئة البيانات من حساب المستخدم إن وجدت
+            db.collection('users').doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    document.getElementById('applicantName').value = userData.name || '';
+                    document.getElementById('applicantPhone').value = userData.phone || '';
+                }
+            });
+        }
+
+        function closeApplicationModal() {
+            document.getElementById('applicationModal').style.display = 'none';
+        }
+
+        // تقديم طلب الانضمام
+        document.getElementById('agentApplicationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const applicationData = {
+                userId: user.uid,
+                userName: user.displayName,
+                userEmail: user.email,
+                name: document.getElementById('applicantName').value,
+                phone: document.getElementById('applicantPhone').value,
+                address: document.getElementById('applicantAddress').value,
+                transport: document.getElementById('applicantTransport').value,
+                experience: document.getElementById('applicantExperience').value,
+                motivation: document.getElementById('applicantMotivation').value,
+                timestamp: new Date(),
+                status: 'pending',
+                type: 'agent_application'
+            };
+
+            try {
+                await db.collection('agent_applications').add(applicationData);
+                
+                // إرسال إشعار للواتساب
+                const message = `🆕 طلب انضمام جديد كوسيط\n👤 الاسم: ${applicationData.name}\n📞 الهاتف: ${applicationData.phone}\n📍 العنوان: ${applicationData.address}\n🚲 المواصلات: ${applicationData.transport}`;
+                const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك خلال 24 ساعة.');
+                closeApplicationModal();
+                
+                // تحديث الواجهة
+                await checkUserApplication(user);
+                
+            } catch (error) {
+                console.error('❌ خطأ في إرسال الطلب:', error);
+                alert('⚠️ حدث خطأ في إرسال الطلب. يرجى المحاولة مرة أخرى.');
+            }
+        });
+
+        // دوال المصادقة
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function showSignupModal() {
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+
+        function hideSignupModal() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                hideLoginModal();
+            } catch (error) {
+                alert('❌ ' + getErrorMessage(error.code));
+            }
+        }
+
+        async function signupUser() {
+            const name = document.getElementById('signupName').value;
+            const phone = document.getElementById('signupPhone').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            if (password.length < 6) {
+                alert('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({
+                    displayName: name
+                });
+
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    role: 'user',
+                    createdAt: new Date(),
+                    status: 'active'
+                });
+
+                hideSignupModal();
+                alert('✅ تم إنشاء حسابك بنجاح!');
+            } catch (error) {
+                alert('❌ ' + getErrorMessage(error.code));
+            }
+        }
+
+        async function logoutUser() {
+            try {
+                await auth.signOut();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        function getErrorMessage(errorCode) {
+            const messages = {
+                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
+                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+                'auth/weak-password': 'كلمة المرور ضعيفة',
+                'auth/user-not-found': 'لم يتم العثور على المستخدم',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة'
+            };
+            return messages[errorCode] || 'حدث خطأ غير متوقع';
         }
 
         // تتبع الزوار في Firebase
@@ -388,8 +940,9 @@
                 await db.collection('visitors').add({
                     page: 'انضم كوكيل',
                     timestamp: new Date(),
-                    referrer: document.referrer || 'مباشر',
-                    userAgent: navigator.userAgent
+                    referrer: document.referrer || 'direct',
+                    userAgent: navigator.userAgent,
+                    screenResolution: `${screen.width}x${screen.height}`
                 });
             } catch (error) {
                 console.log('⚠️ لا يمكن تتبع الزائر في Firebase');
