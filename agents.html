@@ -191,19 +191,26 @@
             color: #666;
         }
 
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
+        .debug-info {
+            background: #f8f9fa;
             padding: 1rem;
             border-radius: 8px;
             margin: 1rem 0;
-            border: 1px solid #c3e6cb;
+            font-family: monospace;
+            font-size: 0.8rem;
+            border-right: 4px solid #2c5aa0;
+        }
+
+        .debug-success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+
+        .debug-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #dc3545;
         }
 
         @media (max-width: 768px) {
@@ -242,7 +249,13 @@
     </nav>
     
     <div class="content">
-        <div id="successMessage" style="display: none;"></div>
+        <!-- زر التصحيح -->
+        <div style="margin-bottom: 1rem;">
+            <button class="btn btn-primary" onclick="debugFirestore()">🐛 تصحيح Firestore</button>
+            <button class="btn btn-warning" onclick="testCollections()">🧪 اختبار الـ Collections</button>
+        </div>
+
+        <div id="debugOutput"></div>
 
         <div class="stats-cards">
             <div class="stat-card">
@@ -310,6 +323,10 @@
         
         // تهيئة Firebase
         try {
+            // إذا كان هناك تطبيق مسبق، احذفه أولاً
+            if (firebase.apps.length) {
+                firebase.app().delete();
+            }
             firebase.initializeApp(firebaseConfig);
             console.log('✅ Firebase initialized successfully');
         } catch (error) {
@@ -319,6 +336,76 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // إضافة معالج للأخطاء العامة
+        window.addEventListener('error', function(e) {
+            console.error('❌ Global error:', e.error);
+            showDebug('Global error: ' + e.error.message, 'error');
+        });
+
+        // دالة لعرض معلومات التصحيح
+        function showDebug(message, type = 'info') {
+            const debugOutput = document.getElementById('debugOutput');
+            const debugClass = type === 'error' ? 'debug-error' : type === 'success' ? 'debug-success' : 'debug-info';
+            debugOutput.innerHTML += `<div class="debug-info ${debugClass}">${new Date().toLocaleTimeString()} - ${message}</div>`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+
+        // دالة لاختبار الـ Collections
+        async function testCollections() {
+            showDebug('🧪 بدء اختبار جميع الـ Collections...');
+            
+            const collections = [
+                'agent_applications',
+                'agents', 
+                'messages',
+                'orders',
+                'users',
+                'visitors'
+            ];
+
+            for (const collectionName of collections) {
+                try {
+                    const snapshot = await db.collection(collectionName).limit(5).get();
+                    showDebug(`✅ ${collectionName}: ${snapshot.size} وثيقة`, snapshot.size > 0 ? 'success' : 'info');
+                    
+                    if (snapshot.size > 0) {
+                        snapshot.docs.forEach(doc => {
+                            showDebug(`   📄 ${doc.id}: ${JSON.stringify(doc.data())}`);
+                        });
+                    }
+                } catch (error) {
+                    showDebug(`❌ ${collectionName}: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // دالة لتصحيح Firestore
+        async function debugFirestore() {
+            showDebug('🔍 بدء تصحيح Firestore...');
+            
+            try {
+                // اختبار الاتصال الأساسي
+                showDebug('📡 اختبار الاتصال بـ Firestore...');
+                
+                // اختبار قراءة من collection معروف (messages)
+                const messagesTest = await db.collection('messages').limit(1).get();
+                showDebug(`✅ messages collection: ${messagesTest.size} وثيقة`, 'success');
+                
+                // اختبار قراءة من agent_applications
+                const agentsTest = await db.collection('agent_applications').limit(1).get();
+                showDebug(`✅ agent_applications collection: ${agentsTest.size} وثيقة`, agentsTest.size > 0 ? 'success' : 'error');
+                
+                if (agentsTest.size > 0) {
+                    agentsTest.docs.forEach(doc => {
+                        showDebug(`   📄 نموذج بيانات: ${JSON.stringify(doc.data())}`);
+                    });
+                }
+                
+            } catch (error) {
+                showDebug(`❌ خطأ في تصحيح Firestore: ${error.message}`, 'error');
+            }
+        }
+
         let currentApplication = null;
 
         // التحقق من تسجيل الدخول
@@ -326,17 +413,19 @@
             if (!user) {
                 window.location.href = 'admin-login.html';
             } else {
+                showDebug('👤 تحقق من صلاحية المستخدم...');
                 db.collection('users').doc(user.uid).get().then((doc) => {
                     if (doc.exists && doc.data().role === 'admin') {
                         document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
+                        showDebug('✅ تم التحقق من صلاحية المدير');
                         initAgentsManager();
                     } else {
+                        showDebug('❌ ليس لديك صلاحية الدخول للوحة التحكم', 'error');
                         alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
                         logout();
                     }
                 }).catch(error => {
-                    console.error('❌ خطأ في التحقق من الصلاحية:', error);
-                    showError('خطأ في التحقق من الصلاحية: ' + error.message);
+                    showDebug(`❌ خطأ في التحقق من الصلاحية: ${error.message}`, 'error');
                 });
             }
         });
@@ -347,52 +436,37 @@
             });
         }
 
-        function showSuccess(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.innerHTML = `<div class="success-message">✅ ${message}</div>`;
-            successDiv.style.display = 'block';
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 5000);
-        }
-
-        function showError(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #f5c6cb;">❌ ${message}</div>`;
-            successDiv.style.display = 'block';
-        }
-
         class AgentsManager {
             constructor() {
                 this.init();
             }
             
             async init() {
+                showDebug('🚀 بدء تهيئة نظام إدارة الوكلاء...');
                 try {
                     await this.loadStats();
                     await this.loadApplications();
                     await this.loadAgents();
                     this.setupRealtimeListeners();
-                    console.log('✅ AgentsManager initialized successfully');
+                    showDebug('✅ تم تهيئة نظام إدارة الوكلاء بنجاح');
                 } catch (error) {
-                    console.error('❌ Error initializing AgentsManager:', error);
-                    showError('خطأ في تهيئة النظام: ' + error.message);
+                    showDebug(`❌ خطأ في تهيئة النظام: ${error.message}`, 'error');
                 }
             }
             
             async loadStats() {
                 try {
-                    console.log('📊 جاري تحميل الإحصائيات...');
+                    showDebug('📊 جاري تحميل الإحصائيات...');
                     
-                    // جلب طلبات الانضمام من agent_applications
+                    // جلب طلبات الانضمام
                     const applicationsSnapshot = await db.collection('agent_applications').get();
-                    console.log('✅ طلبات الانضمام:', applicationsSnapshot.size);
+                    showDebug(`✅ تم تحميل ${applicationsSnapshot.size} طلب انضمام`);
                     
-                    // جلب الوكلاء النشطين
+                    // جلب الوكلاء
                     const agentsSnapshot = await db.collection('users')
                         .where('role', '==', 'agent')
                         .get();
-                    console.log('✅ الوكلاء:', agentsSnapshot.size);
+                    showDebug(`✅ تم تحميل ${agentsSnapshot.size} وكيل`);
                     
                     const pendingApplications = applicationsSnapshot.docs.filter(doc => 
                         doc.data().status === 'pending'
@@ -402,34 +476,31 @@
                         doc.data().status === 'active'
                     ).length;
                     
-                    // إحصائيات العمولات (محاكاة)
-                    const totalCommissions = activeAgents * 5000;
-                    
+                    // تحديث الواجهة
                     document.getElementById('totalAgents').textContent = agentsSnapshot.size;
                     document.getElementById('pendingAgents').textContent = pendingApplications;
                     document.getElementById('activeAgents').textContent = activeAgents;
-                    document.getElementById('agentCommissions').textContent = totalCommissions.toLocaleString() + ' MRU';
+                    document.getElementById('agentCommissions').textContent = (activeAgents * 5000).toLocaleString() + ' MRU';
                     
                     document.getElementById('applicationsCount').textContent = pendingApplications + ' طلب';
                     document.getElementById('agentsCount').textContent = agentsSnapshot.size + ' وكيل';
                     
-                    console.log('✅ الإحصائيات المحدثة:', { pendingApplications, activeAgents });
+                    showDebug(`✅ الإحصائيات: ${pendingApplications} طلب pending, ${activeAgents} وكيل active`);
                     
                 } catch (error) {
-                    console.error('❌ خطأ في تحميل الإحصائيات:', error);
-                    showError('خطأ في تحميل الإحصائيات: ' + error.message);
+                    showDebug(`❌ خطأ في تحميل الإحصائيات: ${error.message}`, 'error');
                 }
             }
             
             async loadApplications() {
                 try {
-                    console.log('📋 جاري تحميل طلبات الانضمام...');
+                    showDebug('📋 جاري تحميل طلبات الانضمام...');
                     
                     const applicationsSnapshot = await db.collection('agent_applications')
                         .orderBy('timestamp', 'desc')
                         .get();
                     
-                    console.log('✅ عدد الطلبات:', applicationsSnapshot.size);
+                    showDebug(`✅ عدد الطلبات: ${applicationsSnapshot.size}`);
                     
                     if (applicationsSnapshot.empty) {
                         document.getElementById('applicationsTable').innerHTML = `
@@ -442,24 +513,7 @@
                         return;
                     }
                     
-                    // عرض جميع الطلبات مع إمكانية التصفية
-                    const allApplications = applicationsSnapshot.docs;
-                    const pendingApplications = allApplications.filter(doc => 
-                        doc.data().status === 'pending'
-                    );
-
-                    console.log('✅ الطلبات pending:', pendingApplications.length);
-
                     const html = `
-                        <div style="margin-bottom: 1rem;">
-                            <label>تصفية حسب الحالة:</label>
-                            <select onchange="filterApplications(this.value)" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px; margin-right: 1rem;">
-                                <option value="all">جميع الطلبات (${allApplications.length})</option>
-                                <option value="pending">قيد المراجعة (${pendingApplications.length})</option>
-                                <option value="approved">مقبولة</option>
-                                <option value="rejected">مرفوضة</option>
-                            </select>
-                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -472,8 +526,8 @@
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
-                            <tbody id="applicationsTableBody">
-                                ${allApplications.map(doc => {
+                            <tbody>
+                                ${applicationsSnapshot.docs.map(doc => {
                                     const data = doc.data();
                                     const status = data.status || 'pending';
                                     const statusClass = status === 'pending' ? 'pending' : 
@@ -482,11 +536,11 @@
                                                      status === 'approved' ? 'مقبول' : 'مرفوض';
                                     
                                     return `
-                                        <tr data-status="${status}">
+                                        <tr>
                                             <td><strong>${data.name || 'غير محدد'}</strong></td>
                                             <td>${data.phone || 'غير محدد'}</td>
                                             <td>${data.address || 'غير محدد'}</td>
-                                            <td>${data.userEmail || data.email || 'غير محدد'}</td>
+                                            <td>${data.userEmail || 'غير محدد'}</td>
                                             <td>${data.timestamp ? data.timestamp.toDate().toLocaleString('ar-SA') : 'غير محدد'}</td>
                                             <td>
                                                 <span class="status-${statusClass}">${statusText}</span>
@@ -506,31 +560,30 @@
                     `;
                     
                     document.getElementById('applicationsTable').innerHTML = html;
-                    console.log('✅ تم تحميل طلبات الانضمام بنجاح');
+                    showDebug('✅ تم تحميل طلبات الانضمام بنجاح');
                     
                 } catch (error) {
-                    console.error('❌ خطأ في تحميل طلبات الانضمام:', error);
+                    showDebug(`❌ خطأ في تحميل طلبات الانضمام: ${error.message}`, 'error');
                     document.getElementById('applicationsTable').innerHTML = `
                         <div class="empty-state">
                             <div>❌</div>
                             <h3>حدث خطأ في تحميل البيانات</h3>
                             <p>${error.message}</p>
-                            <button class="btn btn-primary" onclick="location.reload()">🔄 إعادة تحميل</button>
+                            <button class="btn btn-primary" onclick="testCollections()">🧪 اختبار الـ Collections</button>
                         </div>
                     `;
-                    showError('خطأ في تحميل طلبات الانضمام: ' + error.message);
                 }
             }
             
             async loadAgents() {
                 try {
-                    console.log('👥 جاري تحميل بيانات الوكلاء...');
+                    showDebug('👥 جاري تحميل بيانات الوكلاء...');
                     
                     const agentsSnapshot = await db.collection('users')
                         .where('role', '==', 'agent')
                         .get();
                     
-                    console.log('✅ عدد الوكلاء:', agentsSnapshot.size);
+                    showDebug(`✅ عدد الوكلاء: ${agentsSnapshot.size}`);
                     
                     if (agentsSnapshot.empty) {
                         document.getElementById('agentsTable').innerHTML = `
@@ -587,10 +640,10 @@
                     `;
                     
                     document.getElementById('agentsTable').innerHTML = html;
-                    console.log('✅ تم تحميل الوكلاء بنجاح');
+                    showDebug('✅ تم تحميل الوكلاء بنجاح');
                     
                 } catch (error) {
-                    console.error('❌ خطأ في تحميل الوكلاء:', error);
+                    showDebug(`❌ خطأ في تحميل الوكلاء: ${error.message}`, 'error');
                     document.getElementById('agentsTable').innerHTML = `
                         <div class="empty-state">
                             <div>❌</div>
@@ -598,7 +651,6 @@
                             <p>${error.message}</p>
                         </div>
                     `;
-                    showError('خطأ في تحميل الوكلاء: ' + error.message);
                 }
             }
             
@@ -606,49 +658,33 @@
                 // تحديث فوري للطلبات
                 db.collection('agent_applications')
                     .onSnapshot(() => {
-                        console.log('🔄 تحديث تلقائي لطلبات الانضمام');
+                        showDebug('🔄 تحديث تلقائي لطلبات الانضمام');
                         this.loadApplications();
                         this.loadStats();
                     }, error => {
-                        console.error('❌ خطأ في listener الطلبات:', error);
+                        showDebug(`❌ خطأ في listener الطلبات: ${error.message}`, 'error');
                     });
                 
                 // تحديث فوري للوكلاء
                 db.collection('users')
                     .where('role', '==', 'agent')
                     .onSnapshot(() => {
-                        console.log('🔄 تحديث تلقائي للوكلاء');
+                        showDebug('🔄 تحديث تلقائي للوكلاء');
                         this.loadAgents();
                         this.loadStats();
                     }, error => {
-                        console.error('❌ خطأ في listener الوكلاء:', error);
+                        showDebug(`❌ خطأ في listener الوكلاء: ${error.message}`, 'error');
                     });
             }
-        }
-
-        // وظائف التصفية
-        function filterApplications(status) {
-            const rows = document.querySelectorAll('#applicationsTableBody tr');
-            rows.forEach(row => {
-                if (status === 'all' || row.getAttribute('data-status') === status) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
         }
 
         // دوال الإجراءات
         async function approveApplication(applicationId) {
             if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
                 try {
+                    showDebug(`✅ قبول الطلب: ${applicationId}`);
                     const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
                     const applicationData = applicationDoc.data();
-                    
-                    if (!applicationData) {
-                        alert('❌ لم يتم العثور على بيانات الطلب');
-                        return;
-                    }
                     
                     // تحديث حالة الطلب
                     await db.collection('agent_applications').doc(applicationId).update({
@@ -657,41 +693,12 @@
                         approvedBy: auth.currentUser.uid
                     });
                     
-                    // التحقق إذا كان المستخدم موجوداً بالفعل
-                    let userDoc;
-                    if (applicationData.userId) {
-                        userDoc = await db.collection('users').doc(applicationData.userId).get();
-                    }
-                    
-                    if (userDoc && userDoc.exists) {
-                        // تحديث المستخدم الحالي
-                        await db.collection('users').doc(applicationData.userId).update({
-                            role: 'agent',
-                            status: 'active',
-                            transport: applicationData.transport,
-                            experience: applicationData.experience
-                        });
-                    } else {
-                        // إنشاء مستخدم جديد
-                        await db.collection('users').add({
-                            name: applicationData.name,
-                            phone: applicationData.phone,
-                            email: applicationData.userEmail || '',
-                            role: 'agent',
-                            status: 'active',
-                            address: applicationData.address,
-                            transport: applicationData.transport,
-                            experience: applicationData.experience,
-                            createdAt: new Date(),
-                            joinedAt: new Date()
-                        });
-                    }
-                    
-                    showSuccess('🎉 تم قبول الوكيل بنجاح!');
+                    showDebug('🎉 تم قبول الوكيل بنجاح!');
+                    alert('🎉 تم قبول الوكيل بنجاح!');
                     
                 } catch (error) {
-                    console.error('❌ خطأ في قبول الطلب:', error);
-                    showError('حدث خطأ في قبول الطلب: ' + error.message);
+                    showDebug(`❌ خطأ في قبول الطلب: ${error.message}`, 'error');
+                    alert('❌ حدث خطأ في قبول الطلب: ' + error.message);
                 }
             }
         }
@@ -699,18 +706,19 @@
         async function rejectApplication(applicationId) {
             if (confirm('❌ هل أنت متأكد من رفض هذا الطلب؟')) {
                 try {
+                    showDebug(`❌ رفض الطلب: ${applicationId}`);
                     await db.collection('agent_applications').doc(applicationId).update({
                         status: 'rejected',
                         rejectedAt: new Date(),
-                        rejectedBy: auth.currentUser.uid,
-                        rejectionReason: 'مرفوض من قبل الإدارة'
+                        rejectedBy: auth.currentUser.uid
                     });
                     
-                    showSuccess('✅ تم رفض الطلب بنجاح');
+                    showDebug('✅ تم رفض الطلب بنجاح');
+                    alert('✅ تم رفض الطلب بنجاح');
                     
                 } catch (error) {
-                    console.error('❌ خطأ في رفض الطلب:', error);
-                    showError('حدث خطأ في رفض الطلب: ' + error.message);
+                    showDebug(`❌ خطأ في رفض الطلب: ${error.message}`, 'error');
+                    alert('❌ حدث خطأ في رفض الطلب: ' + error.message);
                 }
             }
         }
@@ -719,11 +727,6 @@
             try {
                 const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
                 const applicationData = applicationDoc.data();
-                
-                if (!applicationData) {
-                    alert('❌ لم يتم العثور على بيانات الطلب');
-                    return;
-                }
                 
                 document.getElementById('applicationDetails').innerHTML = `
                     <div style="margin-bottom: 1rem;">
@@ -753,8 +756,8 @@
                 currentApplication = applicationId;
                 
             } catch (error) {
-                console.error('❌ خطأ في عرض التفاصيل:', error);
-                showError('حدث خطأ في تحميل التفاصيل: ' + error.message);
+                showDebug(`❌ خطأ في عرض التفاصيل: ${error.message}`, 'error');
+                alert('❌ حدث خطأ في تحميل التفاصيل: ' + error.message);
             }
         }
         
@@ -768,16 +771,10 @@
                 const agentDoc = await db.collection('users').doc(agentId).get();
                 const agentData = agentDoc.data();
                 
-                if (!agentData) {
-                    alert('❌ لم يتم العثور على بيانات الوكيل');
-                    return;
-                }
-                
                 alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nتاريخ الانضمام: ${agentData.createdAt ? agentData.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}`);
                 
             } catch (error) {
-                console.error('❌ خطأ في عرض تفاصيل الوكيل:', error);
-                showError('حدث خطأ في عرض التفاصيل: ' + error.message);
+                showDebug(`❌ خطأ في عرض تفاصيل الوكيل: ${error.message}`, 'error');
             }
         }
         
@@ -786,15 +783,15 @@
                 try {
                     await db.collection('users').doc(agentId).update({
                         status: 'inactive',
-                        deactivatedAt: new Date(),
-                        deactivatedBy: auth.currentUser.uid
+                        deactivatedAt: new Date()
                     });
                     
-                    showSuccess('✅ تم إلغاء تفعيل الوكيل بنجاح');
+                    showDebug('✅ تم إلغاء تفعيل الوكيل بنجاح');
+                    alert('✅ تم إلغاء تفعيل الوكيل بنجاح');
                     
                 } catch (error) {
-                    console.error('❌ خطأ في إلغاء التفعيل:', error);
-                    showError('حدث خطأ في إلغاء التفعيل: ' + error.message);
+                    showDebug(`❌ خطأ في إلغاء التفعيل: ${error.message}`, 'error');
+                    alert('❌ حدث خطأ في إلغاء التفعيل');
                 }
             }
         }
@@ -804,15 +801,15 @@
                 try {
                     await db.collection('users').doc(agentId).update({
                         status: 'active',
-                        activatedAt: new Date(),
-                        activatedBy: auth.currentUser.uid
+                        activatedAt: new Date()
                     });
                     
-                    showSuccess('✅ تم تفعيل الوكيل بنجاح');
+                    showDebug('✅ تم تفعيل الوكيل بنجاح');
+                    alert('✅ تم تفعيل الوكيل بنجاح');
                     
                 } catch (error) {
-                    console.error('❌ خطأ في التفعيل:', error);
-                    showError('حدث خطأ في التفعيل: ' + error.message);
+                    showDebug(`❌ خطأ في التفعيل: ${error.message}`, 'error');
+                    alert('❌ حدث خطأ في التفعيل');
                 }
             }
         }
