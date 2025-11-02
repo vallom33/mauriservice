@@ -226,6 +226,12 @@
             margin: 0.5rem 0;
             border-radius: 8px;
             border-right: 4px solid #2c5aa0;
+            transition: all 0.3s ease;
+        }
+
+        .order-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .status-badge {
@@ -240,6 +246,9 @@
         .status-new { background: #dc3545; color: white; }
         .status-pending { background: #ffc107; color: #212529; }
         .status-completed { background: #28a745; color: white; }
+        .status-agent-pending { background: #17a2b8; color: white; }
+        .status-agent-approved { background: #28a745; color: white; }
+        .status-agent-rejected { background: #dc3545; color: white; }
         
         .form-group {
             margin-bottom: 1rem;
@@ -283,6 +292,44 @@
             justify-content: center;
             flex-wrap: wrap;
             margin-top: 1rem;
+        }
+
+        .notification-badge {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .notification-item {
+            background: #e8f4fd;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            border-right: 4px solid #2c5aa0;
+        }
+
+        .agent-status-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
         }
         
         @media (max-width: 768px) {
@@ -382,9 +429,15 @@
                 <div class="profile-avatar" id="userAvatar">U</div>
                 <h2 id="userName">المستخدم</h2>
                 <p id="userEmail">البريد الإلكتروني</p>
+                <p id="userRole" style="margin-top: 0.5rem; font-weight: bold; color: #2c5aa0;"></p>
                 <button class="btn btn-warning" onclick="logoutUser()" style="margin-top: 1rem;">
                     <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
                 </button>
+            </div>
+
+            <!-- حالة الوكيل -->
+            <div id="agentStatusSection" style="display: none;">
+                <!-- سيتم تعبئتها بحالة طلب الوكالة -->
             </div>
 
             <!-- الإحصائيات -->
@@ -414,7 +467,7 @@
                     <h3>طلب خدمة جديدة</h3>
                     <p>اطلب خدمة من متجرنا</p>
                 </div>
-                <div class="action-card" onclick="window.location.href='agents.html'">
+                <div class="action-card" onclick="applyAsAgent()">
                     <div class="action-icon">💼</div>
                     <h3>كن وكيلاً</h3>
                     <p>اربح عمولات معنا</p>
@@ -428,6 +481,17 @@
                     <div class="action-icon">📞</div>
                     <h3>الدعم</h3>
                     <p>تواصل مع الدعم الفني</p>
+                </div>
+            </div>
+
+            <!-- الإشعارات -->
+            <div class="section" id="notificationsSection" style="display: none;">
+                <div class="section-header">
+                    <h2>🔔 الإشعارات</h2>
+                    <span class="notification-badge" id="notificationCount">0</span>
+                </div>
+                <div id="notificationsList">
+                    <!-- سيتم تعبئتها بالإشعارات -->
                 </div>
             </div>
 
@@ -457,6 +521,10 @@
                     <div class="form-group">
                         <label>المدينة</label>
                         <input type="text" id="city">
+                    </div>
+                    <div class="form-group">
+                        <label>العنوان</label>
+                        <textarea id="address" rows="3"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">💾 حفظ التغييرات</button>
                 </form>
@@ -551,7 +619,7 @@
             }
         });
 
-        function showUserSection(user) {
+        async function showUserSection(user) {
             document.getElementById('guestSection').style.display = 'none';
             document.getElementById('userSection').style.display = 'block';
             
@@ -561,8 +629,10 @@
             document.getElementById('userAvatar').textContent = (user.displayName || 'U').charAt(0).toUpperCase();
             
             // تحميل بيانات المستخدم الإضافية
-            loadUserData(user);
-            loadUserOrders(user);
+            await loadUserData(user);
+            await loadUserOrders(user);
+            await loadAgentStatus(user);
+            await loadNotifications(user);
         }
 
         function showGuestSection() {
@@ -653,6 +723,10 @@
                     document.getElementById('fullName').value = userData.name || '';
                     document.getElementById('phone').value = userData.phone || '';
                     document.getElementById('city').value = userData.city || '';
+                    document.getElementById('address').value = userData.address || '';
+                    
+                    // عرض دور المستخدم
+                    document.getElementById('userRole').textContent = userData.role === 'agent' ? '👤 وكيل معتمد' : '👤 مستخدم عادي';
                 }
             } catch (error) {
                 console.error('Error loading user data:', error);
@@ -665,7 +739,7 @@
                 const ordersSnapshot = await db.collection('orders')
                     .where('userId', '==', user.uid)
                     .orderBy('timestamp', 'desc')
-                    .limit(5)
+                    .limit(10)
                     .get();
                 
                 const ordersContainer = document.getElementById('userOrders');
@@ -675,7 +749,16 @@
                 let totalSpent = 0;
 
                 if (ordersSnapshot.empty) {
-                    ordersContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">لا توجد طلبات سابقة</p>';
+                    ordersContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div>📭</div>
+                            <h3>لا توجد طلبات سابقة</h3>
+                            <p>لم تقم بأي طلبات حتى الآن</p>
+                            <button class="btn btn-primary" onclick="window.location.href='services.html'" style="margin-top: 1rem;">
+                                🛍️ اطلب خدمة جديدة
+                            </button>
+                        </div>
+                    `;
                 } else {
                     let ordersHtml = '';
                     ordersSnapshot.forEach(doc => {
@@ -683,15 +766,15 @@
                         totalOrders++;
                         if (order.status === 'جديد' || order.status === 'قيد التنفيذ') pendingOrders++;
                         if (order.status === 'مكتمل') completedOrders++;
-                        totalSpent += order.price || 0;
+                        totalSpent += parseInt(order.price) || 0;
 
                         ordersHtml += `
                             <div class="order-item">
                                 <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                                     <div style="flex: 1;">
                                         <h4>${order.service}</h4>
-                                        <p style="color: #666; margin: 0.5rem 0;">${order.details || ''}</p>
-                                        <small>${order.timestamp?.toDate?.().toLocaleDateString('ar-SA') || ''}</small>
+                                        <p style="color: #666; margin: 0.5rem 0;">${order.details || 'لا توجد تفاصيل إضافية'}</p>
+                                        <small>${order.timestamp?.toDate?.().toLocaleString('ar-SA') || 'غير محدد'}</small>
                                     </div>
                                     <div style="text-align: left;">
                                         <span class="status-badge status-${getStatusClass(order.status)}">${order.status}</span>
@@ -708,13 +791,137 @@
                 document.getElementById('totalOrders').textContent = totalOrders;
                 document.getElementById('pendingOrders').textContent = pendingOrders;
                 document.getElementById('completedOrders').textContent = completedOrders;
-                document.getElementById('totalSpent').textContent = totalSpent;
+                document.getElementById('totalSpent').textContent = totalSpent.toLocaleString();
 
             } catch (error) {
                 console.error('Error loading orders:', error);
+                document.getElementById('userOrders').innerHTML = `
+                    <div class="empty-state">
+                        <div>❌</div>
+                        <h3>حدث خطأ في تحميل الطلبات</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
             }
         }
 
+        // تحميل حالة الوكالة
+        async function loadAgentStatus(user) {
+            try {
+                const agentAppSnapshot = await db.collection('agent_applications')
+                    .where('userEmail', '==', user.email)
+                    .orderBy('timestamp', 'desc')
+                    .limit(1)
+                    .get();
+
+                const agentStatusSection = document.getElementById('agentStatusSection');
+                
+                if (agentAppSnapshot.empty) {
+                    agentStatusSection.style.display = 'none';
+                    return;
+                }
+
+                const application = agentAppSnapshot.docs[0].data();
+                const status = application.status || 'pending';
+                
+                let statusText = '';
+                let statusClass = '';
+                
+                switch(status) {
+                    case 'pending':
+                        statusText = '⏳ طلبك قيد المراجعة';
+                        statusClass = 'status-agent-pending';
+                        break;
+                    case 'approved':
+                        statusText = '✅ تم قبول طلبك كـ وكيل';
+                        statusClass = 'status-agent-approved';
+                        break;
+                    case 'rejected':
+                        statusText = '❌ تم رفض طلب الوكالة';
+                        statusClass = 'status-agent-rejected';
+                        break;
+                }
+
+                agentStatusSection.innerHTML = `
+                    <div class="agent-status-card">
+                        <h3>💼 حالة طلب الوكالة</h3>
+                        <p style="margin: 1rem 0; font-size: 1.2rem;">${statusText}</p>
+                        <span class="status-badge ${statusClass}">${getAgentStatusText(status)}</span>
+                        ${status === 'rejected' ? `
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                                ${application.rejectionReason || 'للأسف لا تنطبق عليك الشروط حالياً'}
+                            </p>
+                        ` : ''}
+                    </div>
+                `;
+                agentStatusSection.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading agent status:', error);
+            }
+        }
+
+        // تحميل الإشعارات
+        async function loadNotifications(user) {
+            try {
+                const notificationsSnapshot = await db.collection('notifications')
+                    .where('userId', '==', user.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(10)
+                    .get();
+
+                const notificationsSection = document.getElementById('notificationsSection');
+                const notificationsList = document.getElementById('notificationsList');
+                const notificationCount = document.getElementById('notificationCount');
+
+                if (notificationsSnapshot.empty) {
+                    notificationsSection.style.display = 'none';
+                    return;
+                }
+
+                let unreadCount = 0;
+                let notificationsHtml = '';
+
+                notificationsSnapshot.forEach(doc => {
+                    const notification = doc.data();
+                    if (!notification.read) unreadCount++;
+
+                    notificationsHtml += `
+                        <div class="notification-item" style="${!notification.read ? 'background: #fff3e0;' : ''}">
+                            <div style="display: flex; justify-content: between; align-items: start; gap: 1rem;">
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 0.5rem 0;">${notification.title}</h4>
+                                    <p style="margin: 0; color: #666;">${notification.message}</p>
+                                    <small>${notification.timestamp?.toDate?.().toLocaleString('ar-SA') || ''}</small>
+                                </div>
+                                ${!notification.read ? `<span style="color: #dc3545; font-weight: bold;">جديد</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                notificationsList.innerHTML = notificationsHtml;
+                notificationCount.textContent = unreadCount;
+                notificationsSection.style.display = 'block';
+
+                // تحديث حالة القراءة
+                if (unreadCount > 0) {
+                    notificationsSnapshot.forEach(async (doc) => {
+                        if (!doc.data().read) {
+                            await db.collection('notifications').doc(doc.id).update({
+                                read: true,
+                                readAt: new Date()
+                            });
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        // دوال مساعدة
         function getStatusClass(status) {
             const classes = {
                 'جديد': 'new',
@@ -722,6 +929,15 @@
                 'مكتمل': 'completed'
             };
             return classes[status] || 'new';
+        }
+
+        function getAgentStatusText(status) {
+            const texts = {
+                'pending': 'قيد المراجعة',
+                'approved': 'مقبول',
+                'rejected': 'مرفوض'
+            };
+            return texts[status] || status;
         }
 
         function getErrorMessage(errorCode) {
@@ -745,6 +961,7 @@
                 name: document.getElementById('fullName').value,
                 phone: document.getElementById('phone').value,
                 city: document.getElementById('city').value,
+                address: document.getElementById('address').value,
                 updatedAt: new Date()
             };
 
@@ -763,6 +980,41 @@
         function editProfile() {
             document.getElementById('profileForm').scrollIntoView({ behavior: 'smooth' });
         }
+
+        function applyAsAgent() {
+            window.location.href = 'agents.html';
+        }
+
+        // إضافة مستمعين للتحديث التلقائي
+        function setupRealtimeListeners(user) {
+            // تحديث الطلبات تلقائياً
+            db.collection('orders')
+                .where('userId', '==', user.uid)
+                .onSnapshot(() => {
+                    loadUserOrders(user);
+                });
+
+            // تحديث حالة الوكالة تلقائياً
+            db.collection('agent_applications')
+                .where('userEmail', '==', user.email)
+                .onSnapshot(() => {
+                    loadAgentStatus(user);
+                });
+
+            // تحديث الإشعارات تلقائياً
+            db.collection('notifications')
+                .where('userId', '==', user.uid)
+                .onSnapshot(() => {
+                    loadNotifications(user);
+                });
+        }
+
+        // تفعيل المستمعين عند تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                setupRealtimeListeners(user);
+            }
+        });
     </script>
 </body>
 </html>
