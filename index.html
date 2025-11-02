@@ -11,7 +11,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c5aa0">
     
-    <!-- الأيقونات الجديدة -->
+    <!-- الأيقونات -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <meta name="theme-color" content="#2c5aa0">
@@ -28,6 +28,7 @@
         body {
             background: #f5f5f5;
             color: #333;
+            line-height: 1.6;
         }
         
         .navbar {
@@ -37,7 +38,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .nav-logo {
@@ -47,6 +50,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #2c5aa0;
+            text-decoration: none;
         }
         
         .nav-logo i {
@@ -69,6 +73,10 @@
             font-size: 0.9rem;
         }
         
+        .nav-link:hover {
+            background: #f0f0f0;
+        }
+        
         .nav-link.active {
             background: #2c5aa0;
             color: white;
@@ -81,6 +89,7 @@
             font-size: 1.3rem;
             color: #2c5aa0;
             cursor: pointer;
+            padding: 0.5rem;
         }
         
         .page-hero {
@@ -100,11 +109,13 @@
             font-size: 1rem;
             margin-bottom: 1.5rem;
             line-height: 1.5;
+            opacity: 0.9;
         }
         
         .container {
             max-width: 100%;
             padding: 0 1rem;
+            margin: 0 auto;
         }
         
         .services-grid {
@@ -120,11 +131,13 @@
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e0e0e0;
         }
         
         .service-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .service-icon {
@@ -151,6 +164,7 @@
             margin-top: 1rem;
             width: 100%;
             transition: background 0.3s ease;
+            font-weight: 600;
         }
         
         .btn-primary:hover {
@@ -185,6 +199,7 @@
         
         .stat p {
             font-size: 0.9rem;
+            opacity: 0.9;
         }
         
         .hero-buttons {
@@ -230,6 +245,11 @@
             background: white;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-3px);
         }
         
         .step-number {
@@ -283,6 +303,7 @@
             color: white;
             font-size: 1.2rem;
             cursor: pointer;
+            margin-right: 10px;
         }
         
         @keyframes slideUp {
@@ -309,6 +330,7 @@
                 padding: 1rem;
                 box-shadow: 0 5px 10px rgba(0,0,0,0.1);
                 border-radius: 0 0 10px 10px;
+                z-index: 99;
             }
             
             .nav-links.active {
@@ -320,12 +342,12 @@
             }
             
             .page-hero {
-                padding: 35px 1rem 25px !important;
+                padding: 40px 1rem 30px !important;
             }
             
             .page-hero h1 {
-                font-size: 1.4rem !important;
-                margin-bottom: 0.8rem !important;
+                font-size: 1.5rem !important;
+                margin-bottom: 1rem !important;
             }
             
             .page-hero p {
@@ -334,12 +356,12 @@
             }
             
             .hero-stats {
-                margin-top: 1rem !important;
+                margin-top: 1.5rem !important;
                 gap: 1rem !important;
             }
             
             .stat h3 {
-                font-size: 1.4rem !important;
+                font-size: 1.5rem !important;
             }
             
             .stat p {
@@ -347,13 +369,14 @@
             }
             
             .hero-buttons {
-                margin-top: 1rem !important;
+                margin-top: 1.5rem !important;
                 gap: 0.8rem !important;
             }
             
             .hero-buttons .btn-primary {
                 min-width: 140px !important;
                 padding: 0.7rem 1.2rem !important;
+                font-size: 0.9rem;
             }
             
             .hero-buttons {
@@ -365,6 +388,12 @@
                 width: 100%;
                 max-width: 280px;
             }
+            
+            .install-prompt {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
         }
         
         @media (min-width: 768px) {
@@ -374,6 +403,10 @@
             
             .steps-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .container {
+                max-width: 720px;
             }
         }
         
@@ -400,9 +433,27 @@
             
             .container {
                 max-width: 1200px;
-                margin: 0 auto;
                 padding: 0 2rem;
             }
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #2c5aa0;
+            margin: 2rem 0 1rem;
+            font-weight: 700;
+        }
+        
+        .service-card h3 {
+            color: #2c5aa0;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .service-card p {
+            color: #666;
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -419,24 +470,24 @@
         </div>
     </div>
 
-<nav class="navbar">
-    <div class="nav-logo">
-        <i class="fas fa-concierge-bell"></i>
-        <span>Mauri-Services</span>
-    </div>
-    
-    <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-    </button>
-    
-    <div class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link active">الرئيسية</a>
-        <a href="services.html" class="nav-link">الخدمات</a>
-        <a href="agents.html" class="nav-link">انضم كوكيل</a>
-        <a href="contact.html" class="nav-link">اتصل بنا</a>
-        <a href="me.html" class="nav-link">👤 حسابي</a>
-    </div>
-</nav>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
+        </a>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" class="nav-link active">الرئيسية</a>
+            <a href="services.html" class="nav-link">الخدمات</a>
+            <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="contact.html" class="nav-link">اتصل بنا</a>
+            <a href="me.html" class="nav-link">👤 حسابي</a>
+        </div>
+    </nav>
 
     <section class="page-hero">
         <div class="container">
@@ -466,7 +517,7 @@
     </section>
 
     <section class="container">
-        <h2 style="text-align: center; font-size: 1.8rem; color: #2c5aa0; margin: 2rem 0 1rem;">خدماتنا الشعبية</h2>
+        <h2 class="section-title">خدماتنا الشعبية</h2>
         
         <div class="services-grid">
             <div class="service-card">
@@ -515,7 +566,7 @@
 
     <section class="steps-section">
         <div class="container">
-            <h2 style="text-align: center; font-size: 1.8rem; color: #2c5aa0; margin-bottom: 2rem;">كيف تعمل خدمتنا؟</h2>
+            <h2 class="section-title">كيف تعمل خدمتنا؟</h2>
             
             <div class="steps-grid">
                 <div class="step">
@@ -558,7 +609,8 @@
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         
-        mobileMenuBtn.addEventListener('click', () => {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             navLinks.classList.toggle('active');
         });
         
@@ -569,33 +621,39 @@
             }
         });
 
-function orderService(serviceName, price) {
-    // خيارات للمستخدم
-    const userChoice = confirm(`هل تريد طلب "${serviceName}" بسعر ${price} MRU؟\n\n✅ نعم: سجل الدخول لمتابعة الطلب\n❌ لا: أرسل طلب مباشر عبر الواتساب`);
-    
-    if (userChoice) {
-        // إذا وافق، انتقل لصفحة الخدمات مع تسجيل الدخول
-        window.location.href = 'services.html';
-    } else {
-        // إذا رفض، أرسل مباشرة للواتساب
-        const message = `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU`;
-        const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-        
-        // تتبع الطلب
-        if (typeof(Storage) !== "undefined") {
-            let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-            orders.push({
-                customer: 'عميل جديد',
-                service: serviceName,
-                price: price,
-                timestamp: new Date().toLocaleString('ar-SA'),
-                status: 'جديد'
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
             });
-            localStorage.setItem('customer_orders', JSON.stringify(orders));
+        });
+
+        function orderService(serviceName, price) {
+            const userChoice = confirm(`هل تريد طلب "${serviceName}" بسعر ${price} MRU؟\n\n✅ نعم: سجل الدخول لمتابعة الطلب\n❌ لا: أرسل طلب مباشر عبر الواتساب`);
+            
+            if (userChoice) {
+                // إذا وافق، انتقل لصفحة الخدمات مع تسجيل الدخول
+                window.location.href = 'services.html';
+            } else {
+                // إذا رفض، أرسل مباشرة للواتساب
+                const message = `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU`;
+                const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                // تتبع الطلب
+                if (typeof(Storage) !== "undefined") {
+                    let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+                    orders.push({
+                        customer: 'عميل جديد',
+                        service: serviceName,
+                        price: price,
+                        timestamp: new Date().toLocaleString('ar-SA'),
+                        status: 'جديد'
+                    });
+                    localStorage.setItem('customer_orders', JSON.stringify(orders));
+                }
+            }
         }
-    }
-}
 
         // تتبع الزوار
         if (typeof(Storage) !== "undefined") {
@@ -651,6 +709,15 @@ function orderService(serviceName, price) {
                     });
             });
         }
+
+        // Handle page visibility for better performance
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                console.log('Page is hidden');
+            } else {
+                console.log('Page is visible');
+            }
+        });
     </script>
 </body>
-</html>" " 
+</html>
