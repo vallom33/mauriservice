@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الطلبات - Mauri Services</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -30,12 +36,14 @@
             background: #2c5aa0;
             color: white;
             padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         
         .admin-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 2rem;
             padding: 0.5rem 1rem;
             border-radius: 5px;
             transition: background 0.3s;
@@ -51,10 +59,19 @@
         
         .section {
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
+            padding: 1.5rem;
+            border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
         }
         
         table {
@@ -72,17 +89,23 @@
         th {
             background: #f8f9fa;
             font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
         }
         
         .btn {
             padding: 0.5rem 1rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
             margin: 0.25rem;
             font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
         
         .btn-success {
@@ -105,6 +128,11 @@
             color: white;
         }
         
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
         .logout-btn {
             background: #dc3545;
             color: white;
@@ -116,50 +144,126 @@
         
         .stats-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
         .stat-card {
             background: white;
             padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
             border-left: 4px solid #2c5aa0;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
         
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #2c5aa0;
             display: block;
         }
         
-        .status-new { background: #e3f2fd; color: #1976d2; padding: 0.3rem 0.8rem; border-radius: 15px; }
-        .status-processing { background: #fff3e0; color: #f57c00; padding: 0.3rem 0.8rem; border-radius: 15px; }
-        .status-completed { background: #e8f5e8; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 15px; }
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-new { background: #dc3545; color: white; }
+        .status-pending { background: #ffc107; color: #212529; }
+        .status-completed { background: #28a745; color: white; }
+        .status-processing { background: #17a2b8; color: white; }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            min-width: 150px;
+        }
+
+        .order-details {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            border-right: 4px solid #2c5aa0;
+        }
+
+        .order-details p {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .admin-header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="admin-header">
-        <h1>إدارة الطلبات - Mauri Services</h1>
+        <h1>🚀 إدارة الطلبات - Mauri Services</h1>
         <div>
-            <span>مرحباً، المدير</span>
+            <span id="adminName">مرحباً، المدير</span>
             <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
     
     <nav class="admin-nav">
-        <a href="admin-dashboard.html">لوحة التحكم</a>
-        <a href="admin-visitors.html">الزوار</a>
-        <a href="admin-orders.html" class="active">الطلبات</a>
-        <a href="admin-settings.html">الإعدادات</a>
-        <a href="admin-agents.html">الوكلاء</a>
+        <a href="admin-dashboard.html">📊 لوحة التحكم</a>
+        <a href="admin-visitors.html">👥 الزوار</a>
+        <a href="admin-orders.html" class="active">📦 الطلبات</a>
+        <a href="admin-messages.html">💬 الرسائل</a>
+        <a href="admin-agents.html">👥 الوكلاء</a>
+        <a href="admin-users.html">👤 المستخدمين</a>
+        <a href="admin-settings.html">⚙️ الإعدادات</a>
     </nav>
     
     <div class="content">
+        <!-- الإحصائيات -->
         <div class="stats-cards">
             <div class="stat-card">
                 <span class="stat-number" id="totalOrders">0</span>
@@ -170,139 +274,323 @@
                 <p>طلبات جديدة</p>
             </div>
             <div class="stat-card">
+                <span class="stat-number" id="processingOrders">0</span>
+                <p>قيد التنفيذ</p>
+            </div>
+            <div class="stat-card">
                 <span class="stat-number" id="completedOrders">0</span>
                 <p>طلبات مكتملة</p>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="totalRevenue">0 MRU</span>
-                <p>إجمالي الإيرادات</p>
+                <span class="stat-number" id="totalRevenue">0</span>
+                <p>إجمالي الإيرادات (MRU)</p>
             </div>
         </div>
         
+        <!-- جميع الطلبات -->
         <div class="section">
-            <h2>جميع الطلبات</h2>
+            <div class="section-header">
+                <h2>📦 جميع الطلبات</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="exportOrders()">📥 تصدير البيانات</button>
+                </div>
+            </div>
+            
+            <div class="filters">
+                <select class="filter-select" onchange="filterOrders(this.value)">
+                    <option value="all">جميع الطلبات</option>
+                    <option value="new">جديد</option>
+                    <option value="processing">قيد التنفيذ</option>
+                    <option value="completed">مكتمل</option>
+                </select>
+                <select class="filter-select" onchange="filterByService(this.value)">
+                    <option value="all">جميع الخدمات</option>
+                    <option value="توصيل المشتريات">توصيل المشتريات</option>
+                    <option value="خدمات المستندات">خدمات المستندات</option>
+                    <option value="البحث عن المعلومات">البحث عن المعلومات</option>
+                </select>
+            </div>
+            
             <div id="ordersTable">
-                <!-- سيتم ملؤها بالبيانات -->
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
             </div>
         </div>
     </div>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // التحقق من تسجيل الدخول
-        if (!localStorage.getItem('adminLoggedIn')) {
-            window.location.href = 'admin-login.html';
-        }
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                // التحقق من دور المستخدم
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
+                        initOrdersPage();
+                    } else {
+                        alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
+                        logout();
+                    }
+                });
+            }
+        });
         
         function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            window.location.href = 'admin-login.html';
+            auth.signOut().then(() => {
+                window.location.href = 'admin-login.html';
+            });
         }
         
-        function updateStats() {
-            const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-            
-            document.getElementById('totalOrders').textContent = orders.length;
-            
-            const newOrders = orders.filter(order => order.status === 'جديد' || !order.status);
-            document.getElementById('newOrders').textContent = newOrders.length;
-            
-            const completedOrders = orders.filter(order => order.status === 'مكتمل');
-            document.getElementById('completedOrders').textContent = completedOrders.length;
-            
-            const totalRevenue = orders.reduce((sum, order) => sum + (order.price || 0), 0);
-            document.getElementById('totalRevenue').textContent = totalRevenue + ' MRU';
-        }
-        
-        function loadOrders() {
-            const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-            const table = document.getElementById('ordersTable');
-            
-            if (orders.length === 0) {
-                table.innerHTML = '<p>لا توجد طلبات مسجلة بعد</p>';
-                return;
+        // نظام إدارة الطلبات مع Firebase
+        class OrdersManager {
+            constructor() {
+                this.orders = [];
+                this.filteredOrders = [];
+                this.currentFilter = 'all';
+                this.currentServiceFilter = 'all';
+                this.init();
             }
             
-            const html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>رقم الطلب</th>
-                            <th>العميل</th>
-                            <th>الخدمة</th>
-                            <th>السعر</th>
-                            <th>التاريخ</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${orders.slice().reverse().map(order => `
-                            <tr>
-                                <td>#${order.id}</td>
-                                <td>${order.customer}</td>
-                                <td>${order.service}</td>
-                                <td>${order.price} MRU</td>
-                                <td>${order.timestamp}</td>
-                                <td>
-                                    <span class="status-${getStatusClass(order.status)}">
-                                        ${order.status || 'جديد'}
-                                    </span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-success" onclick="updateOrderStatus(${order.id}, 'processing')">قيد التنفيذ</button>
-                                    <button class="btn btn-primary" onclick="updateOrderStatus(${order.id}, 'completed')">إكمال</button>
-                                    <button class="btn btn-danger" onclick="deleteOrder(${order.id})">حذف</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            
-            table.innerHTML = html;
-        }
-        
-        function getStatusClass(status) {
-            switch(status) {
-                case 'جديد': return 'new';
-                case 'قيد التنفيذ': return 'processing';
-                case 'مكتمل': return 'completed';
-                default: return 'new';
+            async init() {
+                await this.loadOrders();
+                this.setupRealtimeListeners();
             }
-        }
-        
-        function updateOrderStatus(orderId, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-            const orderIndex = orders.findIndex(order => order.id === orderId);
             
-            if (orderIndex !== -1) {
-                const statusText = {
-                    'processing': 'قيد التنفيذ',
-                    'completed': 'مكتمل'
-                }[newStatus];
+            async loadOrders() {
+                try {
+                    const ordersSnapshot = await db.collection('orders')
+                        .orderBy('timestamp', 'desc')
+                        .get();
+                    
+                    this.orders = ordersSnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    
+                    this.updateStats();
+                    this.renderOrders();
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الطلبات:', error);
+                }
+            }
+            
+            updateStats() {
+                const totalOrders = this.orders.length;
+                const newOrders = this.orders.filter(order => order.status === 'جديد').length;
+                const processingOrders = this.orders.filter(order => order.status === 'قيد التنفيذ').length;
+                const completedOrders = this.orders.filter(order => order.status === 'مكتمل').length;
+                const totalRevenue = this.orders.reduce((sum, order) => sum + (parseInt(order.price) || 0), 0);
                 
-                orders[orderIndex].status = statusText;
-                localStorage.setItem('customer_orders', JSON.stringify(orders));
-                loadOrders();
-                updateStats();
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('newOrders').textContent = newOrders;
+                document.getElementById('processingOrders').textContent = processingOrders;
+                document.getElementById('completedOrders').textContent = completedOrders;
+                document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString();
+            }
+            
+            renderOrders() {
+                this.filteredOrders = this.orders.filter(order => {
+                    const statusMatch = this.currentFilter === 'all' || 
+                        (this.currentFilter === 'new' && order.status === 'جديد') ||
+                        (this.currentFilter === 'processing' && order.status === 'قيد التنفيذ') ||
+                        (this.currentFilter === 'completed' && order.status === 'مكتمل');
+                    
+                    const serviceMatch = this.currentServiceFilter === 'all' || 
+                        order.service === this.currentServiceFilter;
+                    
+                    return statusMatch && serviceMatch;
+                });
+                
+                const table = document.getElementById('ordersTable');
+                
+                if (this.filteredOrders.length === 0) {
+                    table.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">لا توجد طلبات</div>';
+                    return;
+                }
+                
+                const html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>العميل</th>
+                                <th>الخدمة</th>
+                                <th>السعر</th>
+                                <th>التاريخ</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${this.filteredOrders.map(order => `
+                                <tr>
+                                    <td><strong>#${order.id.substring(0, 8)}</strong></td>
+                                    <td>
+                                        <strong>${order.customerName || 'عميل'}</strong>
+                                        <br><small>${order.phone}</small>
+                                    </td>
+                                    <td>${order.service}</td>
+                                    <td>${order.price} MRU</td>
+                                    <td>${order.timestamp?.toDate().toLocaleString('ar-SA') || 'غير محدد'}</td>
+                                    <td>
+                                        <span class="status-badge status-${this.getStatusClass(order.status)}">
+                                            ${order.status || 'جديد'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary" onclick="viewOrderDetails('${order.id}')">👁️ عرض</button>
+                                        ${order.status !== 'قيد التنفيذ' ? 
+                                            `<button class="btn btn-warning" onclick="updateOrderStatus('${order.id}', 'قيد التنفيذ')">⚡ تنفيذ</button>` : ''}
+                                        ${order.status !== 'مكتمل' ? 
+                                            `<button class="btn btn-success" onclick="updateOrderStatus('${order.id}', 'مكتمل')">✅ إكمال</button>` : ''}
+                                        <button class="btn btn-danger" onclick="deleteOrder('${order.id}')">🗑️ حذف</button>
+                                    </td>
+                                </tr>
+                                <tr id="details-${order.id}" style="display: none;">
+                                    <td colspan="7">
+                                        <div class="order-details">
+                                            <h4>تفاصيل الطلب #${order.id.substring(0, 8)}</h4>
+                                            <p><strong>العميل:</strong> ${order.customerName} - ${order.phone}</p>
+                                            <p><strong>الخدمة:</strong> ${order.service}</p>
+                                            <p><strong>السعر:</strong> ${order.price} MRU</p>
+                                            <p><strong>التفاصيل:</strong> ${order.details || 'لا توجد تفاصيل إضافية'}</p>
+                                            <p><strong>الموقع:</strong> ${order.location || 'غير محدد'}</p>
+                                            <p><strong>وقت الإنشاء:</strong> ${order.timestamp?.toDate().toLocaleString('ar-SA') || 'غير محدد'}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                table.innerHTML = html;
+            }
+            
+            getStatusClass(status) {
+                switch(status) {
+                    case 'جديد': return 'new';
+                    case 'قيد التنفيذ': return 'processing';
+                    case 'مكتمل': return 'completed';
+                    default: return 'new';
+                }
+            }
+            
+            setupRealtimeListeners() {
+                // تحديث فوري عند تغيير الطلبات
+                db.collection('orders')
+                    .orderBy('timestamp', 'desc')
+                    .onSnapshot(() => {
+                        this.loadOrders();
+                    });
             }
         }
         
-        function deleteOrder(orderId) {
-            if (confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
-                let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-                orders = orders.filter(order => order.id !== orderId);
-                localStorage.setItem('customer_orders', JSON.stringify(orders));
-                loadOrders();
-                updateStats();
+        // وظائف عامة
+        function viewOrderDetails(orderId) {
+            const detailsRow = document.getElementById(`details-${orderId}`);
+            if (detailsRow) {
+                detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
             }
         }
         
-        // تحميل البيانات عند فتح الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
-            updateStats();
-            loadOrders();
-        });
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                await db.collection('orders').doc(orderId).update({
+                    status: newStatus,
+                    updatedAt: new Date()
+                });
+                
+                alert(`✅ تم تحديث حالة الطلب إلى: ${newStatus}`);
+            } catch (error) {
+                console.error('❌ خطأ في تحديث حالة الطلب:', error);
+                alert('❌ حدث خطأ في تحديث حالة الطلب');
+            }
+        }
+        
+        async function deleteOrder(orderId) {
+            if (confirm('⚠️ هل أنت متأكد من حذف هذا الطلب؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                try {
+                    await db.collection('orders').doc(orderId).delete();
+                    alert('✅ تم حذف الطلب بنجاح');
+                } catch (error) {
+                    console.error('❌ خطأ في حذف الطلب:', error);
+                    alert('❌ حدث خطأ في حذف الطلب');
+                }
+            }
+        }
+        
+        function filterOrders(status) {
+            ordersManager.currentFilter = status;
+            ordersManager.renderOrders();
+        }
+        
+        function filterByService(service) {
+            ordersManager.currentServiceFilter = service;
+            ordersManager.renderOrders();
+        }
+        
+        function exportOrders() {
+            const data = ordersManager.filteredOrders.map(order => ({
+                'رقم الطلب': order.id,
+                'العميل': order.customerName,
+                'الهاتف': order.phone,
+                'الخدمة': order.service,
+                'السعر': order.price,
+                'الحالة': order.status,
+                'التاريخ': order.timestamp?.toDate().toLocaleString('ar-SA')
+            }));
+            
+            const csv = convertToCSV(data);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `طلبات_mauri-services_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function convertToCSV(objArray) {
+            const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            let str = '\uFEFF' + Object.keys(array[0]).join(',') + '\r\n';
+            
+            for (let i = 0; i < array.length; i++) {
+                let line = '';
+                for (let index in array[i]) {
+                    if (line !== '') line += ',';
+                    line += array[i][index];
+                }
+                str += line + '\r\n';
+            }
+            return str;
+        }
+        
+        // بدء النظام
+        let ordersManager;
+        function initOrdersPage() {
+            ordersManager = new OrdersManager();
+        }
     </script>
 </body>
 </html>

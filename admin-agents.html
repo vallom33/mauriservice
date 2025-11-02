@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الوكلاء - Mauri Services</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -30,12 +36,14 @@
             background: #2c5aa0;
             color: white;
             padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         
         .admin-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 2rem;
             padding: 0.5rem 1rem;
             border-radius: 5px;
             transition: background 0.3s;
@@ -51,8 +59,8 @@
         
         .section {
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
+            padding: 1.5rem;
+            border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
@@ -72,17 +80,19 @@
         th {
             background: #f8f9fa;
             font-weight: bold;
+            color: #2c5aa0;
         }
         
         .btn {
             padding: 0.5rem 1rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
             margin: 0.25rem;
             font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
         
         .btn-success {
@@ -105,6 +115,11 @@
             color: white;
         }
         
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
         .logout-btn {
             background: #dc3545;
             color: white;
@@ -124,10 +139,15 @@
         .stat-card {
             background: white;
             padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
             border-left: 4px solid #2c5aa0;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
         
         .stat-number {
@@ -137,26 +157,49 @@
             display: block;
         }
         
-        .status-pending { background: #fff3e0; color: #f57c00; padding: 0.3rem 0.8rem; border-radius: 15px; }
-        .status-approved { background: #e8f5e8; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 15px; }
-        .status-rejected { background: #ffebee; color: #c62828; padding: 0.3rem 0.8rem; border-radius: 15px; }
+        .status-pending { background: #fff3e0; color: #f57c00; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; }
+        .status-approved { background: #e8f5e8; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; }
+        .status-rejected { background: #ffebee; color: #c62828; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="admin-header">
-        <h1>إدارة الوكلاء - Mauri Services</h1>
+        <h1>👥 إدارة الوكلاء - Mauri Services</h1>
         <div>
-            <span>مرحباً، المدير</span>
+            <span id="adminName">مرحباً، المدير</span>
             <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
     
     <nav class="admin-nav">
-        <a href="admin-dashboard.html">لوحة التحكم</a>
-        <a href="admin-visitors.html">الزوار</a>
-        <a href="admin-orders.html">الطلبات</a>
-        <a href="admin-settings.html">الإعدادات</a>
-        <a href="admin-agents.html" class="active">الوكلاء</a>
+        <a href="admin-dashboard.html">📊 لوحة التحكم</a>
+        <a href="admin-visitors.html">👥 الزوار</a>
+        <a href="admin-orders.html">📦 الطلبات</a>
+        <a href="admin-messages.html">💬 الرسائل</a>
+        <a href="admin-agents.html" class="active">👥 الوكلاء</a>
+        <a href="admin-users.html">👤 المستخدمين</a>
+        <a href="admin-settings.html">⚙️ الإعدادات</a>
     </nav>
     
     <div class="content">
@@ -167,7 +210,7 @@
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="pendingAgents">0</span>
-                <p>طلبات pending</p>
+                <p>طلبات قيد المراجعة</p>
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="activeAgents">0</span>
@@ -180,243 +223,385 @@
         </div>
         
         <div class="section">
-            <h2>طلبات الانضمام</h2>
-            <div id="applicationsTable">
-                <!-- سيتم ملؤها بالبيانات -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>📋 طلبات الانضمام</h2>
+                <div id="applicationsCount" style="background: #2c5aa0; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem;">0 طلب</div>
+            </div>
+            <div id="applicationsTable" class="loading">
+                ⏳ جاري تحميل طلبات الانضمام...
             </div>
         </div>
         
         <div class="section">
-            <h2>الوكلاء النشطين</h2>
-            <div id="agentsTable">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>🚀 الوكلاء النشطين</h2>
+                <div id="agentsCount" style="background: #28a745; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem;">0 وكيل</div>
+            </div>
+            <div id="agentsTable" class="loading">
+                ⏳ جاري تحميل بيانات الوكلاء...
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تفاصيل الطلب -->
+    <div id="applicationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>📝 تفاصيل طلب الانضمام</h3>
+                <button onclick="closeApplicationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            <div id="applicationDetails">
                 <!-- سيتم ملؤها بالبيانات -->
             </div>
         </div>
     </div>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentApplication = null;
+
         // التحقق من تسجيل الدخول
-        if (!localStorage.getItem('adminLoggedIn')) {
-            window.location.href = 'admin-login.html';
-        }
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
+                        initAgentsManager();
+                    } else {
+                        alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
+                        logout();
+                    }
+                });
+            }
+        });
         
         function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            window.location.href = 'admin-login.html';
+            auth.signOut().then(() => {
+                window.location.href = 'admin-login.html';
+            });
         }
-        
-        // بيانات وكلاء تجريبية
-        const sampleAgents = [
-            {
-                id: 1,
-                name: "أحمد محمد",
-                phone: "12345678",
-                city: "نواكشوط",
-                joinDate: "2024-01-10",
-                status: "approved",
-                totalSales: 5,
-                totalCommission: 12500
-            },
-            {
-                id: 2,
-                name: "فاطمة عبد الله", 
-                phone: "87654321",
-                city: "نواكشوط",
-                joinDate: "2024-01-12",
-                status: "approved",
-                totalSales: 3,
-                totalCommission: 7500
-            }
-        ];
-        
-        const sampleApplications = [
-            {
-                id: 1001,
-                name: "سيدي ولد أحمد",
-                phone: "11223344", 
-                city: "نواكشوط",
-                applicationDate: "2024-01-15",
-                status: "pending",
-                experience: "لا توجد خبرة سابقة"
-            }
-        ];
-        
-        function updateStats() {
-            const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
-            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
-            
-            document.getElementById('totalAgents').textContent = agents.length;
-            document.getElementById('pendingAgents').textContent = applications.length;
-            document.getElementById('activeAgents').textContent = agents.filter(a => a.status === 'approved').length;
-            
-            const totalCommissions = agents.reduce((sum, agent) => sum + (agent.totalCommission || 0), 0);
-            document.getElementById('agentCommissions').textContent = totalCommissions + ' MRU';
-        }
-        
-        function loadApplications() {
-            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
-            const table = document.getElementById('applicationsTable');
-            
-            if (applications.length === 0) {
-                table.innerHTML = '<p>لا توجد طلبات انضمام pending</p>';
-                return;
+
+        class AgentsManager {
+            constructor() {
+                this.init();
             }
             
-            const html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>الهاتف</th>
-                            <th>المدينة</th>
-                            <th>التاريخ</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${applications.map(app => `
-                            <tr>
-                                <td>${app.name}</td>
-                                <td>${app.phone}</td>
-                                <td>${app.city}</td>
-                                <td>${app.applicationDate}</td>
-                                <td>
-                                    <span class="status-${app.status}">
-                                        ${app.status === 'pending' ? 'قيد المراجعة' : app.status}
-                                    </span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-success" onclick="approveApplication(${app.id})">قبول</button>
-                                    <button class="btn btn-danger" onclick="rejectApplication(${app.id})">رفض</button>
-                                    <button class="btn btn-primary" onclick="viewApplication(${app.id})">تفاصيل</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            
-            table.innerHTML = html;
-        }
-        
-        function loadAgents() {
-            const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
-            const table = document.getElementById('agentsTable');
-            
-            if (agents.length === 0) {
-                table.innerHTML = '<p>لا توجد وكلاء مسجلين</p>';
-                return;
+            async init() {
+                await this.loadStats();
+                await this.loadApplications();
+                await this.loadAgents();
+                this.setupRealtimeListeners();
             }
             
-            const html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>الهاتف</th>
-                            <th>المدينة</th>
-                            <th>تاريخ الانضمام</th>
-                            <th>عدد المبيعات</th>
-                            <th>إجمالي العمولات</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${agents.map(agent => `
-                            <tr>
-                                <td>${agent.name}</td>
-                                <td>${agent.phone}</td>
-                                <td>${agent.city}</td>
-                                <td>${agent.joinDate}</td>
-                                <td>${agent.totalSales || 0}</td>
-                                <td>${agent.totalCommission || 0} MRU</td>
-                                <td>
-                                    <button class="btn btn-primary" onclick="viewAgent(${agent.id})">تفاصيل</button>
-                                    <button class="btn btn-danger" onclick="removeAgent(${agent.id})">إزالة</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+            async loadStats() {
+                try {
+                    // طلبات الانضمام
+                    const applicationsSnapshot = await db.collection('agent_applications').get();
+                    const pendingApplications = applicationsSnapshot.docs.filter(doc => 
+                        doc.data().status === 'pending'
+                    );
+                    
+                    // الوكلاء النشطين
+                    const agentsSnapshot = await db.collection('users')
+                        .where('role', '==', 'agent')
+                        .where('status', '==', 'active')
+                        .get();
+                    
+                    // إحصائيات العمولات (محاكاة)
+                    const totalCommissions = agentsSnapshot.size * 5000; // متوسط العمولات
+                    
+                    document.getElementById('totalAgents').textContent = agentsSnapshot.size;
+                    document.getElementById('pendingAgents').textContent = pendingApplications.length;
+                    document.getElementById('activeAgents').textContent = agentsSnapshot.size;
+                    document.getElementById('agentCommissions').textContent = totalCommissions.toLocaleString() + ' MRU';
+                    
+                    document.getElementById('applicationsCount').textContent = pendingApplications.length + ' طلب';
+                    document.getElementById('agentsCount').textContent = agentsSnapshot.size + ' وكيل';
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الإحصائيات:', error);
+                }
+            }
             
-            table.innerHTML = html;
-        }
-        
-        function approveApplication(appId) {
-            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
-            const appIndex = applications.findIndex(app => app.id === appId);
+            async loadApplications() {
+                try {
+                    const applicationsSnapshot = await db.collection('agent_applications')
+                        .where('status', '==', 'pending')
+                        .orderBy('timestamp', 'desc')
+                        .get();
+                    
+                    if (applicationsSnapshot.empty) {
+                        document.getElementById('applicationsTable').innerHTML = '<p>🎉 لا توجد طلبات انضمام قيد المراجعة</p>';
+                        return;
+                    }
+                    
+                    const html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>الهاتف</th>
+                                    <th>العنوان</th>
+                                    <th>وسيلة المواصلات</th>
+                                    <th>التاريخ</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${applicationsSnapshot.docs.map(doc => {
+                                    const data = doc.data();
+                                    return `
+                                        <tr>
+                                            <td><strong>${data.name}</strong></td>
+                                            <td>${data.phone}</td>
+                                            <td>${data.address}</td>
+                                            <td>${this.getTransportText(data.transport)}</td>
+                                            <td>${data.timestamp.toDate().toLocaleString('ar-SA')}</td>
+                                            <td>
+                                                <button class="btn btn-success" onclick="approveApplication('${doc.id}')">✅ قبول</button>
+                                                <button class="btn btn-danger" onclick="rejectApplication('${doc.id}')">❌ رفض</button>
+                                                <button class="btn btn-primary" onclick="viewApplication('${doc.id}')">👁️ تفاصيل</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    document.getElementById('applicationsTable').innerHTML = html;
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل طلبات الانضمام:', error);
+                    document.getElementById('applicationsTable').innerHTML = '<p>❌ حدث خطأ في تحميل البيانات</p>';
+                }
+            }
             
-            if (appIndex !== -1) {
-                const approvedApp = applications[appIndex];
+            async loadAgents() {
+                try {
+                    const agentsSnapshot = await db.collection('users')
+                        .where('role', '==', 'agent')
+                        .where('status', '==', 'active')
+                        .get();
+                    
+                    if (agentsSnapshot.empty) {
+                        document.getElementById('agentsTable').innerHTML = '<p>📭 لا توجد وكلاء نشطين حالياً</p>';
+                        return;
+                    }
+                    
+                    const html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>الهاتف</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>تاريخ الانضمام</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${agentsSnapshot.docs.map(doc => {
+                                    const data = doc.data();
+                                    return `
+                                        <tr>
+                                            <td><strong>${data.name}</strong></td>
+                                            <td>${data.phone}</td>
+                                            <td>${data.email}</td>
+                                            <td>${data.createdAt?.toDate().toLocaleDateString('ar-SA') || 'غير محدد'}</td>
+                                            <td><span class="status-approved">نشط</span></td>
+                                            <td>
+                                                <button class="btn btn-primary" onclick="viewAgent('${doc.id}')">👁️ تفاصيل</button>
+                                                <button class="btn btn-danger" onclick="deactivateAgent('${doc.id}')">🚫 إلغاء التفعيل</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    document.getElementById('agentsTable').innerHTML = html;
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الوكلاء:', error);
+                    document.getElementById('agentsTable').innerHTML = '<p>❌ حدث خطأ في تحميل البيانات</p>';
+                }
+            }
+            
+            getTransportText(transport) {
+                const transportMap = {
+                    'motorcycle': 'دراجة نارية',
+                    'car': 'سيارة',
+                    'bicycle': 'دراجة هوائية',
+                    'walking': 'سيراً على الأقدام'
+                };
+                return transportMap[transport] || transport;
+            }
+            
+            setupRealtimeListeners() {
+                // تحديث فوري للطلبات
+                db.collection('agent_applications')
+                    .where('status', '==', 'pending')
+                    .onSnapshot(() => {
+                        this.loadApplications();
+                        this.loadStats();
+                    });
                 
-                // نقل إلى قائمة الوكلاء
-                const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
-                agents.push({
-                    ...approvedApp,
-                    status: 'approved',
-                    joinDate: new Date().toISOString().split('T')[0],
-                    totalSales: 0,
-                    totalCommission: 0
-                });
+                // تحديث فوري للوكلاء
+                db.collection('users')
+                    .where('role', '==', 'agent')
+                    .where('status', '==', 'active')
+                    .onSnapshot(() => {
+                        this.loadAgents();
+                        this.loadStats();
+                    });
+            }
+        }
+
+        // دوال الإجراءات
+        async function approveApplication(applicationId) {
+            if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
+                try {
+                    const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
+                    const applicationData = applicationDoc.data();
+                    
+                    // تحديث حالة الطلب
+                    await db.collection('agent_applications').doc(applicationId).update({
+                        status: 'approved',
+                        approvedAt: new Date(),
+                        approvedBy: auth.currentUser.uid
+                    });
+                    
+                    // إنشاء مستخدم وكيل
+                    await db.collection('users').add({
+                        name: applicationData.name,
+                        phone: applicationData.phone,
+                        email: applicationData.userEmail,
+                        role: 'agent',
+                        status: 'active',
+                        address: applicationData.address,
+                        transport: applicationData.transport,
+                        experience: applicationData.experience,
+                        createdAt: new Date(),
+                        joinedAt: new Date()
+                    });
+                    
+                    alert('🎉 تم قبول الوكيل بنجاح!');
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في قبول الطلب:', error);
+                    alert('❌ حدث خطأ في قبول الطلب');
+                }
+            }
+        }
+        
+        async function rejectApplication(applicationId) {
+            if (confirm('❌ هل أنت متأكد من رفض هذا الطلب؟')) {
+                try {
+                    await db.collection('agent_applications').doc(applicationId).update({
+                        status: 'rejected',
+                        rejectedAt: new Date(),
+                        rejectedBy: auth.currentUser.uid
+                    });
+                    
+                    alert('تم رفض الطلب بنجاح');
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في رفض الطلب:', error);
+                    alert('❌ حدث خطأ في رفض الطلب');
+                }
+            }
+        }
+        
+        async function viewApplication(applicationId) {
+            try {
+                const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
+                const applicationData = applicationDoc.data();
                 
-                // حذف من الطلبات
-                applications.splice(appIndex, 1);
+                document.getElementById('applicationDetails').innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <p><strong>👤 الاسم:</strong> ${applicationData.name}</p>
+                        <p><strong>📞 الهاتف:</strong> ${applicationData.phone}</p>
+                        <p><strong>📧 البريد:</strong> ${applicationData.userEmail}</p>
+                        <p><strong>📍 العنوان:</strong> ${applicationData.address}</p>
+                        <p><strong>🚲 وسيلة المواصلات:</strong> ${new AgentsManager().getTransportText(applicationData.transport)}</p>
+                        <p><strong>📅 تاريخ التقديم:</strong> ${applicationData.timestamp.toDate().toLocaleString('ar-SA')}</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p><strong>💼 الخبرة السابقة:</strong></p>
+                        <p>${applicationData.experience || 'لا توجد خبرة سابقة'}</p>
+                    </div>
+                    <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px;">
+                        <p><strong>🎯 الدوافع:</strong></p>
+                        <p>${applicationData.motivation || 'غير محددة'}</p>
+                    </div>
+                `;
                 
-                localStorage.setItem('agents', JSON.stringify(agents));
-                localStorage.setItem('agentApplications', JSON.stringify(applications));
+                document.getElementById('applicationModal').style.display = 'flex';
+                currentApplication = applicationId;
                 
-                loadApplications();
-                loadAgents();
-                updateStats();
+            } catch (error) {
+                console.error('❌ خطأ في عرض التفاصيل:', error);
+                alert('❌ حدث خطأ في تحميل التفاصيل');
+            }
+        }
+        
+        function closeApplicationModal() {
+            document.getElementById('applicationModal').style.display = 'none';
+            currentApplication = null;
+        }
+        
+        async function viewAgent(agentId) {
+            try {
+                const agentDoc = await db.collection('users').doc(agentId).get();
+                const agentData = agentDoc.data();
                 
-                alert('تم قبول الوكيل بنجاح');
+                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nوسيلة المواصلات: ${agentData.transport}\nتاريخ الانضمام: ${agentData.createdAt?.toDate().toLocaleDateString('ar-SA')}`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في عرض تفاصيل الوكيل:', error);
             }
         }
         
-        function rejectApplication(appId) {
-            if (confirm('هل أنت متأكد من رفض هذا الطلب؟')) {
-                const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
-                const updatedApplications = applications.filter(app => app.id !== appId);
-                localStorage.setItem('agentApplications', JSON.stringify(updatedApplications));
-                loadApplications();
-                updateStats();
+        async function deactivateAgent(agentId) {
+            if (confirm('🚫 هل أنت متأكد من إلغاء تفعيل هذا الوكيل؟')) {
+                try {
+                    await db.collection('users').doc(agentId).update({
+                        status: 'inactive',
+                        deactivatedAt: new Date(),
+                        deactivatedBy: auth.currentUser.uid
+                    });
+                    
+                    alert('✅ تم إلغاء تفعيل الوكيل بنجاح');
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في إلغاء التفعيل:', error);
+                    alert('❌ حدث خطأ في إلغاء التفعيل');
+                }
             }
         }
         
-        function viewApplication(appId) {
-            const applications = JSON.parse(localStorage.getItem('agentApplications')) || sampleApplications;
-            const application = applications.find(app => app.id === appId);
-            if (application) {
-                alert(`تفاصيل الطلب:\nالاسم: ${application.name}\nالهاتف: ${application.phone}\nالمدينة: ${application.city}\nالخبرة: ${application.experience || 'غير محددة'}`);
-            }
+        // بدء النظام
+        function initAgentsManager() {
+            new AgentsManager();
         }
-        
-        function viewAgent(agentId) {
-            const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
-            const agent = agents.find(a => a.id === agentId);
-            if (agent) {
-                alert(`تفاصيل الوكيل:\nالاسم: ${agent.name}\nالهاتف: ${agent.phone}\nالمدينة: ${agent.city}\nالمبيعات: ${agent.totalSales}\nالعمولات: ${agent.totalCommission} MRU`);
-            }
-        }
-        
-        function removeAgent(agentId) {
-            if (confirm('هل أنت متأكد من إزالة هذا الوكيل؟')) {
-                const agents = JSON.parse(localStorage.getItem('agents')) || sampleAgents;
-                const updatedAgents = agents.filter(agent => agent.id !== agentId);
-                localStorage.setItem('agents', JSON.stringify(updatedAgents));
-                loadAgents();
-                updateStats();
-            }
-        }
-        
-        // تحميل البيانات عند فتح الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
-            updateStats();
-            loadApplications();
-            loadAgents();
-        });
     </script>
 </body>
 </html>

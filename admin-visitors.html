@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الزوار - الإدارة</title>
+    <title>إدارة الزوار - Mauri Services</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -30,12 +36,14 @@
             background: #2c5aa0;
             color: white;
             padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         
         .admin-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 2rem;
             padding: 0.5rem 1rem;
             border-radius: 5px;
             transition: background 0.3s;
@@ -51,10 +59,19 @@
         
         .section {
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
+            padding: 1.5rem;
+            border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
         }
         
         table {
@@ -72,20 +89,38 @@
         th {
             background: #f8f9fa;
             font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
         }
         
         .btn {
             padding: 0.5rem 1rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
         
         .btn-danger {
             background: #dc3545;
             color: white;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
         
         .logout-btn {
@@ -99,142 +134,562 @@
         
         .stats-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
         .stat-card {
             background: white;
             padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
             border-left: 4px solid #2c5aa0;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
         
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #2c5aa0;
             display: block;
+        }
+        
+        .stat-trend {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .trend-up { color: #28a745; }
+        .trend-down { color: #dc3545; }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            min-width: 150px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            height: 300px;
+        }
+
+        .visitor-info {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .admin-header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <header class="admin-header">
-        <h1>إدارة الزوار - موريتانيا اكسبريس</h1>
+        <h1>🚀 إدارة الزوار - Mauri Services</h1>
         <div>
-            <span>مرحباً، المدير</span>
+            <span id="adminName">مرحباً، المدير</span>
             <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
     
     <nav class="admin-nav">
-        <a href="admin-dashboard.html">لوحة التحكم</a>
-        <a href="admin-visitors.html" class="active">الزوار</a>
-        <a href="admin-orders.html">الطلبات</a>
-        <a href="admin-settings.html">الإعدادات</a>
+        <a href="admin-dashboard.html">📊 لوحة التحكم</a>
+        <a href="admin-visitors.html" class="active">👥 الزوار</a>
+        <a href="admin-orders.html">📦 الطلبات</a>
+        <a href="admin-messages.html">💬 الرسائل</a>
+        <a href="admin-agents.html">👥 الوكلاء</a>
+        <a href="admin-users.html">👤 المستخدمين</a>
+        <a href="admin-settings.html">⚙️ الإعدادات</a>
     </nav>
     
     <div class="content">
+        <!-- الإحصائيات -->
         <div class="stats-cards">
             <div class="stat-card">
                 <span class="stat-number" id="totalVisitors">0</span>
                 <p>إجمالي الزوار</p>
+                <div class="stat-trend trend-up" id="totalTrend">+0% عن الشهر الماضي</div>
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="todayVisitors">0</span>
                 <p>زوار اليوم</p>
+                <div class="stat-trend trend-up" id="todayTrend">+0% عن الأمس</div>
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="uniqueVisitors">0</span>
                 <p>زوار فريدون</p>
+                <div class="stat-trend trend-up" id="uniqueTrend">+0% عن الشهر الماضي</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="activeNow">0</span>
+                <p>نشطون الآن</p>
+                <div class="stat-trend trend-up" id="activeTrend">في آخر 5 دقائق</div>
             </div>
         </div>
-        
+
+        <!-- تحليلات الزوار -->
         <div class="section">
-            <h2>سجل الزوار</h2>
+            <div class="section-header">
+                <h2>📈 تحليلات الزوار</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="exportVisitors()">📥 تصدير البيانات</button>
+                    <button class="btn btn-danger" onclick="clearOldVisitors()">🗑️ مسح القديمة</button>
+                </div>
+            </div>
+            
+            <div class="filters">
+                <select class="filter-select" onchange="filterByPeriod(this.value)">
+                    <option value="today">اليوم</option>
+                    <option value="week">أسبوع</option>
+                    <option value="month">شهر</option>
+                    <option value="all">كل الوقت</option>
+                </select>
+                <select class="filter-select" onchange="filterByPage(this.value)">
+                    <option value="all">جميع الصفحات</option>
+                    <option value="/">الصفحة الرئيسية</option>
+                    <option value="/services.html">الخدمات</option>
+                    <option value="/contact.html">اتصل بنا</option>
+                </select>
+            </div>
+            
             <div id="visitorsTable">
                 <!-- سيتم ملؤها بالبيانات الحقيقية -->
             </div>
-            <button class="btn btn-danger" onclick="clearVisitors()" style="margin-top: 1rem;">مسح سجل الزوار</button>
+        </div>
+
+        <!-- إحصائيات الصفحات -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📊 إحصائيات الصفحات</h2>
+            </div>
+            <div id="pagesStats">
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
+            </div>
         </div>
     </div>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // التحقق من تسجيل الدخول
-        if (!localStorage.getItem('adminLoggedIn')) {
-            window.location.href = 'admin-login.html';
-        }
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                // التحقق من دور المستخدم
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
+                        initVisitorsPage();
+                    } else {
+                        alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
+                        logout();
+                    }
+                });
+            }
+        });
         
         function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            window.location.href = 'admin-login.html';
+            auth.signOut().then(() => {
+                window.location.href = 'admin-login.html';
+            });
         }
         
-        function clearVisitors() {
-            if (confirm('هل أنت متأكد من مسح سجل الزوار؟')) {
-                localStorage.removeItem('website_visitors');
-                loadVisitors();
-                updateStats();
-            }
-        }
-        
-        function updateStats() {
-            const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            
-            document.getElementById('totalVisitors').textContent = visitors.length;
-            
-            const today = new Date().toDateString();
-            const todayVisitors = visitors.filter(v => new Date(v.timestamp).toDateString() === today);
-            document.getElementById('todayVisitors').textContent = todayVisitors.length;
-            
-            // الزوار الفريدون (بناءً على الـ IP المبسط)
-            const uniqueIPs = [...new Set(visitors.map(v => v.ip))];
-            document.getElementById('uniqueVisitors').textContent = uniqueIPs.length;
-        }
-        
-        function loadVisitors() {
-            const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
-            const tbody = document.getElementById('visitorsTable');
-            
-            if (visitors.length === 0) {
-                tbody.innerHTML = '<p>لا توجد زيارات مسجلة</p>';
-                return;
+        // نظام إدارة الزوار مع Firebase
+        class VisitorsManager {
+            constructor() {
+                this.visitors = [];
+                this.filteredVisitors = [];
+                this.currentPeriod = 'today';
+                this.currentPageFilter = 'all';
+                this.init();
             }
             
-            const html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>التاريخ والوقت</th>
-                            <th>الصفحة</th>
-                            <th>المصدر</th>
-                            <th>معلومات المتصفح</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${visitors.slice().reverse().map(visitor => `
+            async init() {
+                await this.loadVisitors();
+                this.setupRealtimeListeners();
+                this.setupAutoRefresh();
+            }
+            
+            async loadVisitors() {
+                try {
+                    const visitorsSnapshot = await db.collection('visitors')
+                        .orderBy('timestamp', 'desc')
+                        .get();
+                    
+                    this.visitors = visitorsSnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    
+                    this.updateStats();
+                    this.renderVisitors();
+                    this.renderPagesStats();
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل بيانات الزوار:', error);
+                }
+            }
+            
+            updateStats() {
+                const totalVisitors = this.visitors.length;
+                
+                // زوار اليوم
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayVisitors = this.visitors.filter(v => 
+                    v.timestamp.toDate() >= today
+                ).length;
+                
+                // زوار فريدون (بناءً على الـ IP)
+                const uniqueIPs = [...new Set(this.visitors.map(v => v.ip))];
+                const uniqueVisitors = uniqueIPs.length;
+                
+                // نشطون الآن (آخر 5 دقائق)
+                const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+                const activeNow = this.visitors.filter(v => 
+                    v.timestamp.toDate() >= fiveMinutesAgo
+                ).length;
+                
+                document.getElementById('totalVisitors').textContent = totalVisitors.toLocaleString();
+                document.getElementById('todayVisitors').textContent = todayVisitors.toLocaleString();
+                document.getElementById('uniqueVisitors').textContent = uniqueVisitors.toLocaleString();
+                document.getElementById('activeNow').textContent = activeNow.toLocaleString();
+            }
+            
+            renderVisitors() {
+                const now = new Date();
+                let startDate;
+                
+                switch(this.currentPeriod) {
+                    case 'today':
+                        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                        break;
+                    case 'week':
+                        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        break;
+                    case 'month':
+                        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                        break;
+                    default:
+                        startDate = new Date(0); // كل الوقت
+                }
+                
+                this.filteredVisitors = this.visitors.filter(visitor => {
+                    const timeMatch = this.currentPeriod === 'all' || 
+                        visitor.timestamp.toDate() >= startDate;
+                    
+                    const pageMatch = this.currentPageFilter === 'all' || 
+                        visitor.page === this.currentPageFilter;
+                    
+                    return timeMatch && pageMatch;
+                });
+                
+                const table = document.getElementById('visitorsTable');
+                
+                if (this.filteredVisitors.length === 0) {
+                    table.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">لا توجد زيارات مسجلة</div>';
+                    return;
+                }
+                
+                const html = `
+                    <table>
+                        <thead>
                             <tr>
-                                <td>${visitor.timestamp}</td>
-                                <td>${visitor.page}</td>
-                                <td>${visitor.referrer || 'مباشر'}</td>
-                                <td style="font-size: 0.8rem; color: #666;">${visitor.userAgent}</td>
+                                <th>التاريخ والوقت</th>
+                                <th>الصفحة</th>
+                                <th>معلومات الزائر</th>
+                                <th>المصدر</th>
+                                <th>البلد</th>
+                                <th>مدة الزيارة</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+                        </thead>
+                        <tbody>
+                            ${this.filteredVisitors.slice(0, 100).map(visitor => `
+                                <tr>
+                                    <td>
+                                        <strong>${visitor.timestamp.toDate().toLocaleDateString('ar-SA')}</strong>
+                                        <br>
+                                        <small>${visitor.timestamp.toDate().toLocaleTimeString('ar-SA')}</small>
+                                    </td>
+                                    <td>
+                                        <div class="visitor-info">
+                                            ${visitor.page || '/'}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="visitor-info">
+                                            <strong>IP:</strong> ${visitor.ip || 'غير معروف'}
+                                            <br>
+                                            <strong>المتصفح:</strong> ${this.getBrowserName(visitor.userAgent)}
+                                            <br>
+                                            <strong>النظام:</strong> ${this.getOSName(visitor.userAgent)}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="visitor-info">
+                                            ${visitor.referrer ? 
+                                                `<a href="${visitor.referrer}" target="_blank">${this.getDomain(visitor.referrer)}</a>` : 
+                                                'مباشر'}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="visitor-info">
+                                            ${visitor.country || 'غير معروف'}
+                                            ${visitor.city ? ` - ${visitor.city}` : ''}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="visitor-info">
+                                            ${visitor.duration ? `${visitor.duration} ثانية` : 'غير معروف'}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ${this.filteredVisitors.length > 100 ? 
+                        `<div style="text-align: center; padding: 1rem; color: #666;">عرض 100 من ${this.filteredVisitors.length} زيارة</div>` : ''}
+                `;
+                
+                table.innerHTML = html;
+            }
             
-            tbody.innerHTML = html;
+            renderPagesStats() {
+                const pageStats = {};
+                
+                this.visitors.forEach(visitor => {
+                    const page = visitor.page || '/';
+                    if (!pageStats[page]) {
+                        pageStats[page] = { visits: 0, unique: new Set() };
+                    }
+                    pageStats[page].visits++;
+                    pageStats[page].unique.add(visitor.ip);
+                });
+                
+                const pagesContainer = document.getElementById('pagesStats');
+                const html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الصفحة</th>
+                                <th>عدد الزيارات</th>
+                                <th>زوار فريدون</th>
+                                <th>النسبة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(pageStats).map(([page, stats]) => `
+                                <tr>
+                                    <td><strong>${page}</strong></td>
+                                    <td>${stats.visits}</td>
+                                    <td>${stats.unique.size}</td>
+                                    <td>${((stats.visits / this.visitors.length) * 100).toFixed(1)}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                pagesContainer.innerHTML = html;
+            }
+            
+            getBrowserName(userAgent) {
+                if (!userAgent) return 'غير معروف';
+                
+                if (userAgent.includes('Chrome')) return 'Chrome';
+                if (userAgent.includes('Firefox')) return 'Firefox';
+                if (userAgent.includes('Safari')) return 'Safari';
+                if (userAgent.includes('Edge')) return 'Edge';
+                
+                return 'متصفح آخر';
+            }
+            
+            getOSName(userAgent) {
+                if (!userAgent) return 'غير معروف';
+                
+                if (userAgent.includes('Windows')) return 'Windows';
+                if (userAgent.includes('Mac')) return 'Mac';
+                if (userAgent.includes('Linux')) return 'Linux';
+                if (userAgent.includes('Android')) return 'Android';
+                if (userAgent.includes('iOS')) return 'iOS';
+                
+                return 'نظام آخر';
+            }
+            
+            getDomain(url) {
+                try {
+                    return new URL(url).hostname;
+                } catch {
+                    return url;
+                }
+            }
+            
+            setupRealtimeListeners() {
+                // تحديث فوري عند إضافة زوار جدد
+                db.collection('visitors')
+                    .orderBy('timestamp', 'desc')
+                    .limit(100)
+                    .onSnapshot(() => {
+                        this.loadVisitors();
+                    });
+            }
+            
+            setupAutoRefresh() {
+                // تحديث الإحصائيات كل دقيقة
+                setInterval(() => {
+                    this.updateStats();
+                }, 60000);
+            }
         }
         
-        // تحميل البيانات عند فتح الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
-            updateStats();
-            loadVisitors();
-        });
+        // وظائف عامة
+        function filterByPeriod(period) {
+            visitorsManager.currentPeriod = period;
+            visitorsManager.renderVisitors();
+        }
+        
+        function filterByPage(page) {
+            visitorsManager.currentPageFilter = page;
+            visitorsManager.renderVisitors();
+        }
+        
+        async function clearOldVisitors() {
+            if (confirm('⚠️ هل أنت متأكد من مسح زوار الشهر الماضي؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                try {
+                    const monthAgo = new Date();
+                    monthAgo.setMonth(monthAgo.getMonth() - 1);
+                    
+                    const oldVisitors = await db.collection('visitors')
+                        .where('timestamp', '<', monthAgo)
+                        .get();
+                    
+                    const batch = db.batch();
+                    oldVisitors.docs.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+                    
+                    await batch.commit();
+                    alert(`✅ تم مسح ${oldVisitors.size} زيارة قديمة`);
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في مسح الزوار القديمة:', error);
+                    alert('❌ حدث خطأ في مسح البيانات');
+                }
+            }
+        }
+        
+        function exportVisitors() {
+            const data = visitorsManager.filteredVisitors.map(visitor => ({
+                'التاريخ': visitor.timestamp.toDate().toLocaleDateString('ar-SA'),
+                'الوقت': visitor.timestamp.toDate().toLocaleTimeString('ar-SA'),
+                'الصفحة': visitor.page,
+                'IP': visitor.ip,
+                'المتصفح': visitorsManager.getBrowserName(visitor.userAgent),
+                'النظام': visitorsManager.getOSName(visitor.userAgent),
+                'المصدر': visitor.referrer || 'مباشر',
+                'البلد': visitor.country || 'غير معروف',
+                'المدينة': visitor.city || 'غير معروف',
+                'مدة الزيارة': visitor.duration ? `${visitor.duration} ثانية` : 'غير معروف'
+            }));
+            
+            const csv = convertToCSV(data);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `زوار_mauri-services_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function convertToCSV(objArray) {
+            const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            let str = '\uFEFF' + Object.keys(array[0]).join(',') + '\r\n';
+            
+            for (let i = 0; i < array.length; i++) {
+                let line = '';
+                for (let index in array[i]) {
+                    if (line !== '') line += ',';
+                    line += `"${array[i][index]}"`;
+                }
+                str += line + '\r\n';
+            }
+            return str;
+        }
+        
+        // بدء النظام
+        let visitorsManager;
+        function initVisitorsPage() {
+            visitorsManager = new VisitorsManager();
+        }
     </script>
 </body>
 </html>

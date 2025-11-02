@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الإعدادات - Mauri Services</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -30,12 +36,14 @@
             background: #2c5aa0;
             color: white;
             padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         
         .admin-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 2rem;
             padding: 0.5rem 1rem;
             border-radius: 5px;
             transition: background 0.3s;
@@ -51,10 +59,19 @@
         
         .section {
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
+            padding: 1.5rem;
+            border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
         }
         
         .form-group {
@@ -65,6 +82,7 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            color: #2c5aa0;
         }
         
         .form-group input,
@@ -75,15 +93,24 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2c5aa0;
+            outline: none;
         }
         
         .btn {
             padding: 0.8rem 1.5rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 1rem;
             margin: 0.25rem;
+            transition: all 0.3s ease;
         }
         
         .btn-primary {
@@ -91,9 +118,24 @@
             color: white;
         }
         
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
         .btn-danger {
             background: #dc3545;
             color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
         
         .logout-btn {
@@ -116,175 +158,599 @@
             padding: 1.5rem;
             border-radius: 10px;
             border-left: 4px solid #2c5aa0;
+            margin-bottom: 1rem;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #2c5aa0;
+            color: #2c5aa0;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .price-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .danger-zone {
+            background: #fff5f5;
+            border: 2px solid #dc3545;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        .danger-zone h3 {
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .admin-header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-buttons {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                padding: 0.8rem 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <header class="admin-header">
-        <h1>الإعدادات - Mauri Services</h1>
+        <h1>🚀 الإعدادات - Mauri Services</h1>
         <div>
-            <span>مرحباً، المدير</span>
+            <span id="adminName">مرحباً، المدير</span>
             <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
     
     <nav class="admin-nav">
-        <a href="admin-dashboard.html">لوحة التحكم</a>
-        <a href="admin-visitors.html">الزوار</a>
-        <a href="admin-orders.html">الطلبات</a>
-        <a href="admin-settings.html" class="active">الإعدادات</a>
-        <a href="admin-agents.html">الوكلاء</a>
+        <a href="admin-dashboard.html">📊 لوحة التحكم</a>
+        <a href="admin-visitors.html">👥 الزوار</a>
+        <a href="admin-orders.html">📦 الطلبات</a>
+        <a href="admin-messages.html">💬 الرسائل</a>
+        <a href="admin-agents.html">👥 الوكلاء</a>
+        <a href="admin-users.html">👤 المستخدمين</a>
+        <a href="admin-settings.html" class="active">⚙️ الإعدادات</a>
     </nav>
     
     <div class="content">
-        <div class="settings-grid">
-            <div class="section">
-                <h2>إعدادات الموقع</h2>
-                
-                <div class="form-group">
-                    <label>اسم الموقع</label>
-                    <input type="text" id="siteName" value="Mauri Services">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="openTab('general')">الإعدادات العامة</button>
+            <button class="tab-btn" onclick="openTab('pricing')">الأسعار والخدمات</button>
+            <button class="tab-btn" onclick="openTab('notifications')">الإشعارات</button>
+            <button class="tab-btn" onclick="openTab('backup')">النسخ الاحتياطي</button>
+        </div>
+        
+        <!-- الإعدادات العامة -->
+        <div id="general" class="tab-content active">
+            <div class="settings-grid">
+                <div class="section">
+                    <h2>🌐 إعدادات الموقع</h2>
+                    
+                    <div class="form-group">
+                        <label>اسم الموقع</label>
+                        <input type="text" id="siteName" placeholder="اسم الموقع">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>وصف الموقع</label>
+                        <textarea id="siteDescription" rows="3" placeholder="وصف الموقع"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" id="siteEmail" placeholder="البريد الإلكتروني">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>رقم الهاتف</label>
+                        <input type="tel" id="phoneNumber" placeholder="رقم الهاتف">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveGeneralSettings()">💾 حفظ الإعدادات</button>
                 </div>
                 
-                <div class="form-group">
-                    <label>رقم الهاتف</label>
-                    <input type="tel" id="phoneNumber" value="12345678">
+                <div class="section">
+                    <h2>📞 معلومات التواصل</h2>
+                    
+                    <div class="form-group">
+                        <label>رقم الواتساب</label>
+                        <input type="tel" id="whatsappNumber" placeholder="رقم الواتساب">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>رابط الفيسبوك</label>
+                        <input type="url" id="facebookUrl" placeholder="رابط الفيسبوك">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>رابط الإنستجرام</label>
+                        <input type="url" id="instagramUrl" placeholder="رابط الإنستجرام">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>العنوان</label>
+                        <textarea id="siteAddress" rows="2" placeholder="العنوان"></textarea>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveContactSettings()">💾 حفظ معلومات التواصل</button>
                 </div>
-                
-                <div class="form-group">
-                    <label>رقم الواتساب</label>
-                    <input type="tel" id="whatsappNumber" value="12345678">
-                </div>
-                
-                <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="email" value="info@mauri-services.com">
-                </div>
-                
-                <button class="btn btn-primary" onclick="saveSettings()">حفظ الإعدادات</button>
-            </div>
-            
-            <div class="section">
-                <h2>إعدادات الأسعار</h2>
-                
-                <div class="form-group">
-                    <label>سعر شهادة الميلاد (MRU)</label>
-                    <input type="number" id="birthCertificatePrice" value="1500">
-                </div>
-                
-                <div class="form-group">
-                    <label>سعر رخصة القيادة (MRU)</label>
-                    <input type="number" id="drivingLicensePrice" value="5000">
-                </div>
-                
-                <div class="form-group">
-                    <label>سعر شهادة الإقامة (MRU)</label>
-                    <input type="number" id="residencePrice" value="2000">
-                </div>
-                
-                <div class="form-group">
-                    <label>سعر جواز السفر (MRU)</label>
-                    <input type="number" id="passportPrice" value="15000">
-                </div>
-                
-                <button class="btn btn-primary" onclick="savePriceSettings()">حفظ الأسعار</button>
             </div>
         </div>
         
-        <div class="section">
-            <h2>إدارة البيانات</h2>
-            
-            <div class="setting-card">
-                <h3>مسح جميع البيانات</h3>
-                <p>هذا الإجراء سيحذف جميع الطلبات والزوار ولا يمكن التراجع عنه</p>
-                <button class="btn btn-danger" onclick="clearAllData()">مسح جميع البيانات</button>
+        <!-- الأسعار والخدمات -->
+        <div id="pricing" class="tab-content">
+            <div class="section">
+                <h2>💰 إعدادات الأسعار</h2>
+                
+                <div class="price-grid">
+                    <div class="price-item">
+                        <div class="form-group">
+                            <label>توصيل المشتريات (MRU)</label>
+                            <input type="number" id="priceShopping" placeholder="السعر">
+                        </div>
+                    </div>
+                    
+                    <div class="price-item">
+                        <div class="form-group">
+                            <label>خدمات المستندات (MRU)</label>
+                            <input type="number" id="priceDocuments" placeholder="السعر">
+                        </div>
+                    </div>
+                    
+                    <div class="price-item">
+                        <div class="form-group">
+                            <label>البحث عن المعلومات (MRU)</label>
+                            <input type="number" id="priceResearch" placeholder="السعر">
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" onclick="savePricingSettings()">💾 حفظ الأسعار</button>
             </div>
-            
-            <div class="setting-card">
-                <h3>تصدير البيانات</h3>
-                <p>حفظ نسخة احتياطية من جميع البيانات</p>
-                <button class="btn btn-primary" onclick="exportData()">تصدير البيانات</button>
+        </div>
+        
+        <!-- الإشعارات -->
+        <div id="notifications" class="tab-content">
+            <div class="section">
+                <h2>🔔 إعدادات الإشعارات</h2>
+                
+                <div class="setting-card">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="notifyNewOrders"> 
+                            إشعارات الطلبات الجديدة
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="notifyNewMessages"> 
+                            إشعارات الرسائل الجديدة
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="notifyNewAgents"> 
+                            إشعارات طلبات الوكلاء
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>البريد للإشعارات</label>
+                        <input type="email" id="notificationEmail" placeholder="البريد للإشعارات">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveNotificationSettings()">💾 حفظ الإعدادات</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- النسخ الاحتياطي -->
+        <div id="backup" class="tab-content">
+            <div class="section">
+                <h2>💾 إدارة البيانات</h2>
+                
+                <div class="setting-card">
+                    <h3>📥 تصدير البيانات</h3>
+                    <p>حفظ نسخة احتياطية من جميع البيانات</p>
+                    <button class="btn btn-primary" onclick="exportAllData()">📥 تصدير جميع البيانات</button>
+                    <button class="btn btn-warning" onclick="exportOrdersData()">📦 تصدير الطلبات فقط</button>
+                </div>
+                
+                <div class="danger-zone">
+                    <h3>⚠️ منطقة الخطر</h3>
+                    <p>هذه الإجراءات لا يمكن التراجع عنها</p>
+                    
+                    <div class="form-group">
+                        <label>اكتب "DELETE" للتأكيد</label>
+                        <input type="text" id="deleteConfirm" placeholder="اكتب DELETE هنا">
+                    </div>
+                    
+                    <button class="btn btn-danger" onclick="clearAllData()" id="deleteBtn" disabled>🗑️ مسح جميع البيانات</button>
+                    <button class="btn btn-danger" onclick="resetSettings()" id="resetBtn" disabled>🔄 إعادة تعيين الإعدادات</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // التحقق من تسجيل الدخول
-        if (!localStorage.getItem('adminLoggedIn')) {
-            window.location.href = 'admin-login.html';
-        }
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                // التحقق من دور المستخدم
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
+                        initSettingsPage();
+                    } else {
+                        alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
+                        logout();
+                    }
+                });
+            }
+        });
         
         function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            window.location.href = 'admin-login.html';
+            auth.signOut().then(() => {
+                window.location.href = 'admin-login.html';
+            });
         }
         
-        function saveSettings() {
-            const settings = {
-                siteName: document.getElementById('siteName').value,
-                phoneNumber: document.getElementById('phoneNumber').value,
-                whatsappNumber: document.getElementById('whatsappNumber').value,
-                email: document.getElementById('email').value
-            };
+        // نظام الإعدادات مع Firebase
+        class SettingsManager {
+            constructor() {
+                this.settings = {};
+                this.init();
+            }
             
-            localStorage.setItem('siteSettings', JSON.stringify(settings));
-            alert('تم حفظ الإعدادات بنجاح');
-        }
-        
-        function savePriceSettings() {
-            const prices = {
-                birthCertificate: document.getElementById('birthCertificatePrice').value,
-                drivingLicense: document.getElementById('drivingLicensePrice').value,
-                residence: document.getElementById('residencePrice').value,
-                passport: document.getElementById('passportPrice').value
-            };
+            async init() {
+                await this.loadSettings();
+                this.setupEventListeners();
+            }
             
-            localStorage.setItem('priceSettings', JSON.stringify(prices));
-            alert('تم حفظ الأسعار بنجاح');
-        }
-        
-        function clearAllData() {
-            if (confirm('هل أنت متأكد من مسح جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه!')) {
-                localStorage.removeItem('customer_orders');
-                localStorage.removeItem('website_visitors');
-                alert('تم مسح جميع البيانات');
+            async loadSettings() {
+                try {
+                    const settingsDoc = await db.collection('settings').doc('general').get();
+                    
+                    if (settingsDoc.exists) {
+                        this.settings = settingsDoc.data();
+                        this.populateForm();
+                    } else {
+                        // الإعدادات الافتراضية
+                        this.settings = this.getDefaultSettings();
+                        await this.saveSettings();
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الإعدادات:', error);
+                }
+            }
+            
+            getDefaultSettings() {
+                return {
+                    siteName: 'Mauri Services',
+                    siteDescription: 'منصة الخدمات المتكاملة في موريتانيا',
+                    siteEmail: 'mauriservices33@gmail.com',
+                    phoneNumber: '22244869780',
+                    whatsappNumber: '22244869780',
+                    facebookUrl: '',
+                    instagramUrl: '',
+                    siteAddress: 'نواكشوط، موريتانيا',
+                    
+                    pricing: {
+                        shopping: 100,
+                        documents: 200,
+                        research: 200
+                    },
+                    
+                    notifications: {
+                        newOrders: true,
+                        newMessages: true,
+                        newAgents: true,
+                        notificationEmail: 'mauriservices33@gmail.com'
+                    },
+                    
+                    updatedAt: new Date()
+                };
+            }
+            
+            populateForm() {
+                // الإعدادات العامة
+                document.getElementById('siteName').value = this.settings.siteName || '';
+                document.getElementById('siteDescription').value = this.settings.siteDescription || '';
+                document.getElementById('siteEmail').value = this.settings.siteEmail || '';
+                document.getElementById('phoneNumber').value = this.settings.phoneNumber || '';
+                
+                // معلومات التواصل
+                document.getElementById('whatsappNumber').value = this.settings.whatsappNumber || '';
+                document.getElementById('facebookUrl').value = this.settings.facebookUrl || '';
+                document.getElementById('instagramUrl').value = this.settings.instagramUrl || '';
+                document.getElementById('siteAddress').value = this.settings.siteAddress || '';
+                
+                // الأسعار
+                document.getElementById('priceShopping').value = this.settings.pricing?.shopping || '';
+                document.getElementById('priceDocuments').value = this.settings.pricing?.documents || '';
+                document.getElementById('priceResearch').value = this.settings.pricing?.research || '';
+                
+                // الإشعارات
+                document.getElementById('notifyNewOrders').checked = this.settings.notifications?.newOrders || false;
+                document.getElementById('notifyNewMessages').checked = this.settings.notifications?.newMessages || false;
+                document.getElementById('notifyNewAgents').checked = this.settings.notifications?.newAgents || false;
+                document.getElementById('notificationEmail').value = this.settings.notifications?.notificationEmail || '';
+            }
+            
+            async saveSettings() {
+                try {
+                    await db.collection('settings').doc('general').set({
+                        ...this.settings,
+                        updatedAt: new Date()
+                    });
+                    
+                    return true;
+                } catch (error) {
+                    console.error('❌ خطأ في حفظ الإعدادات:', error);
+                    return false;
+                }
+            }
+            
+            setupEventListeners() {
+                // تفعيل/تعطيل أزرار الحذف
+                document.getElementById('deleteConfirm').addEventListener('input', function() {
+                    const deleteBtn = document.getElementById('deleteBtn');
+                    const resetBtn = document.getElementById('resetBtn');
+                    const isConfirmed = this.value === 'DELETE';
+                    
+                    deleteBtn.disabled = !isConfirmed;
+                    resetBtn.disabled = !isConfirmed;
+                });
             }
         }
         
-        function exportData() {
-            const orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-            const visitors = JSON.parse(localStorage.getItem('website_visitors')) || [];
+        // وظائف عامة
+        function openTab(tabName) {
+            // إخفاء كل المحتويات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
             
-            const data = {
-                orders: orders,
-                visitors: visitors,
-                exportDate: new Date().toLocaleString('ar-SA')
-            };
+            // إلغاء تنشيط كل الأزرار
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
             
+            // إظهار المحتوى المطلوب
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        async function saveGeneralSettings() {
+            settingsManager.settings.siteName = document.getElementById('siteName').value;
+            settingsManager.settings.siteDescription = document.getElementById('siteDescription').value;
+            settingsManager.settings.siteEmail = document.getElementById('siteEmail').value;
+            settingsManager.settings.phoneNumber = document.getElementById('phoneNumber').value;
+            
+            const success = await settingsManager.saveSettings();
+            if (success) {
+                alert('✅ تم حفظ الإعدادات العامة بنجاح');
+            } else {
+                alert('❌ حدث خطأ في حفظ الإعدادات');
+            }
+        }
+        
+        async function saveContactSettings() {
+            settingsManager.settings.whatsappNumber = document.getElementById('whatsappNumber').value;
+            settingsManager.settings.facebookUrl = document.getElementById('facebookUrl').value;
+            settingsManager.settings.instagramUrl = document.getElementById('instagramUrl').value;
+            settingsManager.settings.siteAddress = document.getElementById('siteAddress').value;
+            
+            const success = await settingsManager.saveSettings();
+            if (success) {
+                alert('✅ تم حفظ معلومات التواصل بنجاح');
+            } else {
+                alert('❌ حدث خطأ في حفظ الإعدادات');
+            }
+        }
+        
+        async function savePricingSettings() {
+            if (!settingsManager.settings.pricing) {
+                settingsManager.settings.pricing = {};
+            }
+            
+            settingsManager.settings.pricing.shopping = parseInt(document.getElementById('priceShopping').value) || 0;
+            settingsManager.settings.pricing.documents = parseInt(document.getElementById('priceDocuments').value) || 0;
+            settingsManager.settings.pricing.research = parseInt(document.getElementById('priceResearch').value) || 0;
+            
+            const success = await settingsManager.saveSettings();
+            if (success) {
+                alert('✅ تم حفظ الأسعار بنجاح');
+            } else {
+                alert('❌ حدث خطأ في حفظ الأسعار');
+            }
+        }
+        
+        async function saveNotificationSettings() {
+            if (!settingsManager.settings.notifications) {
+                settingsManager.settings.notifications = {};
+            }
+            
+            settingsManager.settings.notifications.newOrders = document.getElementById('notifyNewOrders').checked;
+            settingsManager.settings.notifications.newMessages = document.getElementById('notifyNewMessages').checked;
+            settingsManager.settings.notifications.newAgents = document.getElementById('notifyNewAgents').checked;
+            settingsManager.settings.notifications.notificationEmail = document.getElementById('notificationEmail').value;
+            
+            const success = await settingsManager.saveSettings();
+            if (success) {
+                alert('✅ تم حفظ إعدادات الإشعارات بنجاح');
+            } else {
+                alert('❌ حدث خطأ في حفظ الإعدادات');
+            }
+        }
+        
+        async function exportAllData() {
+            try {
+                // جلب جميع البيانات
+                const [ordersSnapshot, messagesSnapshot, agentsSnapshot, visitorsSnapshot] = await Promise.all([
+                    db.collection('orders').get(),
+                    db.collection('messages').get(),
+                    db.collection('agent_applications').get(),
+                    db.collection('visitors').get()
+                ]);
+                
+                const data = {
+                    orders: ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    messages: messagesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    agents: agentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    visitors: visitorsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    exportDate: new Date().toLocaleString('ar-SA'),
+                    totalRecords: ordersSnapshot.size + messagesSnapshot.size + agentsSnapshot.size + visitorsSnapshot.size
+                };
+                
+                downloadJSON(data, `backup_mauri-services_${new Date().toISOString().split('T')[0]}.json`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تصدير البيانات:', error);
+                alert('❌ حدث خطأ في تصدير البيانات');
+            }
+        }
+        
+        async function exportOrdersData() {
+            try {
+                const ordersSnapshot = await db.collection('orders').get();
+                const data = {
+                    orders: ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    exportDate: new Date().toLocaleString('ar-SA'),
+                    totalOrders: ordersSnapshot.size
+                };
+                
+                downloadJSON(data, `orders_mauri-services_${new Date().toISOString().split('T')[0]}.json`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تصدير الطلبات:', error);
+                alert('❌ حدث خطأ في تصدير الطلبات');
+            }
+        }
+        
+        function downloadJSON(data, filename) {
             const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
             
             const link = document.createElement('a');
             link.href = URL.createObjectURL(dataBlob);
-            link.download = 'mauri-services-backup.json';
+            link.download = filename;
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+            
+            alert(`✅ تم تصدير ${filename} بنجاح`);
         }
         
-        // تحميل الإعدادات المحفوظة
-        document.addEventListener('DOMContentLoaded', function() {
-            const settings = JSON.parse(localStorage.getItem('siteSettings')) || {};
-            const prices = JSON.parse(localStorage.getItem('priceSettings')) || {};
-            
-            if (settings.siteName) document.getElementById('siteName').value = settings.siteName;
-            if (settings.phoneNumber) document.getElementById('phoneNumber').value = settings.phoneNumber;
-            if (settings.whatsappNumber) document.getElementById('whatsappNumber').value = settings.whatsappNumber;
-            if (settings.email) document.getElementById('email').value = settings.email;
-            
-            if (prices.birthCertificate) document.getElementById('birthCertificatePrice').value = prices.birthCertificate;
-            if (prices.drivingLicense) document.getElementById('drivingLicensePrice').value = prices.drivingLicense;
-            if (prices.residence) document.getElementById('residencePrice').value = prices.residence;
-            if (prices.passport) document.getElementById('passportPrice').value = prices.passport;
-        });
+        async function clearAllData() {
+            if (confirm('⚠️ هل أنت متأكد من مسح جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه!')) {
+                try {
+                    // يمكن إضافة منطق مسح البيانات هنا
+                    alert('🚧 هذه الخاصية قيد التطوير');
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في مسح البيانات:', error);
+                    alert('❌ حدث خطأ في مسح البيانات');
+                }
+            }
+        }
+        
+        async function resetSettings() {
+            if (confirm('⚠️ هل أنت متأكد من إعادة تعيين جميع الإعدادات؟ سيتم فقدان جميع التغييرات!')) {
+                try {
+                    settingsManager.settings = settingsManager.getDefaultSettings();
+                    await settingsManager.saveSettings();
+                    settingsManager.populateForm();
+                    
+                    alert('✅ تم إعادة تعيين الإعدادات بنجاح');
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في إعادة التعيين:', error);
+                    alert('❌ حدث خطأ في إعادة التعيين');
+                }
+            }
+        }
+        
+        // بدء النظام
+        let settingsManager;
+        function initSettingsPage() {
+            settingsManager = new SettingsManager();
+        }
     </script>
 </body>
 </html>

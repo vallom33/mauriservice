@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الرسائل - Mauri Services</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -30,12 +36,14 @@
             background: #2c5aa0;
             color: white;
             padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         
         .admin-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 2rem;
             padding: 0.5rem 1rem;
             border-radius: 5px;
             transition: background 0.3s;
@@ -51,8 +59,8 @@
         
         .section {
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
+            padding: 1.5rem;
+            border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
@@ -72,16 +80,19 @@
         th {
             background: #f8f9fa;
             font-weight: bold;
+            color: #2c5aa0;
         }
         
         .btn {
             padding: 0.5rem 1rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
             margin: 0.25rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
         
         .btn-primary {
@@ -94,6 +105,16 @@
             color: white;
         }
         
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
         .logout-btn {
             background: #dc3545;
             color: white;
@@ -103,122 +124,485 @@
             cursor: pointer;
         }
         
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #2c5aa0;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
         .message-unread {
             background: #fff3e0;
+            font-weight: bold;
         }
         
         .message-read {
             background: white;
         }
+        
+        .status-new {
+            background: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .status-read {
+            background: #28a745;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="admin-header">
-        <h1>إدارة الرسائل - Mauri Services</h1>
+        <h1>💬 إدارة الرسائل - Mauri Services</h1>
         <div>
-            <span>مرحباً، المدير</span>
+            <span id="adminName">مرحباً، المدير</span>
             <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </header>
     
     <nav class="admin-nav">
-        <a href="admin-dashboard.html">لوحة التحكم</a>
-        <a href="admin-visitors.html">الزوار</a>
-        <a href="admin-orders.html">الطلبات</a>
-        <a href="admin-messages.html" class="active">الرسائل</a>
-        <a href="admin-content.html">المحتوى</a>
-        <a href="admin-agents.html">الوكلاء</a>
-        <a href="admin-settings.html">الإعدادات</a>
+        <a href="admin-dashboard.html">📊 لوحة التحكم</a>
+        <a href="admin-visitors.html">👥 الزوار</a>
+        <a href="admin-orders.html">📦 الطلبات</a>
+        <a href="admin-messages.html" class="active">💬 الرسائل</a>
+        <a href="admin-agents.html">👥 الوكلاء</a>
+        <a href="admin-users.html">👤 المستخدمين</a>
+        <a href="admin-settings.html">⚙️ الإعدادات</a>
     </nav>
     
     <div class="content">
+        <div class="stats-cards">
+            <div class="stat-card">
+                <span class="stat-number" id="totalMessages">0</span>
+                <p>إجمالي الرسائل</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="unreadMessages">0</span>
+                <p>رسائل غير مقروءة</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="todayMessages">0</span>
+                <p>رسائل اليوم</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="responseRate">0%</span>
+                <p>معدل الرد</p>
+            </div>
+        </div>
+        
         <div class="section">
-            <h2>جميع الرسائل</h2>
-            <div id="messagesTable">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>📨 جميع الرسائل</h2>
+                <div id="messagesCount" style="background: #2c5aa0; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem;">0 رسالة</div>
+            </div>
+            
+            <div class="filters">
+                <select class="filter-select" onchange="filterMessages(this.value)">
+                    <option value="all">جميع الرسائل</option>
+                    <option value="unread">غير مقروء</option>
+                    <option value="read">مقروء</option>
+                    <option value="today">رسائل اليوم</option>
+                </select>
+                <select class="filter-select" onchange="filterByService(this.value)">
+                    <option value="all">جميع الخدمات</option>
+                    <option value="delivery">توصيل</option>
+                    <option value="documents">مستندات</option>
+                    <option value="payment">دفع</option>
+                    <option value="information">معلومات</option>
+                    <option value="agent">انضم كوكيل</option>
+                </select>
+            </div>
+            
+            <div id="messagesTable" class="loading">
+                ⏳ جاري تحميل الرسائل...
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تفاصيل الرسالة -->
+    <div id="messageModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>📩 تفاصيل الرسالة</h3>
+                <button onclick="closeMessageModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            <div id="messageDetails">
                 <!-- سيتم ملؤها بالبيانات -->
             </div>
         </div>
     </div>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentMessage = null;
+        let currentFilter = 'all';
+        let currentServiceFilter = 'all';
+
         // التحقق من تسجيل الدخول
-        if (!localStorage.getItem('adminLoggedIn')) {
-            window.location.href = 'admin-login.html';
-        }
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
+                        initMessagesManager();
+                    } else {
+                        alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
+                        logout();
+                    }
+                });
+            }
+        });
         
         function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            window.location.href = 'admin-login.html';
+            auth.signOut().then(() => {
+                window.location.href = 'admin-login.html';
+            });
         }
-        
-        function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
-            const table = document.getElementById('messagesTable');
-            
-            if (messages.length === 0) {
-                table.innerHTML = '<p>لا توجد رسائل بعد</p>';
-                return;
+
+        class MessagesManager {
+            constructor() {
+                this.init();
             }
             
-            const html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الاسم</th>
-                            <th>الهاتف</th>
-                            <th>الخدمة</th>
-                            <th>الرسالة</th>
-                            <th>التاريخ</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${messages.slice().reverse().map((message, index) => `
-                            <tr class="${message.read ? 'message-read' : 'message-unread'}">
-                                <td><strong>${message.name}</strong></td>
-                                <td>${message.phone}</td>
-                                <td>${message.service}</td>
-                                <td>${message.message}</td>
-                                <td>${message.timestamp}</td>
-                                <td>
-                                    ${message.read ? 'مقروء' : '<span style="color: red">جديد</span>'}
-                                </td>
-                                <td>
-                                    <button class="btn btn-primary" onclick="markAsRead(${messages.length - 1 - index})">تعيين كمقروء</button>
-                                    <button class="btn btn-danger" onclick="deleteMessage(${messages.length - 1 - index})">حذف</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+            async init() {
+                await this.loadStats();
+                await this.loadMessages();
+                this.setupRealtimeListeners();
+            }
             
-            table.innerHTML = html;
+            async loadStats() {
+                try {
+                    const messagesSnapshot = await db.collection('messages').get();
+                    const messages = messagesSnapshot.docs.map(doc => doc.data());
+                    
+                    const totalMessages = messages.length;
+                    const unreadMessages = messages.filter(msg => !msg.read).length;
+                    
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const todayMessages = messages.filter(msg => 
+                        msg.timestamp.toDate() >= today
+                    ).length;
+                    
+                    // معدل الرد (محاكاة)
+                    const responseRate = Math.round((messages.filter(msg => msg.responded).length / totalMessages) * 100) || 0;
+                    
+                    document.getElementById('totalMessages').textContent = totalMessages;
+                    document.getElementById('unreadMessages').textContent = unreadMessages;
+                    document.getElementById('todayMessages').textContent = todayMessages;
+                    document.getElementById('responseRate').textContent = responseRate + '%';
+                    
+                    document.getElementById('messagesCount').textContent = totalMessages + ' رسالة';
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الإحصائيات:', error);
+                }
+            }
+            
+            async loadMessages() {
+                try {
+                    let query = db.collection('messages').orderBy('timestamp', 'desc');
+                    
+                    // تطبيق الفلترة
+                    if (currentFilter === 'unread') {
+                        query = query.where('read', '==', false);
+                    } else if (currentFilter === 'read') {
+                        query = query.where('read', '==', true);
+                    } else if (currentFilter === 'today') {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        query = query.where('timestamp', '>=', today);
+                    }
+                    
+                    const messagesSnapshot = await query.get();
+                    
+                    if (messagesSnapshot.empty) {
+                        document.getElementById('messagesTable').innerHTML = '<p>📭 لا توجد رسائل</p>';
+                        return;
+                    }
+                    
+                    let messages = messagesSnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    
+                    // فلترة حسب الخدمة
+                    if (currentServiceFilter !== 'all') {
+                        messages = messages.filter(msg => 
+                            msg.service && msg.service.includes(this.getServiceKeyword(currentServiceFilter))
+                        );
+                    }
+                    
+                    const html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>الهاتف</th>
+                                    <th>الخدمة</th>
+                                    <th>الرسالة</th>
+                                    <th>التاريخ</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${messages.map(message => `
+                                    <tr class="${message.read ? 'message-read' : 'message-unread'}">
+                                        <td><strong>${message.name}</strong></td>
+                                        <td>${message.phone}</td>
+                                        <td>${message.service || 'استفسار عام'}</td>
+                                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            ${message.message}
+                                        </td>
+                                        <td>${message.timestamp.toDate().toLocaleString('ar-SA')}</td>
+                                        <td>
+                                            <span class="status-${message.read ? 'read' : 'new'}">
+                                                ${message.read ? 'مقروء' : 'جديد'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary" onclick="viewMessage('${message.id}')">👁️ عرض</button>
+                                            ${!message.read ? 
+                                                `<button class="btn btn-success" onclick="markAsRead('${message.id}')">✅ مقروء</button>` : 
+                                                ''
+                                            }
+                                            <button class="btn btn-danger" onclick="deleteMessage('${message.id}')">🗑️ حذف</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    document.getElementById('messagesTable').innerHTML = html;
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الرسائل:', error);
+                    document.getElementById('messagesTable').innerHTML = '<p>❌ حدث خطأ في تحميل البيانات</p>';
+                }
+            }
+            
+            getServiceKeyword(service) {
+                const serviceMap = {
+                    'delivery': 'توصيل',
+                    'documents': 'مستند',
+                    'payment': 'دفع',
+                    'information': 'معلومات',
+                    'agent': 'وكيل'
+                };
+                return serviceMap[service] || service;
+            }
+            
+            setupRealtimeListeners() {
+                // تحديث فوري للرسائل
+                db.collection('messages')
+                    .orderBy('timestamp', 'desc')
+                    .onSnapshot(() => {
+                        this.loadMessages();
+                        this.loadStats();
+                    });
+            }
         }
-        
-        function markAsRead(index) {
-            let messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
-            if (messages[index]) {
-                messages[index].read = true;
-                localStorage.setItem('customer_messages', JSON.stringify(messages));
-                loadMessages();
+
+        // دوال الإجراءات
+        async function markAsRead(messageId) {
+            try {
+                await db.collection('messages').doc(messageId).update({
+                    read: true,
+                    readAt: new Date(),
+                    readBy: auth.currentUser.uid
+                });
+                
+                // إعادة تحميل الرسائل
+                new MessagesManager().loadMessages();
+                
+            } catch (error) {
+                console.error('❌ خطأ في تعيين الرسالة كمقروءة:', error);
+                alert('❌ حدث خطأ في تحديث حالة الرسالة');
             }
         }
         
-        function deleteMessage(index) {
-            if (confirm('هل أنت متأكد من حذف هذه الرسالة؟')) {
-                let messages = JSON.parse(localStorage.getItem('customer_messages')) || [];
-                messages.splice(index, 1);
-                localStorage.setItem('customer_messages', JSON.stringify(messages));
-                loadMessages();
+        async function markAsUnread(messageId) {
+            try {
+                await db.collection('messages').doc(messageId).update({
+                    read: false,
+                    readAt: null,
+                    readBy: null
+                });
+                
+                new MessagesManager().loadMessages();
+                
+            } catch (error) {
+                console.error('❌ خطأ في تعيين الرسالة كغير مقروءة:', error);
             }
         }
         
-        // تحميل البيانات عند فتح الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
-            loadMessages();
-        });
+        async function deleteMessage(messageId) {
+            if (confirm('🗑️ هل أنت متأكد من حذف هذه الرسالة؟')) {
+                try {
+                    await db.collection('messages').doc(messageId).delete();
+                    alert('✅ تم حذف الرسالة بنجاح');
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في حذف الرسالة:', error);
+                    alert('❌ حدث خطأ في حذف الرسالة');
+                }
+            }
+        }
+        
+        async function viewMessage(messageId) {
+            try {
+                const messageDoc = await db.collection('messages').doc(messageId).get();
+                const messageData = messageDoc.data();
+                
+                // تعيين الرسالة كمقروءة إذا لم تكن
+                if (!messageData.read) {
+                    await markAsRead(messageId);
+                }
+                
+                document.getElementById('messageDetails').innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <p><strong>👤 الاسم:</strong> ${messageData.name}</p>
+                        <p><strong>📞 الهاتف:</strong> ${messageData.phone}</p>
+                        <p><strong>📧 البريد:</strong> ${messageData.email || 'غير محدد'}</p>
+                        <p><strong>📋 الخدمة:</strong> ${messageData.service || 'استفسار عام'}</p>
+                        <p><strong>📅 التاريخ:</strong> ${messageData.timestamp.toDate().toLocaleString('ar-SA')}</p>
+                        <p><strong>🔔 الحالة:</strong> ${messageData.read ? '✅ مقروء' : '🆕 جديد'}</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p><strong>💬 الرسالة:</strong></p>
+                        <p style="line-height: 1.6;">${messageData.message}</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="contactCustomer('${messageData.phone}')">📞 اتصل بالعميل</button>
+                        <button class="btn btn-success" onclick="whatsappCustomer('${messageData.phone}')">💬 واتساب</button>
+                        ${messageData.read ? 
+                            `<button class="btn btn-warning" onclick="markAsUnread('${messageId}')">🔄 تعيين كغير مقروء</button>` : 
+                            ''
+                        }
+                    </div>
+                `;
+                
+                document.getElementById('messageModal').style.display = 'flex';
+                currentMessage = messageId;
+                
+            } catch (error) {
+                console.error('❌ خطأ في عرض تفاصيل الرسالة:', error);
+                alert('❌ حدث خطأ في تحميل التفاصيل');
+            }
+        }
+        
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+            currentMessage = null;
+        }
+        
+        function contactCustomer(phone) {
+            window.open(`tel:${phone}`, '_self');
+        }
+        
+        function whatsappCustomer(phone) {
+            const message = 'مرحباً! شكراً لتواصلكم مع Mauri-Services. كيف يمكنني مساعدتك؟';
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+        
+        function filterMessages(filter) {
+            currentFilter = filter;
+            new MessagesManager().loadMessages();
+        }
+        
+        function filterByService(service) {
+            currentServiceFilter = service;
+            new MessagesManager().loadMessages();
+        }
+        
+        // بدء النظام
+        function initMessagesManager() {
+            new MessagesManager();
+        }
     </script>
 </body>
 </html>
