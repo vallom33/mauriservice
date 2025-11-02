@@ -191,26 +191,22 @@
             color: #666;
         }
 
-        .debug-info {
-            background: #f8f9fa;
+        .success-message {
+            background: #d4edda;
+            color: #155724;
             padding: 1rem;
             border-radius: 8px;
             margin: 1rem 0;
-            font-family: monospace;
-            font-size: 0.8rem;
-            border-right: 4px solid #2c5aa0;
+            border: 1px solid #c3e6cb;
         }
 
-        .debug-success {
-            background: #d4edda;
-            color: #155724;
-            border-color: #28a745;
-        }
-
-        .debug-error {
+        .error-message {
             background: #f8d7da;
             color: #721c24;
-            border-color: #dc3545;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #f5c6cb;
         }
 
         @media (max-width: 768px) {
@@ -249,13 +245,8 @@
     </nav>
     
     <div class="content">
-        <!-- زر التصحيح -->
-        <div style="margin-bottom: 1rem;">
-            <button class="btn btn-primary" onclick="debugFirestore()">🐛 تصحيح Firestore</button>
-            <button class="btn btn-warning" onclick="testCollections()">🧪 اختبار الـ Collections</button>
-        </div>
-
-        <div id="debugOutput"></div>
+        <!-- رسائل النظام -->
+        <div id="systemMessage"></div>
 
         <div class="stats-cards">
             <div class="stat-card">
@@ -322,88 +313,38 @@
         };
         
         // تهيئة Firebase
+        let app;
         try {
-            // إذا كان هناك تطبيق مسبق، احذفه أولاً
-            if (firebase.apps.length) {
+            // حذف أي تطبيق مسبق لتجنب التضارب
+            if (firebase.apps.length > 0) {
                 firebase.app().delete();
             }
-            firebase.initializeApp(firebaseConfig);
+            app = firebase.initializeApp(firebaseConfig);
             console.log('✅ Firebase initialized successfully');
         } catch (error) {
             console.log('✅ Firebase already initialized');
+            app = firebase.app();
         }
         
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // إضافة معالج للأخطاء العامة
+        // إعداد معالجة الأخطاء العامة
         window.addEventListener('error', function(e) {
             console.error('❌ Global error:', e.error);
-            showDebug('Global error: ' + e.error.message, 'error');
+            showSystemMessage('خطأ عام: ' + e.error.message, 'error');
         });
 
-        // دالة لعرض معلومات التصحيح
-        function showDebug(message, type = 'info') {
-            const debugOutput = document.getElementById('debugOutput');
-            const debugClass = type === 'error' ? 'debug-error' : type === 'success' ? 'debug-success' : 'debug-info';
-            debugOutput.innerHTML += `<div class="debug-info ${debugClass}">${new Date().toLocaleTimeString()} - ${message}</div>`;
-            debugOutput.scrollTop = debugOutput.scrollHeight;
-        }
-
-        // دالة لاختبار الـ Collections
-        async function testCollections() {
-            showDebug('🧪 بدء اختبار جميع الـ Collections...');
+        // دالة لعرض رسائل النظام
+        function showSystemMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('systemMessage');
+            const messageClass = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
             
-            const collections = [
-                'agent_applications',
-                'agents', 
-                'messages',
-                'orders',
-                'users',
-                'visitors'
-            ];
-
-            for (const collectionName of collections) {
-                try {
-                    const snapshot = await db.collection(collectionName).limit(5).get();
-                    showDebug(`✅ ${collectionName}: ${snapshot.size} وثيقة`, snapshot.size > 0 ? 'success' : 'info');
-                    
-                    if (snapshot.size > 0) {
-                        snapshot.docs.forEach(doc => {
-                            showDebug(`   📄 ${doc.id}: ${JSON.stringify(doc.data())}`);
-                        });
-                    }
-                } catch (error) {
-                    showDebug(`❌ ${collectionName}: ${error.message}`, 'error');
-                }
-            }
-        }
-
-        // دالة لتصحيح Firestore
-        async function debugFirestore() {
-            showDebug('🔍 بدء تصحيح Firestore...');
-            
-            try {
-                // اختبار الاتصال الأساسي
-                showDebug('📡 اختبار الاتصال بـ Firestore...');
-                
-                // اختبار قراءة من collection معروف (messages)
-                const messagesTest = await db.collection('messages').limit(1).get();
-                showDebug(`✅ messages collection: ${messagesTest.size} وثيقة`, 'success');
-                
-                // اختبار قراءة من agent_applications
-                const agentsTest = await db.collection('agent_applications').limit(1).get();
-                showDebug(`✅ agent_applications collection: ${agentsTest.size} وثيقة`, agentsTest.size > 0 ? 'success' : 'error');
-                
-                if (agentsTest.size > 0) {
-                    agentsTest.docs.forEach(doc => {
-                        showDebug(`   📄 نموذج بيانات: ${JSON.stringify(doc.data())}`);
-                    });
-                }
-                
-            } catch (error) {
-                showDebug(`❌ خطأ في تصحيح Firestore: ${error.message}`, 'error');
-            }
+            // إخفاء الرسالة بعد 5 ثواني
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
         }
 
         let currentApplication = null;
@@ -413,19 +354,20 @@
             if (!user) {
                 window.location.href = 'admin-login.html';
             } else {
-                showDebug('👤 تحقق من صلاحية المستخدم...');
+                console.log('👤 تحقق من صلاحية المستخدم...');
                 db.collection('users').doc(user.uid).get().then((doc) => {
                     if (doc.exists && doc.data().role === 'admin') {
                         document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
-                        showDebug('✅ تم التحقق من صلاحية المدير');
+                        console.log('✅ تم التحقق من صلاحية المدير');
                         initAgentsManager();
                     } else {
-                        showDebug('❌ ليس لديك صلاحية الدخول للوحة التحكم', 'error');
-                        alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
-                        logout();
+                        console.log('❌ ليس لديك صلاحية الدخول للوحة التحكم');
+                        showSystemMessage('❌ ليس لديك صلاحية الدخول للوحة التحكم', 'error');
+                        setTimeout(() => logout(), 2000);
                     }
                 }).catch(error => {
-                    showDebug(`❌ خطأ في التحقق من الصلاحية: ${error.message}`, 'error');
+                    console.error('❌ خطأ في التحقق من الصلاحية:', error);
+                    showSystemMessage('خطأ في التحقق من الصلاحية: ' + error.message, 'error');
                 });
             }
         });
@@ -442,31 +384,33 @@
             }
             
             async init() {
-                showDebug('🚀 بدء تهيئة نظام إدارة الوكلاء...');
+                console.log('🚀 بدء تهيئة نظام إدارة الوكلاء...');
                 try {
                     await this.loadStats();
                     await this.loadApplications();
                     await this.loadAgents();
                     this.setupRealtimeListeners();
-                    showDebug('✅ تم تهيئة نظام إدارة الوكلاء بنجاح');
+                    console.log('✅ تم تهيئة نظام إدارة الوكلاء بنجاح');
+                    showSystemMessage('✅ تم تحميل البيانات بنجاح', 'success');
                 } catch (error) {
-                    showDebug(`❌ خطأ في تهيئة النظام: ${error.message}`, 'error');
+                    console.error('❌ خطأ في تهيئة النظام:', error);
+                    showSystemMessage('خطأ في تحميل البيانات: ' + error.message, 'error');
                 }
             }
             
             async loadStats() {
                 try {
-                    showDebug('📊 جاري تحميل الإحصائيات...');
+                    console.log('📊 جاري تحميل الإحصائيات...');
                     
                     // جلب طلبات الانضمام
                     const applicationsSnapshot = await db.collection('agent_applications').get();
-                    showDebug(`✅ تم تحميل ${applicationsSnapshot.size} طلب انضمام`);
+                    console.log('✅ تم تحميل', applicationsSnapshot.size, 'طلب انضمام');
                     
                     // جلب الوكلاء
                     const agentsSnapshot = await db.collection('users')
                         .where('role', '==', 'agent')
                         .get();
-                    showDebug(`✅ تم تحميل ${agentsSnapshot.size} وكيل`);
+                    console.log('✅ تم تحميل', agentsSnapshot.size, 'وكيل');
                     
                     const pendingApplications = applicationsSnapshot.docs.filter(doc => 
                         doc.data().status === 'pending'
@@ -485,22 +429,23 @@
                     document.getElementById('applicationsCount').textContent = pendingApplications + ' طلب';
                     document.getElementById('agentsCount').textContent = agentsSnapshot.size + ' وكيل';
                     
-                    showDebug(`✅ الإحصائيات: ${pendingApplications} طلب pending, ${activeAgents} وكيل active`);
+                    console.log('✅ الإحصائيات:', pendingApplications, 'طلب pending,', activeAgents, 'وكيل active');
                     
                 } catch (error) {
-                    showDebug(`❌ خطأ في تحميل الإحصائيات: ${error.message}`, 'error');
+                    console.error('❌ خطأ في تحميل الإحصائيات:', error);
+                    throw error;
                 }
             }
             
             async loadApplications() {
                 try {
-                    showDebug('📋 جاري تحميل طلبات الانضمام...');
+                    console.log('📋 جاري تحميل طلبات الانضمام...');
                     
                     const applicationsSnapshot = await db.collection('agent_applications')
                         .orderBy('timestamp', 'desc')
                         .get();
                     
-                    showDebug(`✅ عدد الطلبات: ${applicationsSnapshot.size}`);
+                    console.log('✅ عدد الطلبات:', applicationsSnapshot.size);
                     
                     if (applicationsSnapshot.empty) {
                         document.getElementById('applicationsTable').innerHTML = `
@@ -521,6 +466,7 @@
                                     <th>الهاتف</th>
                                     <th>العنوان</th>
                                     <th>البريد الإلكتروني</th>
+                                    <th>وسيلة النقل</th>
                                     <th>التاريخ</th>
                                     <th>الحالة</th>
                                     <th>الإجراءات</th>
@@ -541,6 +487,7 @@
                                             <td>${data.phone || 'غير محدد'}</td>
                                             <td>${data.address || 'غير محدد'}</td>
                                             <td>${data.userEmail || 'غير محدد'}</td>
+                                            <td>${this.getTransportText(data.transport)}</td>
                                             <td>${data.timestamp ? data.timestamp.toDate().toLocaleString('ar-SA') : 'غير محدد'}</td>
                                             <td>
                                                 <span class="status-${statusClass}">${statusText}</span>
@@ -560,30 +507,31 @@
                     `;
                     
                     document.getElementById('applicationsTable').innerHTML = html;
-                    showDebug('✅ تم تحميل طلبات الانضمام بنجاح');
+                    console.log('✅ تم تحميل طلبات الانضمام بنجاح');
                     
                 } catch (error) {
-                    showDebug(`❌ خطأ في تحميل طلبات الانضمام: ${error.message}`, 'error');
+                    console.error('❌ خطأ في تحميل طلبات الانضمام:', error);
                     document.getElementById('applicationsTable').innerHTML = `
                         <div class="empty-state">
                             <div>❌</div>
                             <h3>حدث خطأ في تحميل البيانات</h3>
                             <p>${error.message}</p>
-                            <button class="btn btn-primary" onclick="testCollections()">🧪 اختبار الـ Collections</button>
+                            <button class="btn btn-primary" onclick="location.reload()">🔄 إعادة تحميل الصفحة</button>
                         </div>
                     `;
+                    throw error;
                 }
             }
             
             async loadAgents() {
                 try {
-                    showDebug('👥 جاري تحميل بيانات الوكلاء...');
+                    console.log('👥 جاري تحميل بيانات الوكلاء...');
                     
                     const agentsSnapshot = await db.collection('users')
                         .where('role', '==', 'agent')
                         .get();
                     
-                    showDebug(`✅ عدد الوكلاء: ${agentsSnapshot.size}`);
+                    console.log('✅ عدد الوكلاء:', agentsSnapshot.size);
                     
                     if (agentsSnapshot.empty) {
                         document.getElementById('agentsTable').innerHTML = `
@@ -604,6 +552,7 @@
                                     <th>الهاتف</th>
                                     <th>البريد الإلكتروني</th>
                                     <th>العنوان</th>
+                                    <th>وسيلة النقل</th>
                                     <th>تاريخ الانضمام</th>
                                     <th>الحالة</th>
                                     <th>الإجراءات</th>
@@ -619,6 +568,7 @@
                                             <td>${data.phone || 'غير محدد'}</td>
                                             <td>${data.email || 'غير محدد'}</td>
                                             <td>${data.address || 'غير محدد'}</td>
+                                            <td>${this.getTransportText(data.transport)}</td>
                                             <td>${data.createdAt ? data.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}</td>
                                             <td>
                                                 <span class="status-${status === 'active' ? 'approved' : 'rejected'}">
@@ -640,10 +590,10 @@
                     `;
                     
                     document.getElementById('agentsTable').innerHTML = html;
-                    showDebug('✅ تم تحميل الوكلاء بنجاح');
+                    console.log('✅ تم تحميل الوكلاء بنجاح');
                     
                 } catch (error) {
-                    showDebug(`❌ خطأ في تحميل الوكلاء: ${error.message}`, 'error');
+                    console.error('❌ خطأ في تحميل الوكلاء:', error);
                     document.getElementById('agentsTable').innerHTML = `
                         <div class="empty-state">
                             <div>❌</div>
@@ -651,29 +601,41 @@
                             <p>${error.message}</p>
                         </div>
                     `;
+                    throw error;
                 }
+            }
+            
+            getTransportText(transport) {
+                const transportMap = {
+                    'motorcycle': 'دراجة نارية',
+                    'car': 'سيارة',
+                    'bicycle': 'دراجة هوائية',
+                    'walking': 'سيراً على الأقدام',
+                    'bike': 'دراجة نارية'
+                };
+                return transportMap[transport] || transport || 'غير محدد';
             }
             
             setupRealtimeListeners() {
                 // تحديث فوري للطلبات
                 db.collection('agent_applications')
                     .onSnapshot(() => {
-                        showDebug('🔄 تحديث تلقائي لطلبات الانضمام');
+                        console.log('🔄 تحديث تلقائي لطلبات الانضمام');
                         this.loadApplications();
                         this.loadStats();
                     }, error => {
-                        showDebug(`❌ خطأ في listener الطلبات: ${error.message}`, 'error');
+                        console.error('❌ خطأ في listener الطلبات:', error);
                     });
                 
                 // تحديث فوري للوكلاء
                 db.collection('users')
                     .where('role', '==', 'agent')
                     .onSnapshot(() => {
-                        showDebug('🔄 تحديث تلقائي للوكلاء');
+                        console.log('🔄 تحديث تلقائي للوكلاء');
                         this.loadAgents();
                         this.loadStats();
                     }, error => {
-                        showDebug(`❌ خطأ في listener الوكلاء: ${error.message}`, 'error');
+                        console.error('❌ خطأ في listener الوكلاء:', error);
                     });
             }
         }
@@ -682,7 +644,7 @@
         async function approveApplication(applicationId) {
             if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
                 try {
-                    showDebug(`✅ قبول الطلب: ${applicationId}`);
+                    console.log('✅ قبول الطلب:', applicationId);
                     const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
                     const applicationData = applicationDoc.data();
                     
@@ -693,12 +655,25 @@
                         approvedBy: auth.currentUser.uid
                     });
                     
-                    showDebug('🎉 تم قبول الوكيل بنجاح!');
-                    alert('🎉 تم قبول الوكيل بنجاح!');
+                    // إنشاء مستخدم وكيل جديد
+                    await db.collection('users').add({
+                        name: applicationData.name,
+                        phone: applicationData.phone,
+                        email: applicationData.userEmail || '',
+                        role: 'agent',
+                        status: 'active',
+                        address: applicationData.address,
+                        transport: applicationData.transport,
+                        experience: applicationData.experience,
+                        createdAt: new Date(),
+                        joinedAt: new Date()
+                    });
+                    
+                    showSystemMessage('🎉 تم قبول الوكيل بنجاح!', 'success');
                     
                 } catch (error) {
-                    showDebug(`❌ خطأ في قبول الطلب: ${error.message}`, 'error');
-                    alert('❌ حدث خطأ في قبول الطلب: ' + error.message);
+                    console.error('❌ خطأ في قبول الطلب:', error);
+                    showSystemMessage('حدث خطأ في قبول الطلب: ' + error.message, 'error');
                 }
             }
         }
@@ -706,19 +681,19 @@
         async function rejectApplication(applicationId) {
             if (confirm('❌ هل أنت متأكد من رفض هذا الطلب؟')) {
                 try {
-                    showDebug(`❌ رفض الطلب: ${applicationId}`);
+                    console.log('❌ رفض الطلب:', applicationId);
                     await db.collection('agent_applications').doc(applicationId).update({
                         status: 'rejected',
                         rejectedAt: new Date(),
-                        rejectedBy: auth.currentUser.uid
+                        rejectedBy: auth.currentUser.uid,
+                        rejectionReason: 'مرفوض من قبل الإدارة'
                     });
                     
-                    showDebug('✅ تم رفض الطلب بنجاح');
-                    alert('✅ تم رفض الطلب بنجاح');
+                    showSystemMessage('✅ تم رفض الطلب بنجاح', 'success');
                     
                 } catch (error) {
-                    showDebug(`❌ خطأ في رفض الطلب: ${error.message}`, 'error');
-                    alert('❌ حدث خطأ في رفض الطلب: ' + error.message);
+                    console.error('❌ خطأ في رفض الطلب:', error);
+                    showSystemMessage('حدث خطأ في رفض الطلب: ' + error.message, 'error');
                 }
             }
         }
@@ -734,6 +709,7 @@
                         <p><strong>📞 الهاتف:</strong> ${applicationData.phone || 'غير محدد'}</p>
                         <p><strong>📧 البريد:</strong> ${applicationData.userEmail || 'غير محدد'}</p>
                         <p><strong>📍 العنوان:</strong> ${applicationData.address || 'غير محدد'}</p>
+                        <p><strong>🚗 وسيلة النقل:</strong> ${new AgentsManager().getTransportText(applicationData.transport)}</p>
                         <p><strong>📅 تاريخ التقديم:</strong> ${applicationData.timestamp ? applicationData.timestamp.toDate().toLocaleString('ar-SA') : 'غير محدد'}</p>
                     </div>
                     <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -756,8 +732,8 @@
                 currentApplication = applicationId;
                 
             } catch (error) {
-                showDebug(`❌ خطأ في عرض التفاصيل: ${error.message}`, 'error');
-                alert('❌ حدث خطأ في تحميل التفاصيل: ' + error.message);
+                console.error('❌ خطأ في عرض التفاصيل:', error);
+                showSystemMessage('حدث خطأ في تحميل التفاصيل: ' + error.message, 'error');
             }
         }
         
@@ -771,10 +747,11 @@
                 const agentDoc = await db.collection('users').doc(agentId).get();
                 const agentData = agentDoc.data();
                 
-                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nتاريخ الانضمام: ${agentData.createdAt ? agentData.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}`);
+                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nوسيلة النقل: ${agentData.transport}\nتاريخ الانضمام: ${agentData.createdAt ? agentData.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}`);
                 
             } catch (error) {
-                showDebug(`❌ خطأ في عرض تفاصيل الوكيل: ${error.message}`, 'error');
+                console.error('❌ خطأ في عرض تفاصيل الوكيل:', error);
+                showSystemMessage('حدث خطأ في عرض التفاصيل: ' + error.message, 'error');
             }
         }
         
@@ -783,15 +760,15 @@
                 try {
                     await db.collection('users').doc(agentId).update({
                         status: 'inactive',
-                        deactivatedAt: new Date()
+                        deactivatedAt: new Date(),
+                        deactivatedBy: auth.currentUser.uid
                     });
                     
-                    showDebug('✅ تم إلغاء تفعيل الوكيل بنجاح');
-                    alert('✅ تم إلغاء تفعيل الوكيل بنجاح');
+                    showSystemMessage('✅ تم إلغاء تفعيل الوكيل بنجاح', 'success');
                     
                 } catch (error) {
-                    showDebug(`❌ خطأ في إلغاء التفعيل: ${error.message}`, 'error');
-                    alert('❌ حدث خطأ في إلغاء التفعيل');
+                    console.error('❌ خطأ في إلغاء التفعيل:', error);
+                    showSystemMessage('حدث خطأ في إلغاء التفعيل', 'error');
                 }
             }
         }
@@ -801,15 +778,15 @@
                 try {
                     await db.collection('users').doc(agentId).update({
                         status: 'active',
-                        activatedAt: new Date()
+                        activatedAt: new Date(),
+                        activatedBy: auth.currentUser.uid
                     });
                     
-                    showDebug('✅ تم تفعيل الوكيل بنجاح');
-                    alert('✅ تم تفعيل الوكيل بنجاح');
+                    showSystemMessage('✅ تم تفعيل الوكيل بنجاح', 'success');
                     
                 } catch (error) {
-                    showDebug(`❌ خطأ في التفعيل: ${error.message}`, 'error');
-                    alert('❌ حدث خطأ في التفعيل');
+                    console.error('❌ خطأ في التفعيل:', error);
+                    showSystemMessage('حدث خطأ في التفعيل', 'error');
                 }
             }
         }
@@ -818,34 +795,23 @@
         function initAgentsManager() {
             new AgentsManager();
         }
+
+        // دالة لاختبار Firestore
+        async function testFirestore() {
+            try {
+                const testSnapshot = await db.collection('agent_applications').limit(1).get();
+                if (testSnapshot.empty) {
+                    showSystemMessage('✅ الاتصال ناجح لكن لا توجد بيانات', 'success');
+                } else {
+                    showSystemMessage('✅ تم قراءة البيانات بنجاح!', 'success');
+                }
+            } catch (error) {
+                showSystemMessage('❌ خطأ في الاتصال: ' + error.message, 'error');
+            }
+        }
+
+        // تشغيل الاختبار تلقائياً عند التحميل
+        setTimeout(testFirestore, 1000);
     </script>
-
-    <!-- زر تصحيح Firestore -->
-<button id="debugBtn" style="margin:20px; padding:10px;">🐛 تصحيح Firestore</button>
-<pre id="debugOutput" style="background:#111; color:#0f0; padding:10px; border-radius:10px;"></pre>
-
-<script>
-  async function debugFirestore() {
-    const debugOutput = document.getElementById("debugOutput");
-    debugOutput.textContent = "جارٍ اختبار Firestore...\n";
-
-    try {
-      // اختبار الاتصال بالـ Firestore
-      const snapshot = await db.collection("agent_applications").limit(1).get();
-
-      if (snapshot.empty) {
-        debugOutput.textContent += "✅ الاتصال ناجح لكن لا توجد بيانات في مجموعة agent_applications.\n";
-      } else {
-        debugOutput.textContent += "✅ تم قراءة البيانات بنجاح من agent_applications.\n";
-      }
-    } catch (err) {
-      debugOutput.textContent += "❌ حدث خطأ:\n" + err.message + "\n\n";
-      debugOutput.textContent += "🧠 تلميح: تحقق من قواعد Firestore في لوحة Firebase.\n";
-    }
-  }
-
-  document.getElementById("debugBtn").addEventListener("click", debugFirestore);
-</script>
-
 </body>
 </html>
