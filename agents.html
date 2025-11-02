@@ -819,5 +819,33 @@
             new AgentsManager();
         }
     </script>
+
+    <!-- زر تصحيح Firestore -->
+<button id="debugBtn" style="margin:20px; padding:10px;">🐛 تصحيح Firestore</button>
+<pre id="debugOutput" style="background:#111; color:#0f0; padding:10px; border-radius:10px;"></pre>
+
+<script>
+  async function debugFirestore() {
+    const debugOutput = document.getElementById("debugOutput");
+    debugOutput.textContent = "جارٍ اختبار Firestore...\n";
+
+    try {
+      // اختبار الاتصال بالـ Firestore
+      const snapshot = await db.collection("agent_applications").limit(1).get();
+
+      if (snapshot.empty) {
+        debugOutput.textContent += "✅ الاتصال ناجح لكن لا توجد بيانات في مجموعة agent_applications.\n";
+      } else {
+        debugOutput.textContent += "✅ تم قراءة البيانات بنجاح من agent_applications.\n";
+      }
+    } catch (err) {
+      debugOutput.textContent += "❌ حدث خطأ:\n" + err.message + "\n\n";
+      debugOutput.textContent += "🧠 تلميح: تحقق من قواعد Firestore في لوحة Firebase.\n";
+    }
+  }
+
+  document.getElementById("debugBtn").addEventListener("click", debugFirestore);
+</script>
+
 </body>
 </html>
