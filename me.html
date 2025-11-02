@@ -22,6 +22,7 @@
         body {
             background: #f5f5f5;
             color: #333;
+            min-height: 100vh;
         }
         
         .navbar {
@@ -41,6 +42,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #2c5aa0;
+            text-decoration: none;
         }
         
         .nav-logo i {
@@ -76,6 +78,7 @@
             font-size: 1.3rem;
             color: #2c5aa0;
             cursor: pointer;
+            padding: 0.5rem;
         }
         
         .page-hero {
@@ -88,6 +91,7 @@
         .container {
             max-width: 100%;
             padding: 0 1rem;
+            margin: 0 auto;
         }
         
         .profile-header {
@@ -129,6 +133,11 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
             border-left: 4px solid #2c5aa0;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
         }
         
         .stat-number {
@@ -158,6 +167,7 @@
         
         .action-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .action-icon {
@@ -193,6 +203,7 @@
             font-size: 1rem;
             transition: all 0.3s ease;
             text-align: center;
+            font-weight: 600;
         }
         
         .btn-primary {
@@ -267,6 +278,12 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #2c5aa0;
+            outline: none;
         }
         
         .footer {
@@ -309,6 +326,11 @@
             margin: 0.5rem 0;
             border-radius: 8px;
             border-right: 4px solid #2c5aa0;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            transform: translateX(-3px);
         }
 
         .agent-status-card {
@@ -318,18 +340,45 @@
             border-radius: 12px;
             margin: 1rem 0;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading {
             text-align: center;
             padding: 2rem;
             color: #666;
         }
 
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #c3e6cb;
+            text-align: center;
         }
         
         @media (max-width: 768px) {
@@ -344,6 +393,7 @@
                 padding: 1rem;
                 box-shadow: 0 5px 10px rgba(0,0,0,0.1);
                 border-radius: 0 0 10px 10px;
+                z-index: 1000;
             }
             
             .nav-links.active {
@@ -365,22 +415,42 @@
             .auth-buttons .btn {
                 width: 100%;
             }
+
+            .profile-header {
+                margin: -30px auto 2rem;
+                padding: 1.5rem 1rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .section-header .btn {
+                width: 100%;
+            }
         }
         
         @media (min-width: 768px) {
             .container {
                 max-width: 800px;
-                margin: 0 auto;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1000px;
             }
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-logo">
+        <a href="index.html" class="nav-logo">
             <i class="fas fa-concierge-bell"></i>
             <span>Mauri-Services</span>
-        </div>
+        </a>
         
         <button class="mobile-menu-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
@@ -403,6 +473,9 @@
     </section>
 
     <div class="container">
+        <!-- رسائل النظام -->
+        <div id="systemMessage"></div>
+
         <!-- للمستخدمين غير المسجلين -->
         <div id="guestSection" class="auth-section">
             <h2>مرحباً بك!</h2>
@@ -501,8 +574,8 @@
                     <h2>📦 طلباتي الأخيرة</h2>
                     <button class="btn btn-primary" onclick="window.location.href='services.html'">طلب جديد</button>
                 </div>
-                <div id="userOrders">
-                    <!-- سيتم تعبئتها بالطلبات -->
+                <div id="userOrders" class="loading">
+                    ⏳ جاري تحميل الطلبات...
                 </div>
             </div>
 
@@ -592,7 +665,19 @@
             appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        // تهيئة Firebase بشكل آمن
+        let app;
+        try {
+            if (!firebase.apps.length) {
+                app = firebase.initializeApp(firebaseConfig);
+            } else {
+                app = firebase.app();
+            }
+            console.log('✅ Firebase initialized successfully');
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+        }
+
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -600,7 +685,8 @@
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         
-        mobileMenuBtn.addEventListener('click', () => {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             navLinks.classList.toggle('active');
         });
         
@@ -610,8 +696,27 @@
             }
         });
 
+        // إغلاق القائمة عند النقر على رابط
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // دالة لعرض رسائل النظام
+        function showSystemMessage(message, type = 'error') {
+            const messageDiv = document.getElementById('systemMessage');
+            const messageClass = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
         // نظام المصادقة
         auth.onAuthStateChanged((user) => {
+            console.log('🔐 Auth state changed:', user ? 'User logged in' : 'No user');
             if (user) {
                 showUserSection(user);
             } else {
@@ -620,22 +725,33 @@
         });
 
         async function showUserSection(user) {
+            console.log('👤 Showing user section for:', user.email);
             document.getElementById('guestSection').style.display = 'none';
             document.getElementById('userSection').style.display = 'block';
             
-            // تحديث معلومات المستخدم
-            document.getElementById('userName').textContent = user.displayName || 'مستخدم';
-            document.getElementById('userEmail').textContent = user.email;
-            document.getElementById('userAvatar').textContent = (user.displayName || 'U').charAt(0).toUpperCase();
-            
-            // تحميل بيانات المستخدم الإضافية
-            await loadUserData(user);
-            await loadUserOrders(user);
-            await loadAgentStatus(user);
-            await loadNotifications(user);
+            try {
+                // تحديث معلومات المستخدم الأساسية
+                document.getElementById('userName').textContent = user.displayName || 'مستخدم';
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userAvatar').textContent = (user.displayName || 'U').charAt(0).toUpperCase();
+                
+                // تحميل بيانات المستخدم الإضافية
+                await loadUserData(user);
+                await loadUserOrders(user);
+                await loadAgentStatus(user);
+                await loadNotifications(user);
+                
+                // إعداد المستمعين للتحديث التلقائي
+                setupRealtimeListeners(user);
+                
+            } catch (error) {
+                console.error('❌ Error showing user section:', error);
+                showSystemMessage('حدث خطأ في تحميل البيانات: ' + error.message);
+            }
         }
 
         function showGuestSection() {
+            console.log('👤 Showing guest section');
             document.getElementById('guestSection').style.display = 'block';
             document.getElementById('userSection').style.display = 'none';
         }
@@ -647,6 +763,9 @@
 
         function hideLoginModal() {
             document.getElementById('loginModal').style.display = 'none';
+            // تنظيف الحقول
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
         }
 
         function showSignupModal() {
@@ -655,18 +774,30 @@
 
         function hideSignupModal() {
             document.getElementById('signupModal').style.display = 'none';
+            // تنظيف الحقول
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupPhone').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
         }
 
         async function loginUser() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
+            if (!email || !password) {
+                showSystemMessage('⚠️ يرجى ملء جميع الحقول');
+                return;
+            }
+            
             try {
-                await auth.signInWithEmailAndPassword(email, password);
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                console.log('✅ Login successful:', userCredential.user.email);
                 hideLoginModal();
-                alert('✅ تم تسجيل الدخول بنجاح!');
+                showSystemMessage('✅ تم تسجيل الدخول بنجاح!', 'success');
             } catch (error) {
-                alert('❌ ' + getErrorMessage(error.code));
+                console.error('❌ Login error:', error);
+                showSystemMessage('❌ ' + getErrorMessage(error.code));
             }
         }
 
@@ -676,8 +807,13 @@
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
             
+            if (!name || !phone || !email || !password) {
+                showSystemMessage('⚠️ يرجى ملء جميع الحقول');
+                return;
+            }
+            
             if (password.length < 6) {
-                alert('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                showSystemMessage('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
                 return;
             }
             
@@ -687,6 +823,7 @@
                     displayName: name
                 });
 
+                // حفظ بيانات المستخدم في Firestore
                 await db.collection('users').doc(userCredential.user.uid).set({
                     name: name,
                     phone: phone,
@@ -695,22 +832,27 @@
                     createdAt: new Date(),
                     status: 'active',
                     totalOrders: 0,
-                    totalSpent: 0
+                    totalSpent: 0,
+                    lastLogin: new Date()
                 });
 
+                console.log('✅ Signup successful:', userCredential.user.email);
                 hideSignupModal();
-                alert('✅ تم إنشاء حسابك بنجاح!');
+                showSystemMessage('✅ تم إنشاء حسابك بنجاح!', 'success');
             } catch (error) {
-                alert('❌ ' + getErrorMessage(error.code));
+                console.error('❌ Signup error:', error);
+                showSystemMessage('❌ ' + getErrorMessage(error.code));
             }
         }
 
         async function logoutUser() {
             try {
                 await auth.signOut();
-                alert('✅ تم تسجيل الخروج بنجاح');
+                console.log('✅ Logout successful');
+                showSystemMessage('✅ تم تسجيل الخروج بنجاح', 'success');
             } catch (error) {
-                console.error('Logout error:', error);
+                console.error('❌ Logout error:', error);
+                showSystemMessage('❌ حدث خطأ أثناء تسجيل الخروج');
             }
         }
 
@@ -720,35 +862,64 @@
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 if (userDoc.exists) {
                     const userData = userDoc.data();
+                    console.log('📊 User data loaded:', userData);
+                    
                     document.getElementById('fullName').value = userData.name || '';
                     document.getElementById('phone').value = userData.phone || '';
                     document.getElementById('city').value = userData.city || '';
                     document.getElementById('address').value = userData.address || '';
                     
                     // عرض دور المستخدم
-                    document.getElementById('userRole').textContent = userData.role === 'agent' ? '👤 وكيل معتمد' : '👤 مستخدم عادي';
+                    const roleText = userData.role === 'agent' ? '👤 وكيل معتمد' : 
+                                   userData.role === 'admin' ? '👑 مدير النظام' : '👤 مستخدم عادي';
+                    document.getElementById('userRole').textContent = roleText;
+                } else {
+                    console.log('📝 No user data found, creating default...');
+                    // إنشاء بيانات افتراضية إذا لم توجد
+                    await db.collection('users').doc(user.uid).set({
+                        name: user.displayName || 'مستخدم',
+                        email: user.email,
+                        role: 'user',
+                        createdAt: new Date(),
+                        status: 'active',
+                        totalOrders: 0,
+                        totalSpent: 0,
+                        lastLogin: new Date()
+                    });
                 }
             } catch (error) {
-                console.error('Error loading user data:', error);
+                console.error('❌ Error loading user data:', error);
+                throw error;
             }
         }
 
-        // تحميل طلبات المستخدم
+        // تحميل طلبات المستخدم - بدون استخدام الفهرس
         async function loadUserOrders(user) {
             try {
-                const ordersSnapshot = await db.collection('orders')
-                    .where('userId', '==', user.uid)
-                    .orderBy('timestamp', 'desc')
-                    .limit(10)
-                    .get();
+                console.log('📦 Loading orders for user:', user.uid);
                 
+                // جلب جميع الطلبات ثم التصفية يدوياً لتجنب مشكلة الفهرس
+                const ordersSnapshot = await db.collection('orders').get();
+                
+                const userOrders = ordersSnapshot.docs.filter(doc => {
+                    const order = doc.data();
+                    return order.userId === user.uid || order.customerEmail === user.email;
+                }).sort((a, b) => {
+                    // ترتيب حسب التاريخ يدوياً
+                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
+                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
+                    return timeB - timeA;
+                }).slice(0, 10); // آخر 10 طلبات فقط
+
+                console.log('✅ Found orders:', userOrders.length);
+
                 const ordersContainer = document.getElementById('userOrders');
                 let totalOrders = 0;
                 let pendingOrders = 0;
                 let completedOrders = 0;
                 let totalSpent = 0;
 
-                if (ordersSnapshot.empty) {
+                if (userOrders.length === 0) {
                     ordersContainer.innerHTML = `
                         <div class="empty-state">
                             <div>📭</div>
@@ -761,24 +932,27 @@
                     `;
                 } else {
                     let ordersHtml = '';
-                    ordersSnapshot.forEach(doc => {
+                    userOrders.forEach(doc => {
                         const order = doc.data();
                         totalOrders++;
                         if (order.status === 'جديد' || order.status === 'قيد التنفيذ') pendingOrders++;
                         if (order.status === 'مكتمل') completedOrders++;
                         totalSpent += parseInt(order.price) || 0;
 
+                        const orderDate = order.timestamp?.toDate?.();
+                        const dateText = orderDate ? orderDate.toLocaleString('ar-SA') : 'غير محدد';
+
                         ordersHtml += `
                             <div class="order-item">
-                                <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
                                     <div style="flex: 1;">
-                                        <h4>${order.service}</h4>
-                                        <p style="color: #666; margin: 0.5rem 0;">${order.details || 'لا توجد تفاصيل إضافية'}</p>
-                                        <small>${order.timestamp?.toDate?.().toLocaleString('ar-SA') || 'غير محدد'}</small>
+                                        <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0;">${order.service || 'خدمة غير محددة'}</h4>
+                                        <p style="color: #666; margin: 0.5rem 0; line-height: 1.5;">${order.details || 'لا توجد تفاصيل إضافية'}</p>
+                                        <small style="color: #888;">${dateText}</small>
                                     </div>
-                                    <div style="text-align: left;">
-                                        <span class="status-badge status-${getStatusClass(order.status)}">${order.status}</span>
-                                        <div style="font-weight: bold; margin-top: 0.5rem;">${order.price || 0} MRU</div>
+                                    <div style="text-align: left; min-width: 120px;">
+                                        <span class="status-badge status-${getStatusClass(order.status)}">${order.status || 'جديد'}</span>
+                                        <div style="font-weight: bold; margin-top: 0.5rem; font-size: 1.1rem;">${order.price || 0} MRU</div>
                                     </div>
                                 </div>
                             </div>
@@ -794,12 +968,15 @@
                 document.getElementById('totalSpent').textContent = totalSpent.toLocaleString();
 
             } catch (error) {
-                console.error('Error loading orders:', error);
+                console.error('❌ Error loading orders:', error);
                 document.getElementById('userOrders').innerHTML = `
                     <div class="empty-state">
                         <div>❌</div>
                         <h3>حدث خطأ في تحميل الطلبات</h3>
                         <p>${error.message}</p>
+                        <button class="btn btn-primary" onclick="loadUserOrders(auth.currentUser)" style="margin-top: 1rem;">
+                            🔄 إعادة المحاولة
+                        </button>
                     </div>
                 `;
             }
@@ -808,21 +985,27 @@
         // تحميل حالة الوكالة
         async function loadAgentStatus(user) {
             try {
-                const agentAppSnapshot = await db.collection('agent_applications')
-                    .where('userEmail', '==', user.email)
-                    .orderBy('timestamp', 'desc')
-                    .limit(1)
-                    .get();
+                // جلب جميع طلبات الوكالة ثم التصفية يدوياً
+                const agentAppsSnapshot = await db.collection('agent_applications').get();
+                
+                const userApplications = agentAppsSnapshot.docs.filter(doc => {
+                    const app = doc.data();
+                    return app.userEmail === user.email || app.userId === user.uid;
+                }).sort((a, b) => {
+                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
+                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
+                    return timeB - timeA;
+                });
 
                 const agentStatusSection = document.getElementById('agentStatusSection');
                 
-                if (agentAppSnapshot.empty) {
+                if (userApplications.length === 0) {
                     agentStatusSection.style.display = 'none';
                     return;
                 }
 
-                const application = agentAppSnapshot.docs[0].data();
-                const status = application.status || 'pending';
+                const latestApp = userApplications[0].data();
+                const status = latestApp.status || 'pending';
                 
                 let statusText = '';
                 let statusClass = '';
@@ -849,7 +1032,12 @@
                         <span class="status-badge ${statusClass}">${getAgentStatusText(status)}</span>
                         ${status === 'rejected' ? `
                             <p style="margin-top: 1rem; font-size: 0.9rem;">
-                                ${application.rejectionReason || 'للأسف لا تنطبق عليك الشروط حالياً'}
+                                ${latestApp.rejectionReason || 'للأسف لا تنطبق عليك الشروط حالياً'}
+                            </p>
+                        ` : ''}
+                        ${status === 'pending' ? `
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                                سيتم مراجعة طلبك خلال 24 ساعة
                             </p>
                         ` : ''}
                     </div>
@@ -857,44 +1045,50 @@
                 agentStatusSection.style.display = 'block';
 
             } catch (error) {
-                console.error('Error loading agent status:', error);
+                console.error('❌ Error loading agent status:', error);
             }
         }
 
         // تحميل الإشعارات
         async function loadNotifications(user) {
             try {
-                const notificationsSnapshot = await db.collection('notifications')
-                    .where('userId', '==', user.uid)
-                    .orderBy('timestamp', 'desc')
-                    .limit(10)
-                    .get();
+                // جلب جميع الإشعارات ثم التصفية يدوياً
+                const notificationsSnapshot = await db.collection('notifications').get();
+                
+                const userNotifications = notificationsSnapshot.docs.filter(doc => {
+                    const notification = doc.data();
+                    return notification.userId === user.uid;
+                }).sort((a, b) => {
+                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
+                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
+                    return timeB - timeA;
+                }).slice(0, 10);
 
                 const notificationsSection = document.getElementById('notificationsSection');
                 const notificationsList = document.getElementById('notificationsList');
                 const notificationCount = document.getElementById('notificationCount');
 
-                if (notificationsSnapshot.empty) {
+                if (userNotifications.length === 0) {
                     notificationsSection.style.display = 'none';
                     return;
                 }
 
-                let unreadCount = 0;
+                let unreadCount = userNotifications.filter(doc => !doc.data().read).length;
                 let notificationsHtml = '';
 
-                notificationsSnapshot.forEach(doc => {
+                userNotifications.forEach(doc => {
                     const notification = doc.data();
-                    if (!notification.read) unreadCount++;
+                    const isUnread = !notification.read;
 
                     notificationsHtml += `
-                        <div class="notification-item" style="${!notification.read ? 'background: #fff3e0;' : ''}">
-                            <div style="display: flex; justify-content: between; align-items: start; gap: 1rem;">
+                        <div class="notification-item" style="${isUnread ? 'background: #fff3e0; border-right-color: #ffc107;' : ''}">
+                            <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
                                 <div style="flex: 1;">
-                                    <h4 style="margin: 0 0 0.5rem 0;">${notification.title}</h4>
-                                    <p style="margin: 0; color: #666;">${notification.message}</p>
-                                    <small>${notification.timestamp?.toDate?.().toLocaleString('ar-SA') || ''}</small>
+                                    <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0;">${notification.title || 'إشعار'}</h4>
+                                    <p style="margin: 0; color: #666; line-height: 1.5;">${notification.message || 'لا توجد تفاصيل'}</p>
+                                    <small style="color: #888;">${notification.timestamp?.toDate?.().toLocaleString('ar-SA') || ''}</small>
                                 </div>
-                                ${!notification.read ? `<span style="color: #dc3545; font-weight: bold;">جديد</span>` : ''}
+                                ${isUnread ? `<span style="color: #dc3545; font-weight: bold; font-size: 0.8rem;">جديد</span>` : ''}
                             </div>
                         </div>
                     `;
@@ -904,20 +1098,8 @@
                 notificationCount.textContent = unreadCount;
                 notificationsSection.style.display = 'block';
 
-                // تحديث حالة القراءة
-                if (unreadCount > 0) {
-                    notificationsSnapshot.forEach(async (doc) => {
-                        if (!doc.data().read) {
-                            await db.collection('notifications').doc(doc.id).update({
-                                read: true,
-                                readAt: new Date()
-                            });
-                        }
-                    });
-                }
-
             } catch (error) {
-                console.error('Error loading notifications:', error);
+                console.error('❌ Error loading notifications:', error);
             }
         }
 
@@ -926,7 +1108,10 @@
             const classes = {
                 'جديد': 'new',
                 'قيد التنفيذ': 'pending',
-                'مكتمل': 'completed'
+                'مكتمل': 'completed',
+                'new': 'new',
+                'pending': 'pending', 
+                'completed': 'completed'
             };
             return classes[status] || 'new';
         }
@@ -946,7 +1131,9 @@
                 'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
                 'auth/weak-password': 'كلمة المرور ضعيفة',
                 'auth/user-not-found': 'لم يتم العثور على المستخدم',
-                'auth/wrong-password': 'كلمة المرور غير صحيحة'
+                'auth/wrong-password': 'كلمة المرور غير صحيحة',
+                'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت',
+                'auth/too-many-requests': 'محاولات تسجيل دخول كثيرة، حاول لاحقاً'
             };
             return messages[errorCode] || 'حدث خطأ غير متوقع';
         }
@@ -955,7 +1142,10 @@
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
-            if (!user) return;
+            if (!user) {
+                showSystemMessage('⚠️ يرجى تسجيل الدخول أولاً');
+                return;
+            }
 
             const updatedData = {
                 name: document.getElementById('fullName').value,
@@ -970,15 +1160,20 @@
                 await user.updateProfile({
                     displayName: updatedData.name
                 });
-                alert('✅ تم تحديث الملف الشخصي بنجاح');
-                showUserSection(user); // إعادة تحميل البيانات
+                showSystemMessage('✅ تم تحديث الملف الشخصي بنجاح', 'success');
+                // إعادة تحميل البيانات
+                showUserSection(user);
             } catch (error) {
-                alert('❌ حدث خطأ في التحديث');
+                console.error('❌ Error updating profile:', error);
+                showSystemMessage('❌ حدث خطأ في تحديث الملف الشخصي');
             }
         });
 
         function editProfile() {
-            document.getElementById('profileForm').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('profileForm').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
         }
 
         function applyAsAgent() {
@@ -987,34 +1182,56 @@
 
         // إضافة مستمعين للتحديث التلقائي
         function setupRealtimeListeners(user) {
+            console.log('🔔 Setting up realtime listeners for user:', user.uid);
+            
             // تحديث الطلبات تلقائياً
-            db.collection('orders')
-                .where('userId', '==', user.uid)
-                .onSnapshot(() => {
-                    loadUserOrders(user);
-                });
+            db.collection('orders').onSnapshot(() => {
+                console.log('🔄 Orders updated, reloading...');
+                loadUserOrders(user);
+            });
 
             // تحديث حالة الوكالة تلقائياً
-            db.collection('agent_applications')
-                .where('userEmail', '==', user.email)
-                .onSnapshot(() => {
-                    loadAgentStatus(user);
-                });
+            db.collection('agent_applications').onSnapshot(() => {
+                console.log('🔄 Agent applications updated, reloading...');
+                loadAgentStatus(user);
+            });
 
             // تحديث الإشعارات تلقائياً
-            db.collection('notifications')
-                .where('userId', '==', user.uid)
-                .onSnapshot(() => {
-                    loadNotifications(user);
-                });
+            db.collection('notifications').onSnapshot(() => {
+                console.log('🔄 Notifications updated, reloading...');
+                loadNotifications(user);
+            });
         }
 
-        // تفعيل المستمعين عند تسجيل الدخول
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                setupRealtimeListeners(user);
+        // منع إرسال النموذج عند الضغط على Enter
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const focused = document.activeElement;
+                if (focused && focused.form && focused.form.id === 'profileForm') {
+                    e.preventDefault();
+                }
             }
         });
+
+        // إغلاق النماذج عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'loginModal') {
+                hideLoginModal();
+            }
+            if (e.target.id === 'signupModal') {
+                hideSignupModal();
+            }
+        });
+
+        // تهيئة الصفحة عند التحميل
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page loaded successfully');
+            // التأكد من أن Firebase مهيأ
+            if (auth.currentUser) {
+                showUserSection(auth.currentUser);
+            }
+        });
+
     </script>
 </body>
 </html>
