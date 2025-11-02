@@ -197,6 +197,15 @@
             opacity: 0.5;
         }
 
+        .debug-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
         @media (max-width: 768px) {
             .admin-nav {
                 flex-direction: column;
@@ -233,6 +242,11 @@
     </nav>
     
     <div class="content">
+        <!-- زر تصحيح -->
+        <div style="margin-bottom: 1rem; text-align: left;">
+            <button class="btn btn-primary" onclick="debugCollections()">🐛 تصحيح البيانات</button>
+        </div>
+
         <div class="stats-cards">
             <div class="stat-card">
                 <span class="stat-number" id="totalAgents">0</span>
@@ -271,6 +285,9 @@
                 ⏳ جاري تحميل بيانات الوكلاء...
             </div>
         </div>
+
+        <!-- معلومات التصحيح -->
+        <div id="debugInfo" style="display: none;"></div>
     </div>
 
     <!-- نموذج تفاصيل الطلب -->
@@ -302,6 +319,7 @@
         const db = firebase.firestore();
 
         let currentApplication = null;
+        let currentCollection = '';
 
         // التحقق من تسجيل الدخول
         auth.onAuthStateChanged((user) => {
@@ -326,55 +344,123 @@
             });
         }
 
+        // دالة التصحيح - تفحص جميع الcollections
+        async function debugCollections() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = 'block';
+            debugInfo.innerHTML = '<div class="debug-info">🔍 جاري فحص قاعدة البيانات...</div>';
+
+            try {
+                // فحص collections المختلفة
+                const collectionsToCheck = [
+                    'agent_applications',
+                    'agents', 
+                    'agent_requests',
+                    'applications',
+                    'agentApplications',
+                    'agentRequests'
+                ];
+
+                let foundData = false;
+
+                for (const collectionName of collectionsToCheck) {
+                    try {
+                        const snapshot = await db.collection(collectionName).get();
+                        debugInfo.innerHTML += `<div class="debug-info">📁 ${collectionName}: ${snapshot.size} وثيقة</div>`;
+                        
+                        if (snapshot.size > 0) {
+                            foundData = true;
+                            snapshot.docs.forEach(doc => {
+                                debugInfo.innerHTML += `<div class="debug-info">📄 ${doc.id}: ${JSON.stringify(doc.data())}</div>`;
+                            });
+                        }
+                    } catch (error) {
+                        debugInfo.innerHTML += `<div class="debug-info">❌ ${collectionName}: ${error.message}</div>`;
+                    }
+                }
+
+                if (!foundData) {
+                    debugInfo.innerHTML += `<div class="debug-info">⚠️ لم يتم العثور على بيانات في أي collection</div>`;
+                }
+
+            } catch (error) {
+                debugInfo.innerHTML += `<div class="debug-info">❌ خطأ في التصحيح: ${error.message}</div>`;
+            }
+        }
+
         class AgentsManager {
             constructor() {
                 this.init();
             }
             
             async init() {
+                await this.findCorrectCollection();
                 await this.loadStats();
                 await this.loadApplications();
                 await this.loadAgents();
                 this.setupRealtimeListeners();
             }
+
+            // البحث عن الcollection الصحيح
+            async findCorrectCollection() {
+                const collectionsToTry = [
+                    'agent_applications',
+                    'agents',
+                    'agent_requests', 
+                    'applications',
+                    'agentApplications',
+                    'agentRequests'
+                ];
+
+                for (const collectionName of collectionsToTry) {
+                    try {
+                        const snapshot = await db.collection(collectionName).limit(1).get();
+                        if (!snapshot.empty) {
+                            currentCollection = collectionName;
+                            console.log(`✅ تم العثور على البيانات في: ${collectionName}`);
+                            return collectionName;
+                        }
+                    } catch (error) {
+                        console.log(`❌ ${collectionName}: ${error.message}`);
+                    }
+                }
+
+                // إذا لم نجد أي collection، نستخدم الافتراضي
+                currentCollection = 'agent_applications';
+                console.log('⚠️ استخدام collection افتراضي: agent_applications');
+                return 'agent_applications';
+            }
             
             async loadStats() {
                 try {
-                    // محاولة جلب البيانات من collections مختلفة
                     let applicationsSnapshot;
                     let agentsSnapshot;
                     
+                    // جلب طلبات الانضمام من الcollection الصحيح
                     try {
-                        // المحاولة الأولى: agent_applications
-                        applicationsSnapshot = await db.collection('agent_applications')
+                        applicationsSnapshot = await db.collection(currentCollection)
                             .where('status', '==', 'pending')
                             .get();
                     } catch (error) {
-                        console.log('⚠️ collection agent_applications غير موجود، جرب agents...');
-                        try {
-                            // المحاولة الثانية: agents
-                            applicationsSnapshot = await db.collection('agents')
-                                .where('status', '==', 'pending')
-                                .get();
-                        } catch (error2) {
-                            console.log('⚠️ collection agents غير موجود أيضاً');
-                            applicationsSnapshot = { docs: [], empty: true };
-                        }
+                        console.log('⚠️ محاولة جلب جميع الطلبات بدون تصفية...');
+                        applicationsSnapshot = await db.collection(currentCollection).get();
                     }
                     
+                    // جلب الوكلاء النشطين
                     try {
-                        // جلب الوكلاء النشطين
                         agentsSnapshot = await db.collection('users')
                             .where('role', '==', 'agent')
                             .where('status', '==', 'active')
                             .get();
                     } catch (error) {
-                        console.log('⚠️ لا توجد بيانات وكلاء في users');
-                        agentsSnapshot = { docs: [], empty: true };
+                        console.log('⚠️ جلب جميع المستخدمين مع دور agent...');
+                        agentsSnapshot = await db.collection('users')
+                            .where('role', '==', 'agent')
+                            .get();
                     }
                     
-                    const pendingApplications = applicationsSnapshot.docs.length;
-                    const activeAgents = agentsSnapshot.docs.length;
+                    const pendingApplications = applicationsSnapshot.size;
+                    const activeAgents = agentsSnapshot.size;
                     
                     // إحصائيات العمولات (محاكاة)
                     const totalCommissions = activeAgents * 5000;
@@ -389,6 +475,7 @@
                     
                 } catch (error) {
                     console.error('❌ خطأ في تحميل الإحصائيات:', error);
+                    document.getElementById('applicationsCount').textContent = 'خطأ في التحميل';
                 }
             }
             
@@ -397,23 +484,16 @@
                     let applicationsSnapshot;
                     
                     try {
-                        // المحاولة الأولى
-                        applicationsSnapshot = await db.collection('agent_applications')
+                        // محاولة الجلب مع التصفية
+                        applicationsSnapshot = await db.collection(currentCollection)
                             .where('status', '==', 'pending')
                             .orderBy('timestamp', 'desc')
                             .get();
-                    } catch (error) {
-                        console.log('⚠️ جرب collection agents...');
-                        try {
-                            // المحاولة الثانية
-                            applicationsSnapshot = await db.collection('agents')
-                                .where('status', '==', 'pending')
-                                .orderBy('timestamp', 'desc')
-                                .get();
-                        } catch (error2) {
-                            console.log('⚠️ لا توجد طلبات انضمام');
-                            applicationsSnapshot = { docs: [], empty: true };
-                        }
+                    } catch (filterError) {
+                        console.log('⚠️ جلب جميع البيانات بدون تصفية...');
+                        applicationsSnapshot = await db.collection(currentCollection)
+                            .orderBy('timestamp', 'desc')
+                            .get();
                     }
                     
                     if (applicationsSnapshot.empty) {
@@ -422,12 +502,36 @@
                                 <div>📭</div>
                                 <h3>لا توجد طلبات انضمام</h3>
                                 <p>لا توجد طلبات انضمام جديدة قيد المراجعة</p>
+                                <p><small>Collection: ${currentCollection}</small></p>
                             </div>
                         `;
                         return;
                     }
                     
+                    // تصفية يدوية إذا لم تكن هناك تصفية في الاستعلام
+                    let pendingApplications = applicationsSnapshot.docs;
+                    if (currentCollection !== '') {
+                        pendingApplications = applicationsSnapshot.docs.filter(doc => {
+                            const data = doc.data();
+                            return data.status === 'pending' || data.status === 'جديد' || !data.status;
+                        });
+                    }
+
+                    if (pendingApplications.length === 0) {
+                        document.getElementById('applicationsTable').innerHTML = `
+                            <div class="empty-state">
+                                <div>✅</div>
+                                <h3>لا توجد طلبات pending</h3>
+                                <p>جميع الطلبات تمت معالجتها</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
                     const html = `
+                        <div class="debug-info" style="margin-bottom: 1rem;">
+                            📁 Collection: ${currentCollection} | 📊 العدد: ${pendingApplications.length}
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -435,24 +539,26 @@
                                     <th>الهاتف</th>
                                     <th>العنوان</th>
                                     <th>وسيلة المواصلات</th>
+                                    <th>الحالة</th>
                                     <th>التاريخ</th>
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${applicationsSnapshot.docs.map(doc => {
+                                ${pendingApplications.map(doc => {
                                     const data = doc.data();
                                     return `
                                         <tr>
-                                            <td><strong>${data.name || 'غير محدد'}</strong></td>
-                                            <td>${data.phone || 'غير محدد'}</td>
-                                            <td>${data.address || 'غير محدد'}</td>
-                                            <td>${this.getTransportText(data.transport)}</td>
-                                            <td>${data.timestamp?.toDate().toLocaleString('ar-SA') || 'غير محدد'}</td>
+                                            <td><strong>${data.name || data.fullName || 'غير محدد'}</strong></td>
+                                            <td>${data.phone || data.phoneNumber || 'غير محدد'}</td>
+                                            <td>${data.address || data.location || 'غير محدد'}</td>
+                                            <td>${this.getTransportText(data.transport || data.vehicle)}</td>
+                                            <td><span class="status-pending">${data.status || 'جديد'}</span></td>
+                                            <td>${data.timestamp?.toDate?.().toLocaleString('ar-SA') || data.createdAt?.toDate?.().toLocaleString('ar-SA') || 'غير محدد'}</td>
                                             <td>
-                                                <button class="btn btn-success" onclick="approveApplication('${doc.id}', '${this.getCollectionName(applicationsSnapshot)}')">✅ قبول</button>
-                                                <button class="btn btn-danger" onclick="rejectApplication('${doc.id}', '${this.getCollectionName(applicationsSnapshot)}')">❌ رفض</button>
-                                                <button class="btn btn-primary" onclick="viewApplication('${doc.id}', '${this.getCollectionName(applicationsSnapshot)}')">👁️ تفاصيل</button>
+                                                <button class="btn btn-success" onclick="approveApplication('${doc.id}')">✅ قبول</button>
+                                                <button class="btn btn-danger" onclick="rejectApplication('${doc.id}')">❌ رفض</button>
+                                                <button class="btn btn-primary" onclick="viewApplication('${doc.id}')">👁️ تفاصيل</button>
                                             </td>
                                         </tr>
                                     `;
@@ -469,7 +575,8 @@
                         <div class="empty-state">
                             <div>❌</div>
                             <h3>حدث خطأ في تحميل البيانات</h3>
-                            <p>تحقق من اتصال الإنترنت وحاول مرة أخرى</p>
+                            <p>${error.message}</p>
+                            <button class="btn btn-primary" onclick="debugCollections()">🐛 تصحيح</button>
                         </div>
                     `;
                 }
@@ -477,9 +584,18 @@
             
             async loadAgents() {
                 try {
-                    const agentsSnapshot = await db.collection('users')
-                        .where('role', '==', 'agent')
-                        .get();
+                    let agentsSnapshot;
+                    
+                    try {
+                        agentsSnapshot = await db.collection('users')
+                            .where('role', '==', 'agent')
+                            .where('status', '==', 'active')
+                            .get();
+                    } catch (error) {
+                        agentsSnapshot = await db.collection('users')
+                            .where('role', '==', 'agent')
+                            .get();
+                    }
                     
                     if (agentsSnapshot.empty) {
                         document.getElementById('agentsTable').innerHTML = `
@@ -513,7 +629,7 @@
                                             <td><strong>${data.name || 'غير محدد'}</strong></td>
                                             <td>${data.phone || 'غير محدد'}</td>
                                             <td>${data.email || 'غير محدد'}</td>
-                                            <td>${data.createdAt?.toDate().toLocaleDateString('ar-SA') || 'غير محدد'}</td>
+                                            <td>${data.createdAt?.toDate?.().toLocaleDateString('ar-SA') || data.joinedAt?.toDate?.().toLocaleDateString('ar-SA') || 'غير محدد'}</td>
                                             <td>
                                                 <span class="status-${status === 'active' ? 'approved' : 'rejected'}">
                                                     ${status === 'active' ? 'نشط' : 'غير نشط'}
@@ -541,7 +657,7 @@
                         <div class="empty-state">
                             <div>❌</div>
                             <h3>حدث خطأ في تحميل البيانات</h3>
-                            <p>تحقق من اتصال الإنترنت وحاول مرة أخرى</p>
+                            <p>${error.message}</p>
                         </div>
                     `;
                 }
@@ -553,41 +669,23 @@
                     'car': 'سيارة',
                     'bicycle': 'دراجة هوائية',
                     'walking': 'سيراً على الأقدام',
-                    'bike': 'دراجة نارية'
+                    'bike': 'دراجة نارية',
+                    'دراجة نارية': 'دراجة نارية',
+                    'سيارة': 'سيارة'
                 };
                 return transportMap[transport] || transport || 'غير محدد';
             }
             
-            getCollectionName(snapshot) {
-                // تحديد اسم الcollection من البيانات
-                return 'agent_applications'; // يمكن تغيير هذا حسب الcollection الفعلي
-            }
-            
             setupRealtimeListeners() {
-                // تحديث فوري للطلبات (بمحاولة collections مختلفة)
-                try {
-                    db.collection('agent_applications')
-                        .where('status', '==', 'pending')
+                // تحديث فوري عند تغيير البيانات
+                if (currentCollection) {
+                    db.collection(currentCollection)
                         .onSnapshot(() => {
                             this.loadApplications();
                             this.loadStats();
                         });
-                } catch (error) {
-                    console.log('⚠️ لا يمكن إعداد listener لـ agent_applications');
                 }
                 
-                try {
-                    db.collection('agents')
-                        .where('status', '==', 'pending')
-                        .onSnapshot(() => {
-                            this.loadApplications();
-                            this.loadStats();
-                        });
-                } catch (error) {
-                    console.log('⚠️ لا يمكن إعداد listener لـ agents');
-                }
-                
-                // تحديث فوري للوكلاء
                 db.collection('users')
                     .where('role', '==', 'agent')
                     .onSnapshot(() => {
@@ -598,10 +696,10 @@
         }
 
         // دوال الإجراءات
-        async function approveApplication(applicationId, collectionName = 'agent_applications') {
+        async function approveApplication(applicationId) {
             if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
                 try {
-                    const applicationDoc = await db.collection(collectionName).doc(applicationId).get();
+                    const applicationDoc = await db.collection(currentCollection).doc(applicationId).get();
                     const applicationData = applicationDoc.data();
                     
                     if (!applicationData) {
@@ -610,39 +708,27 @@
                     }
                     
                     // تحديث حالة الطلب
-                    await db.collection(collectionName).doc(applicationId).update({
+                    await db.collection(currentCollection).doc(applicationId).update({
                         status: 'approved',
                         approvedAt: new Date(),
                         approvedBy: auth.currentUser.uid
                     });
                     
-                    // إنشاء مستخدم وكيل إذا لم يكن موجوداً
-                    const userQuery = await db.collection('users')
-                        .where('phone', '==', applicationData.phone)
-                        .get();
-                    
-                    if (userQuery.empty) {
-                        await db.collection('users').add({
-                            name: applicationData.name,
-                            phone: applicationData.phone,
-                            email: applicationData.userEmail || applicationData.email || '',
-                            role: 'agent',
-                            status: 'active',
-                            address: applicationData.address,
-                            transport: applicationData.transport,
-                            experience: applicationData.experience,
-                            createdAt: new Date(),
-                            joinedAt: new Date()
-                        });
-                    } else {
-                        // تحديث المستخدم الحالي إلى وكيل
-                        await db.collection('users').doc(userQuery.docs[0].id).update({
-                            role: 'agent',
-                            status: 'active',
-                            transport: applicationData.transport,
-                            experience: applicationData.experience
-                        });
-                    }
+                    // إنشاء مستخدم وكيل
+                    const userData = {
+                        name: applicationData.name || applicationData.fullName,
+                        phone: applicationData.phone || applicationData.phoneNumber,
+                        email: applicationData.email || applicationData.userEmail || '',
+                        role: 'agent',
+                        status: 'active',
+                        address: applicationData.address || applicationData.location,
+                        transport: applicationData.transport || applicationData.vehicle,
+                        experience: applicationData.experience,
+                        createdAt: new Date(),
+                        joinedAt: new Date()
+                    };
+
+                    await db.collection('users').add(userData);
                     
                     alert('🎉 تم قبول الوكيل بنجاح!');
                     
@@ -653,10 +739,10 @@
             }
         }
         
-        async function rejectApplication(applicationId, collectionName = 'agent_applications') {
+        async function rejectApplication(applicationId) {
             if (confirm('❌ هل أنت متأكد من رفض هذا الطلب؟')) {
                 try {
-                    await db.collection(collectionName).doc(applicationId).update({
+                    await db.collection(currentCollection).doc(applicationId).update({
                         status: 'rejected',
                         rejectedAt: new Date(),
                         rejectedBy: auth.currentUser.uid,
@@ -672,9 +758,9 @@
             }
         }
         
-        async function viewApplication(applicationId, collectionName = 'agent_applications') {
+        async function viewApplication(applicationId) {
             try {
-                const applicationDoc = await db.collection(collectionName).doc(applicationId).get();
+                const applicationDoc = await db.collection(currentCollection).doc(applicationId).get();
                 const applicationData = applicationDoc.data();
                 
                 if (!applicationData) {
@@ -684,12 +770,12 @@
                 
                 document.getElementById('applicationDetails').innerHTML = `
                     <div style="margin-bottom: 1rem;">
-                        <p><strong>👤 الاسم:</strong> ${applicationData.name || 'غير محدد'}</p>
-                        <p><strong>📞 الهاتف:</strong> ${applicationData.phone || 'غير محدد'}</p>
-                        <p><strong>📧 البريد:</strong> ${applicationData.userEmail || applicationData.email || 'غير محدد'}</p>
-                        <p><strong>📍 العنوان:</strong> ${applicationData.address || 'غير محدد'}</p>
-                        <p><strong>🚲 وسيلة المواصلات:</strong> ${new AgentsManager().getTransportText(applicationData.transport)}</p>
-                        <p><strong>📅 تاريخ التقديم:</strong> ${applicationData.timestamp?.toDate().toLocaleString('ar-SA') || 'غير محدد'}</p>
+                        <p><strong>👤 الاسم:</strong> ${applicationData.name || applicationData.fullName || 'غير محدد'}</p>
+                        <p><strong>📞 الهاتف:</strong> ${applicationData.phone || applicationData.phoneNumber || 'غير محدد'}</p>
+                        <p><strong>📧 البريد:</strong> ${applicationData.email || applicationData.userEmail || 'غير محدد'}</p>
+                        <p><strong>📍 العنوان:</strong> ${applicationData.address || applicationData.location || 'غير محدد'}</p>
+                        <p><strong>🚲 وسيلة المواصلات:</strong> ${new AgentsManager().getTransportText(applicationData.transport || applicationData.vehicle)}</p>
+                        <p><strong>📅 تاريخ التقديم:</strong> ${applicationData.timestamp?.toDate?.().toLocaleString('ar-SA') || applicationData.createdAt?.toDate?.().toLocaleString('ar-SA') || 'غير محدد'}</p>
                     </div>
                     <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                         <p><strong>💼 الخبرة السابقة:</strong></p>
@@ -697,11 +783,11 @@
                     </div>
                     <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px;">
                         <p><strong>🎯 الدوافع:</strong></p>
-                        <p>${applicationData.motivation || 'غير محددة'}</p>
+                        <p>${applicationData.motivation || applicationData.reason || 'غير محددة'}</p>
                     </div>
                     <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                        <button class="btn btn-success" onclick="approveApplication('${applicationId}', '${collectionName}')">✅ قبول الطلب</button>
-                        <button class="btn btn-danger" onclick="rejectApplication('${applicationId}', '${collectionName}')">❌ رفض الطلب</button>
+                        <button class="btn btn-success" onclick="approveApplication('${applicationId}')">✅ قبول الطلب</button>
+                        <button class="btn btn-danger" onclick="rejectApplication('${applicationId}')">❌ رفض الطلب</button>
                     </div>
                 `;
                 
@@ -724,7 +810,12 @@
                 const agentDoc = await db.collection('users').doc(agentId).get();
                 const agentData = agentDoc.data();
                 
-                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nوسيلة المواصلات: ${agentData.transport}\nتاريخ الانضمام: ${agentData.createdAt?.toDate().toLocaleDateString('ar-SA')}`);
+                if (!agentData) {
+                    alert('❌ لم يتم العثور على بيانات الوكيل');
+                    return;
+                }
+                
+                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nوسيلة المواصلات: ${agentData.transport}\nتاريخ الانضمام: ${agentData.createdAt?.toDate?.().toLocaleDateString('ar-SA')}`);
                 
             } catch (error) {
                 console.error('❌ خطأ في عرض تفاصيل الوكيل:', error);
