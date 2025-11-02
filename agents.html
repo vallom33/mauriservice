@@ -397,7 +397,7 @@
     <section class="page-hero">
         <div class="container">
             <h1>انضم إلى فريقنا</h1>
-            <p>اربح معنا كوسيط خدمات وابني مستقبلك المهني</p>
+            <p>اربح معنا كوسيط خدمات وابن مستقبلك المهني</p>
         </div>
     </section>
 
@@ -410,13 +410,13 @@
             </div>
             <div id="agentStatus" class="agent-status" style="display: none;">
                 <h4>📋 حالة طلب الانضمام: <span id="statusText">جارٍ المراجعة</span></h4>
-                <p id="statusMessage">سيتم مراجعة طلبك خلال 24 ساعة</p>
+                <p id="statusMessage">سيتم مراجعة طلبك خلال 12 ساعة</p>
             </div>
             <div id="authButtons"></div>
         </div>
 
         <div class="agent-section">
-            <h2 style="color: #2c5aa0; margin-bottom: 1rem;">ابحث عن دخل إضافي؟</h2>
+            <h2 style="color: #2c5aa0; margin-bottom: 1rem;">تبحث عن دخل إضافي؟</h2>
             <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666;">
                 انضم كوسيط خدمات واربح عمولة على كل طلب تنفذه. ابدأ رحلتك نحو الاستقلال المالي اليوم!
             </p>
@@ -429,10 +429,12 @@
                         <span class="stat-number" id="totalAgents">0</span>
                         <span>وكيل نشط</span>
                     </div>
+                    <!--
                     <div class="stat-item">
                         <span class="stat-number" id="totalEarnings">0</span>
                         <span>MRU أرباح</span>
                     </div>
+                    -->
                     <div class="stat-item">
                         <span class="stat-number" id="completedOrders">0</span>
                         <span>طلب منفذ</span>
@@ -450,7 +452,7 @@
                 <div class="benefit-card">
                     <div class="benefit-icon">💰</div>
                     <h4>عمولات مجزية</h4>
-                    <p>احصل على نسبة 25% - 40% من كل خدمة تنفذها</p>
+                    <p>احصل على نسبة 80% - 40% من كل خدمة تنفذها</p>
                 </div>
                 
                 <div class="benefit-card">
@@ -477,9 +479,9 @@
                 <h3 style="text-align: center; margin-bottom: 1rem;">🧮 حاسبة الأرباح</h3>
                 <div class="calculator-input">
                     <span>عدد الطلبات اليومية:</span>
-                    <input type="number" id="dailyOrders" value="5" min="1" max="50">
+                    <input type="number" id="dailyOrders" value="5" min="1" max="10">
                     <span>متوسط سعر الخدمة:</span>
-                    <input type="number" id="avgPrice" value="200" min="50" max="1000">
+                    <input type="number" id="avgPrice" value="100" min="50" max="300">
                 </div>
                 <div class="calculator-result">
                     <h4>💰 الأرباح الشهرية المتوقعة: <span id="monthlyEarnings">0</span> MRU</h4>
