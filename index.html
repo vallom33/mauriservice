@@ -430,14 +430,12 @@
         </button>
         
         <div class="nav-links" id="navLinks">
-            <a href="index.html" class="nav-link active">الرئيسية</a>
-            <a href="services.html" class="nav-link">الخدمات</a>
-            <a href="pricing.html" class="nav-link">الأسعار</a>
-            <a href="agents.html" class="nav-link">انضم كوكيل</a>
-            <a href="about.html" class="nav-link">من نحن</a>
-            <a href="contact.html" class="nav-link">اتصل بنا</a>
-        </div>
-    </nav>
+    <a href="index.html" class="nav-link active">الرئيسية</a>
+    <a href="services.html" class="nav-link">الخدمات</a>
+    <a href="agents.html" class="nav-link">انضم كوكيل</a>
+    <a href="contact.html" class="nav-link">اتصل بنا</a>
+    <a href="me.html" class="nav-link">👤 حسابي</a>
+</div>
 
     <section class="page-hero">
         <div class="container">
@@ -570,24 +568,33 @@
             }
         });
 
-        function orderService(serviceName, price) {
-            const message = `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU`;
-            const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            // تتبع الطلب
-            if (typeof(Storage) !== "undefined") {
-                let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
-                orders.push({
-                    customer: 'عميل جديد',
-                    service: serviceName,
-                    price: price,
-                    timestamp: new Date().toLocaleString('ar-SA'),
-                    status: 'جديد'
-                });
-                localStorage.setItem('customer_orders', JSON.stringify(orders));
-            }
+function orderService(serviceName, price) {
+    // خيارات للمستخدم
+    const userChoice = confirm(`هل تريد طلب "${serviceName}" بسعر ${price} MRU؟\n\n✅ نعم: سجل الدخول لمتابعة الطلب\n❌ لا: أرسل طلب مباشر عبر الواتساب`);
+    
+    if (userChoice) {
+        // إذا وافق، انتقل لصفحة الخدمات مع تسجيل الدخول
+        window.location.href = 'services.html';
+    } else {
+        // إذا رفض، أرسل مباشرة للواتساب
+        const message = `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU`;
+        const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        // تتبع الطلب
+        if (typeof(Storage) !== "undefined") {
+            let orders = JSON.parse(localStorage.getItem('customer_orders')) || [];
+            orders.push({
+                customer: 'عميل جديد',
+                service: serviceName,
+                price: price,
+                timestamp: new Date().toLocaleString('ar-SA'),
+                status: 'جديد'
+            });
+            localStorage.setItem('customer_orders', JSON.stringify(orders));
         }
+    }
+}
 
         // تتبع الزوار
         if (typeof(Storage) !== "undefined") {
