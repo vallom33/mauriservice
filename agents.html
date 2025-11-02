@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الوكلاء - Mauri Services</title>
+    <title>انضم كوكيل - Mauri-Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
+    <!-- الأيقونات الجديدة -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
+    <meta name="theme-color" content="#2c5aa0">
+    <meta name="msapplication-TileColor" content="#2c5aa0">
     
     <style>
         * {
@@ -19,135 +26,198 @@
         }
         
         body {
-            background: #f8f9fa;
+            background: #f5f5f5;
             color: #333;
         }
         
-        .admin-header {
+        .navbar {
             background: white;
-            padding: 1rem 2rem;
+            padding: 1rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         
-        .admin-nav {
-            background: #2c5aa0;
-            color: white;
-            padding: 1rem 2rem;
+        .nav-logo {
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .admin-nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        
-        .admin-nav a:hover, .admin-nav a.active {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .content {
-            padding: 2rem;
-        }
-        
-        .section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        
-        th, td {
-            padding: 1rem;
-            text-align: right;
-            border-bottom: 1px solid #eee;
-        }
-        
-        th {
-            background: #f8f9fa;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #2c5aa0;
         }
         
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+        .nav-logo i {
+            font-size: 1.5rem;
+            color: #2c5aa0;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link {
             text-decoration: none;
-            display: inline-block;
-            margin: 0.25rem;
-            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-warning {
-            background: #ffc107;
-            color: black;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-primary {
+        .nav-link.active {
             background: #2c5aa0;
             color: white;
         }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-        }
-        
-        .logout-btn {
-            background: #dc3545;
-            color: white;
+        .mobile-menu-btn {
+            display: none;
+            background: none;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            font-size: 1.3rem;
+            color: #2c5aa0;
             cursor: pointer;
         }
         
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+        .page-hero {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 60px 1rem 40px;
+            text-align: center;
         }
         
-        .stat-card {
+        .page-hero h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .page-hero p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 0 1rem;
+        }
+        
+        .agent-section {
             background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            text-align: center;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .benefit-card {
+            background: #f8f9fa;
             padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
             border-left: 4px solid #2c5aa0;
             transition: transform 0.3s ease;
         }
         
-        .stat-card:hover {
+        .benefit-card:hover {
             transform: translateY(-5px);
+        }
+        
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            background: #2c5aa0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+        }
+        
+        .commission-calculator {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .calculator-input {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .calculator-input input {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            width: 120px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .calculator-result {
+            background: rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .requirement-item {
+            background: #e8f4ff;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #2c5aa0;
+        }
+        
+        .stats-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .stat-number {
@@ -157,147 +227,405 @@
             display: block;
         }
         
-        .status-pending { 
-            background: #fff3e0; 
-            color: #f57c00; 
-            padding: 0.3rem 0.8rem; 
-            border-radius: 15px; 
-            font-size: 0.8rem; 
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
         }
-        .status-approved { 
-            background: #e8f5e8; 
-            color: #2e7d32; 
-            padding: 0.3rem 0.8rem; 
-            border-radius: 15px; 
-            font-size: 0.8rem; 
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
         }
-        .status-rejected { 
-            background: #ffebee; 
-            color: #c62828; 
-            padding: 0.3rem 0.8rem; 
-            border-radius: 15px; 
-            font-size: 0.8rem; 
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
         }
-
-        .loading {
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background: #1e3a8a;
+            color: white;
+            padding: 2rem 1rem;
             text-align: center;
-            padding: 2rem;
-            color: #666;
+            margin-top: 3rem;
         }
-
-        .empty-state {
+        
+        /* أنماط المصادقة */
+        .auth-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
             text-align: center;
-            padding: 3rem;
-            color: #666;
         }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
+        
+        .user-welcome {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-right: 4px solid #4caf50;
+        }
+        
+        .agent-status {
+            background: #fff3cd;
             padding: 1rem;
             border-radius: 8px;
             margin: 1rem 0;
-            border: 1px solid #c3e6cb;
+            border-right: 4px solid #ffc107;
         }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            border: 1px solid #f5c6cb;
-        }
-
+        
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .admin-nav {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                left: 0;
+                background: white;
                 flex-direction: column;
-                gap: 0.5rem;
+                padding: 1rem;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                border-radius: 0 0 10px 10px;
             }
             
-            table {
-                font-size: 0.8rem;
+            .nav-links.active {
+                display: flex;
             }
             
-            th, td {
-                padding: 0.5rem;
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .page-hero {
+                padding: 35px 1rem 25px !important;
+            }
+            
+            .page-hero h1 {
+                font-size: 1.4rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+            
+            .page-hero p {
+                font-size: 0.9rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .calculator-input {
+                flex-direction: column;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .navbar {
+                padding: 1rem 2rem;
+            }
+            
+            .page-hero {
+                padding: 80px 2rem 60px;
+            }
+            
+            .page-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 2rem;
+            }
+            
+            .agent-section {
+                padding: 3rem;
+                margin: 3rem auto;
+            }
+            
+            .btn-primary {
+                width: auto;
             }
         }
     </style>
 </head>
 <body>
-    <header class="admin-header">
-        <h1>👥 إدارة الوكلاء - Mauri Services</h1>
-        <div>
-            <span id="adminName">مرحباً، المدير</span>
-            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
         </div>
-    </header>
-    
-    <nav class="admin-nav">
-        <a href="admin-dashboard.html">📊 لوحة التحكم</a>
-        <a href="admin-visitors.html">👥 الزوار</a>
-        <a href="admin-orders.html">📦 الطلبات</a>
-        <a href="admin-messages.html">💬 الرسائل</a>
-        <a href="admin-agents.html" class="active">👥 الوكلاء</a>
-        <a href="admin-users.html">👤 المستخدمين</a>
-        <a href="admin-settings.html">⚙️ الإعدادات</a>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <a href="services.html" class="nav-link">الخدمات</a>
+            <a href="agents.html" class="nav-link active">انضم كوكيل</a>
+            <a href="contact.html" class="nav-link">اتصل بنا</a>
+            <a href="me.html" class="nav-link">👤 حسابي</a>
+            <div id="authElements"></div>
+        </div>
     </nav>
-    
-    <div class="content">
-        <!-- رسائل النظام -->
-        <div id="systemMessage"></div>
 
-        <div class="stats-cards">
-            <div class="stat-card">
-                <span class="stat-number" id="totalAgents">0</span>
-                <p>إجمالي الوكلاء</p>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="pendingAgents">0</span>
-                <p>طلبات قيد المراجعة</p>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="activeAgents">0</span>
-                <p>وكلاء نشطين</p>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="agentCommissions">0 MRU</span>
-                <p>عمولات مستحقة</p>
-            </div>
+    <section class="page-hero">
+        <div class="container">
+            <h1>انضم إلى فريقنا</h1>
+            <p>اربح معنا كوسيط خدمات وابني مستقبلك المهني</p>
         </div>
-        
-        <div class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2>📋 طلبات الانضمام</h2>
-                <div id="applicationsCount" style="background: #2c5aa0; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem;">0 طلب</div>
-            </div>
-            <div id="applicationsTable" class="loading">
-                ⏳ جاري تحميل طلبات الانضمام...
-            </div>
-        </div>
-        
-        <div class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2>🚀 الوكلاء النشطين</h2>
-                <div id="agentsCount" style="background: #28a745; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.9rem;">0 وكيل</div>
-            </div>
-            <div id="agentsTable" class="loading">
-                ⏳ جاري تحميل بيانات الوكلاء...
-            </div>
-        </div>
-    </div>
+    </section>
 
-    <!-- نموذج تفاصيل الطلب -->
+    <section class="container">
+        <!-- قسم المصادقة -->
+        <div class="auth-section" id="authSection">
+            <div id="userWelcome" class="user-welcome" style="display: none;">
+                <h3>مرحباً بك! <span id="userName"></span></h3>
+                <p>يمكنك الآن التقديم للانضمام كوسيط خدمات</p>
+            </div>
+            <div id="agentStatus" class="agent-status" style="display: none;">
+                <h4>📋 حالة طلب الانضمام: <span id="statusText">جارٍ المراجعة</span></h4>
+                <p id="statusMessage">سيتم مراجعة طلبك خلال 24 ساعة</p>
+            </div>
+            <div id="authButtons"></div>
+        </div>
+
+        <div class="agent-section">
+            <h2 style="color: #2c5aa0; margin-bottom: 1rem;">ابحث عن دخل إضافي؟</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666;">
+                انضم كوسيط خدمات واربح عمولة على كل طلب تنفذه. ابدأ رحلتك نحو الاستقلال المالي اليوم!
+            </p>
+            
+            <!-- إحصائيات سريعة -->
+            <div class="stats-section">
+                <h3 style="text-align: center; margin-bottom: 1rem;">📊 إحصائيات وكلائنا</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalAgents">0</span>
+                        <span>وكيل نشط</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalEarnings">0</span>
+                        <span>MRU أرباح</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="completedOrders">0</span>
+                        <span>طلب منفذ</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4.8</span>
+                        <span>تقييم ⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المزايا -->
+            <h3 style="color: #2c5aa0; margin: 2rem 0 1rem;">🎁 مزايا الانضمام إلينا</h3>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">💰</div>
+                    <h4>عمولات مجزية</h4>
+                    <p>احصل على نسبة 25% - 40% من كل خدمة تنفذها</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">⏰</div>
+                    <h4>مرونة في الوقت</h4>
+                    <p>اعمل في الأوقات التي تناسبك دون تقيد بجدول ثابت</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📍</div>
+                    <h4>عمل من منطقتك</h4>
+                    <p>لا حاجة للانتقال - اعمل من حيك ومنطقتك</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📈</div>
+                    <h4>تطور مستمر</h4>
+                    <p>فرص لزيادة دخلك مع تطور مهاراتك</p>
+                </div>
+            </div>
+
+            <!-- حاسبة الأرباح -->
+            <div class="commission-calculator">
+                <h3 style="text-align: center; margin-bottom: 1rem;">🧮 حاسبة الأرباح</h3>
+                <div class="calculator-input">
+                    <span>عدد الطلبات اليومية:</span>
+                    <input type="number" id="dailyOrders" value="5" min="1" max="50">
+                    <span>متوسط سعر الخدمة:</span>
+                    <input type="number" id="avgPrice" value="200" min="50" max="1000">
+                </div>
+                <div class="calculator-result">
+                    <h4>💰 الأرباح الشهرية المتوقعة: <span id="monthlyEarnings">0</span> MRU</h4>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        بناءً على متوسط عمولة 30% وعمل 26 يوم في الشهر
+                    </p>
+                </div>
+            </div>
+
+            <!-- المتطلبات -->
+            <h3 style="color: #2c5aa0; margin: 2rem 0 1rem;">📋 متطلبات الانضمام</h3>
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <h4>📱 هاتف ذكي</h4>
+                    <p>اتصال بالإنترنت وتطبيقات التواصل</p>
+                </div>
+                
+                <div class="requirement-item">
+                    <h4>🚲 وسيلة مواصلات</h4>
+                    <p>دراجة نارية، سيارة، أو دراجة هوائية</p>
+                </div>
+                
+                <div class="requirement-item">
+                    <h4>💬 قدرة على التواصل</h4>
+                    <p>مهارات تواصل جيدة مع العملاء</p>
+                </div>
+                
+                <div class="requirement-item">
+                    <h4>📄 وثائق شخصية</h4>
+                    <p>بطاقة تعريف سارية المفعول</p>
+                </div>
+            </div>
+
+            <!-- نموذج التقديم -->
+            <div id="applicationForm">
+                <h3 style="color: #2c5aa0; margin: 2rem 0 1rem;">📝 قدم طلب الانضمام الآن</h3>
+                <button class="btn-success" onclick="showApplicationModal()" id="applyButton">
+                    🚀 قدم طلب الانضمام
+                </button>
+                <p style="color: #666; margin-top: 1rem;">
+                    سيتم مراجعة طلبك خلال 24 ساعة وسنتصل بك لتأكيد التفاصيل
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - واتساب: 31573340</p>
+        </div>
+    </footer>
+
+    <!-- نموذج التقديم -->
     <div id="applicationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
         <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3>📝 تفاصيل طلب الانضمام</h3>
+                <h3>📝 طلب الانضمام كوسيط</h3>
                 <button onclick="closeApplicationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
             </div>
-            <div id="applicationDetails">
-                <!-- سيتم ملؤها بالبيانات -->
+            
+            <form id="agentApplicationForm">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">الاسم الكامل</label>
+                    <input type="text" id="applicantName" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">رقم الهاتف</label>
+                    <input type="tel" id="applicantPhone" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">العنوان</label>
+                    <input type="text" id="applicantAddress" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;" placeholder="المنطقة/الحي">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">وسيلة المواصلات</label>
+                    <select id="applicantTransport" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                        <option value="">اختر وسيلة المواصلات</option>
+                        <option value="motorcycle">دراجة نارية</option>
+                        <option value="car">سيارة</option>
+                        <option value="bicycle">دراجة هوائية</option>
+                        <option value="walking">سيراً على الأقدام</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">الخبرة السابقة (اختياري)</label>
+                    <textarea id="applicantExperience" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; height: 80px;" placeholder="أي خبرة سابقة في مجال التوصيل أو الخدمات..."></textarea>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">لماذا تريد الانضمام إلينا؟</label>
+                    <textarea id="applicantMotivation" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; height: 80px;" placeholder="أخبرنا عن دوافعك للانضمام..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-success" style="width: 100%;">
+                    📨 إرسال الطلب
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نماذج المصادقة -->
+    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
+            <h3>تسجيل الدخول</h3>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">البريد الإلكتروني</label>
+                <input type="email" id="loginEmail" placeholder="أدخل بريدك الإلكتروني" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
             </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">كلمة المرور</label>
+                <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <button onclick="loginUser()" class="btn-primary">تسجيل الدخول</button>
+            <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer;">إنشاء حساب جديد</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
+            <h3>إنشاء حساب جديد</h3>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">الاسم الكامل</label>
+                <input type="text" id="signupName" placeholder="أدخل اسمك الكامل" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">رقم الهاتف</label>
+                <input type="tel" id="signupPhone" placeholder="أدخل رقم هاتفك" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">البريد الإلكتروني</label>
+                <input type="email" id="signupEmail" placeholder="أدخل بريدك الإلكتروني" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">كلمة المرور</label>
+                <input type="password" id="signupPassword" placeholder="أدخل كلمة المرور (6 أحرف على الأقل)" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <button onclick="signupUser()" class="btn-primary">إنشاء حساب</button>
+            <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
         </div>
     </div>
 
@@ -311,507 +639,317 @@
             messagingSenderId: "324986363643",
             appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
         };
-        
-        // تهيئة Firebase
-        let app;
-        try {
-            // حذف أي تطبيق مسبق لتجنب التضارب
-            if (firebase.apps.length > 0) {
-                firebase.app().delete();
-            }
-            app = firebase.initializeApp(firebaseConfig);
-            console.log('✅ Firebase initialized successfully');
-        } catch (error) {
-            console.log('✅ Firebase already initialized');
-            app = firebase.app();
-        }
-        
+
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // إعداد معالجة الأخطاء العامة
-        window.addEventListener('error', function(e) {
-            console.error('❌ Global error:', e.error);
-            showSystemMessage('خطأ عام: ' + e.error.message, 'error');
-        });
+        let userApplication = null;
 
-        // دالة لعرض رسائل النظام
-        function showSystemMessage(message, type = 'info') {
-            const messageDiv = document.getElementById('systemMessage');
-            const messageClass = type === 'error' ? 'error-message' : 'success-message';
-            messageDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
-            
-            // إخفاء الرسالة بعد 5 ثواني
-            setTimeout(() => {
-                messageDiv.innerHTML = '';
-            }, 5000);
-        }
-
-        let currentApplication = null;
-
-        // التحقق من تسجيل الدخول
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = 'admin-login.html';
-            } else {
-                console.log('👤 تحقق من صلاحية المستخدم...');
-                db.collection('users').doc(user.uid).get().then((doc) => {
-                    if (doc.exists && doc.data().role === 'admin') {
-                        document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
-                        console.log('✅ تم التحقق من صلاحية المدير');
-                        initAgentsManager();
-                    } else {
-                        console.log('❌ ليس لديك صلاحية الدخول للوحة التحكم');
-                        showSystemMessage('❌ ليس لديك صلاحية الدخول للوحة التحكم', 'error');
-                        setTimeout(() => logout(), 2000);
-                    }
-                }).catch(error => {
-                    console.error('❌ خطأ في التحقق من الصلاحية:', error);
-                    showSystemMessage('خطأ في التحقق من الصلاحية: ' + error.message, 'error');
-                });
-            }
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
         });
         
-        function logout() {
-            auth.signOut().then(() => {
-                window.location.href = 'admin-login.html';
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navbar')) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEarningsCalculator();
+            loadAgentsStats();
+        });
+
+        // نظام المصادقة
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                await showUserWelcome(user);
+                await checkUserApplication(user);
+            } else {
+                showAuthButtons();
+            }
+        });
+
+        async function showUserWelcome(user) {
+            document.getElementById('userWelcome').style.display = 'block';
+            document.getElementById('userName').textContent = user.displayName || user.email;
+            document.getElementById('authButtons').innerHTML = `
+                <button onclick="logoutUser()" class="btn-primary" style="padding: 0.5rem 1rem;">تسجيل الخروج</button>
+            `;
+        }
+
+        function showAuthButtons() {
+            document.getElementById('userWelcome').style.display = 'none';
+            document.getElementById('agentStatus').style.display = 'none';
+            document.getElementById('authButtons').innerHTML = `
+                <button onclick="showLoginModal()" class="btn-primary" style="padding: 0.5rem 1rem;">تسجيل الدخول</button>
+                <button onclick="showSignupModal()" class="btn-outline" style="padding: 0.5rem 1rem;">إنشاء حساب</button>
+            `;
+        }
+
+        // التحقق من طلب المستخدم
+        async function checkUserApplication(user) {
+            try {
+                const applicationsSnapshot = await db.collection('agent_applications')
+                    .where('userId', '==', user.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(1)
+                    .get();
+
+                if (!applicationsSnapshot.empty) {
+                    userApplication = applicationsSnapshot.docs[0].data();
+                    userApplication.id = applicationsSnapshot.docs[0].id;
+                    
+                    showApplicationStatus(userApplication);
+                } else {
+                    document.getElementById('agentStatus').style.display = 'none';
+                    document.getElementById('applyButton').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error checking application:', error);
+            }
+        }
+
+        function showApplicationStatus(application) {
+            const statusElement = document.getElementById('agentStatus');
+            const statusText = document.getElementById('statusText');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            statusElement.style.display = 'block';
+            document.getElementById('applyButton').style.display = 'none';
+            
+            const statusConfig = {
+                'pending': { text: '⏳ قيد المراجعة', message: 'جاري مراجعة طلبك، سيتم الرد خلال 24 ساعة', color: '#fff3cd' },
+                'approved': { text: '✅ مقبول', message: 'مبروك! تم قبول طلبك. سنتواصل معك قريباً', color: '#d4edda' },
+                'rejected': { text: '❌ مرفوض', message: 'نعتذر، لم يتم قبول طلبك حالياً', color: '#f8d7da' },
+                'under_review': { text: '🔍 قيد التدقيق', message: 'طلبك قيد التدقيق الإضافي', color: '#cce7ff' }
+            };
+            
+            const config = statusConfig[application.status] || statusConfig.pending;
+            statusText.textContent = config.text;
+            statusMessage.textContent = application.message || config.message;
+            statusElement.style.background = config.color;
+        }
+
+        // حاسبة الأرباح
+        function setupEarningsCalculator() {
+            const dailyOrdersInput = document.getElementById('dailyOrders');
+            const avgPriceInput = document.getElementById('avgPrice');
+            
+            function calculateEarnings() {
+                const dailyOrders = parseInt(dailyOrdersInput.value) || 0;
+                const avgPrice = parseInt(avgPriceInput.value) || 0;
+                const commissionRate = 0.3; // 30%
+                const workingDays = 26;
+                
+                const monthlyEarnings = Math.round(dailyOrders * avgPrice * commissionRate * workingDays);
+                document.getElementById('monthlyEarnings').textContent = monthlyEarnings.toLocaleString();
+            }
+            
+            dailyOrdersInput.addEventListener('input', calculateEarnings);
+            avgPriceInput.addEventListener('input', calculateEarnings);
+            
+            calculateEarnings(); // حساب أولي
+        }
+
+        // تحميل إحصائيات الوكلاء
+        async function loadAgentsStats() {
+            try {
+                // إحصائيات الوكلاء
+                const agentsSnapshot = await db.collection('users')
+                    .where('role', '==', 'agent')
+                    .where('status', '==', 'active')
+                    .get();
+                
+                document.getElementById('totalAgents').textContent = agentsSnapshot.size;
+
+                // إحصائيات الأرباح (محاكاة)
+                const totalEarnings = agentsSnapshot.size * 15000; // متوسط أرباح
+                document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString();
+
+                // عدد الطلبات المكتملة
+                const ordersSnapshot = await db.collection('orders')
+                    .where('status', '==', 'مكتمل')
+                    .get();
+                
+                document.getElementById('completedOrders').textContent = ordersSnapshot.size;
+
+            } catch (error) {
+                console.log('⚠️ لا يمكن تحميل الإحصائيات');
+            }
+        }
+
+        // إظهار نموذج التقديم
+        function showApplicationModal() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert('⚠️ يرجى تسجيل الدخول أولاً لتقديم طلب الانضمام');
+                showLoginModal();
+                return;
+            }
+            
+            document.getElementById('applicationModal').style.display = 'flex';
+            
+            // تعبئة البيانات من حساب المستخدم إن وجدت
+            db.collection('users').doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    document.getElementById('applicantName').value = userData.name || '';
+                    document.getElementById('applicantPhone').value = userData.phone || '';
+                }
             });
         }
 
-        class AgentsManager {
-            constructor() {
-                this.init();
-            }
-            
-            async init() {
-                console.log('🚀 بدء تهيئة نظام إدارة الوكلاء...');
-                try {
-                    await this.loadStats();
-                    await this.loadApplications();
-                    await this.loadAgents();
-                    this.setupRealtimeListeners();
-                    console.log('✅ تم تهيئة نظام إدارة الوكلاء بنجاح');
-                    showSystemMessage('✅ تم تحميل البيانات بنجاح', 'success');
-                } catch (error) {
-                    console.error('❌ خطأ في تهيئة النظام:', error);
-                    showSystemMessage('خطأ في تحميل البيانات: ' + error.message, 'error');
-                }
-            }
-            
-            async loadStats() {
-                try {
-                    console.log('📊 جاري تحميل الإحصائيات...');
-                    
-                    // جلب طلبات الانضمام
-                    const applicationsSnapshot = await db.collection('agent_applications').get();
-                    console.log('✅ تم تحميل', applicationsSnapshot.size, 'طلب انضمام');
-                    
-                    // جلب الوكلاء
-                    const agentsSnapshot = await db.collection('users')
-                        .where('role', '==', 'agent')
-                        .get();
-                    console.log('✅ تم تحميل', agentsSnapshot.size, 'وكيل');
-                    
-                    const pendingApplications = applicationsSnapshot.docs.filter(doc => 
-                        doc.data().status === 'pending'
-                    ).length;
-                    
-                    const activeAgents = agentsSnapshot.docs.filter(doc => 
-                        doc.data().status === 'active'
-                    ).length;
-                    
-                    // تحديث الواجهة
-                    document.getElementById('totalAgents').textContent = agentsSnapshot.size;
-                    document.getElementById('pendingAgents').textContent = pendingApplications;
-                    document.getElementById('activeAgents').textContent = activeAgents;
-                    document.getElementById('agentCommissions').textContent = (activeAgents * 5000).toLocaleString() + ' MRU';
-                    
-                    document.getElementById('applicationsCount').textContent = pendingApplications + ' طلب';
-                    document.getElementById('agentsCount').textContent = agentsSnapshot.size + ' وكيل';
-                    
-                    console.log('✅ الإحصائيات:', pendingApplications, 'طلب pending,', activeAgents, 'وكيل active');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في تحميل الإحصائيات:', error);
-                    throw error;
-                }
-            }
-            
-            async loadApplications() {
-                try {
-                    console.log('📋 جاري تحميل طلبات الانضمام...');
-                    
-                    const applicationsSnapshot = await db.collection('agent_applications')
-                        .orderBy('timestamp', 'desc')
-                        .get();
-                    
-                    console.log('✅ عدد الطلبات:', applicationsSnapshot.size);
-                    
-                    if (applicationsSnapshot.empty) {
-                        document.getElementById('applicationsTable').innerHTML = `
-                            <div class="empty-state">
-                                <div>📭</div>
-                                <h3>لا توجد طلبات انضمام</h3>
-                                <p>لا توجد طلبات انضمام جديدة قيد المراجعة</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    const html = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>الاسم</th>
-                                    <th>الهاتف</th>
-                                    <th>العنوان</th>
-                                    <th>البريد الإلكتروني</th>
-                                    <th>وسيلة النقل</th>
-                                    <th>التاريخ</th>
-                                    <th>الحالة</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${applicationsSnapshot.docs.map(doc => {
-                                    const data = doc.data();
-                                    const status = data.status || 'pending';
-                                    const statusClass = status === 'pending' ? 'pending' : 
-                                                      status === 'approved' ? 'approved' : 'rejected';
-                                    const statusText = status === 'pending' ? 'قيد المراجعة' :
-                                                     status === 'approved' ? 'مقبول' : 'مرفوض';
-                                    
-                                    return `
-                                        <tr>
-                                            <td><strong>${data.name || 'غير محدد'}</strong></td>
-                                            <td>${data.phone || 'غير محدد'}</td>
-                                            <td>${data.address || 'غير محدد'}</td>
-                                            <td>${data.userEmail || 'غير محدد'}</td>
-                                            <td>${this.getTransportText(data.transport)}</td>
-                                            <td>${data.timestamp ? data.timestamp.toDate().toLocaleString('ar-SA') : 'غير محدد'}</td>
-                                            <td>
-                                                <span class="status-${statusClass}">${statusText}</span>
-                                            </td>
-                                            <td>
-                                                ${status === 'pending' ? `
-                                                    <button class="btn btn-success" onclick="approveApplication('${doc.id}')">✅ قبول</button>
-                                                    <button class="btn btn-danger" onclick="rejectApplication('${doc.id}')">❌ رفض</button>
-                                                ` : ''}
-                                                <button class="btn btn-primary" onclick="viewApplication('${doc.id}')">👁️ تفاصيل</button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                    
-                    document.getElementById('applicationsTable').innerHTML = html;
-                    console.log('✅ تم تحميل طلبات الانضمام بنجاح');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في تحميل طلبات الانضمام:', error);
-                    document.getElementById('applicationsTable').innerHTML = `
-                        <div class="empty-state">
-                            <div>❌</div>
-                            <h3>حدث خطأ في تحميل البيانات</h3>
-                            <p>${error.message}</p>
-                            <button class="btn btn-primary" onclick="location.reload()">🔄 إعادة تحميل الصفحة</button>
-                        </div>
-                    `;
-                    throw error;
-                }
-            }
-            
-            async loadAgents() {
-                try {
-                    console.log('👥 جاري تحميل بيانات الوكلاء...');
-                    
-                    const agentsSnapshot = await db.collection('users')
-                        .where('role', '==', 'agent')
-                        .get();
-                    
-                    console.log('✅ عدد الوكلاء:', agentsSnapshot.size);
-                    
-                    if (agentsSnapshot.empty) {
-                        document.getElementById('agentsTable').innerHTML = `
-                            <div class="empty-state">
-                                <div>👥</div>
-                                <h3>لا توجد وكلاء</h3>
-                                <p>لا توجد وكلاء مسجلين في النظام حالياً</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    const html = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>الاسم</th>
-                                    <th>الهاتف</th>
-                                    <th>البريد الإلكتروني</th>
-                                    <th>العنوان</th>
-                                    <th>وسيلة النقل</th>
-                                    <th>تاريخ الانضمام</th>
-                                    <th>الحالة</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${agentsSnapshot.docs.map(doc => {
-                                    const data = doc.data();
-                                    const status = data.status || 'active';
-                                    return `
-                                        <tr>
-                                            <td><strong>${data.name || 'غير محدد'}</strong></td>
-                                            <td>${data.phone || 'غير محدد'}</td>
-                                            <td>${data.email || 'غير محدد'}</td>
-                                            <td>${data.address || 'غير محدد'}</td>
-                                            <td>${this.getTransportText(data.transport)}</td>
-                                            <td>${data.createdAt ? data.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}</td>
-                                            <td>
-                                                <span class="status-${status === 'active' ? 'approved' : 'rejected'}">
-                                                    ${status === 'active' ? 'نشط' : 'غير نشط'}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary" onclick="viewAgent('${doc.id}')">👁️ تفاصيل</button>
-                                                ${status === 'active' ? 
-                                                    `<button class="btn btn-danger" onclick="deactivateAgent('${doc.id}')">🚫 إلغاء التفعيل</button>` :
-                                                    `<button class="btn btn-success" onclick="activateAgent('${doc.id}')">✅ تفعيل</button>`
-                                                }
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                    
-                    document.getElementById('agentsTable').innerHTML = html;
-                    console.log('✅ تم تحميل الوكلاء بنجاح');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في تحميل الوكلاء:', error);
-                    document.getElementById('agentsTable').innerHTML = `
-                        <div class="empty-state">
-                            <div>❌</div>
-                            <h3>حدث خطأ في تحميل البيانات</h3>
-                            <p>${error.message}</p>
-                        </div>
-                    `;
-                    throw error;
-                }
-            }
-            
-            getTransportText(transport) {
-                const transportMap = {
-                    'motorcycle': 'دراجة نارية',
-                    'car': 'سيارة',
-                    'bicycle': 'دراجة هوائية',
-                    'walking': 'سيراً على الأقدام',
-                    'bike': 'دراجة نارية'
-                };
-                return transportMap[transport] || transport || 'غير محدد';
-            }
-            
-            setupRealtimeListeners() {
-                // تحديث فوري للطلبات
-                db.collection('agent_applications')
-                    .onSnapshot(() => {
-                        console.log('🔄 تحديث تلقائي لطلبات الانضمام');
-                        this.loadApplications();
-                        this.loadStats();
-                    }, error => {
-                        console.error('❌ خطأ في listener الطلبات:', error);
-                    });
-                
-                // تحديث فوري للوكلاء
-                db.collection('users')
-                    .where('role', '==', 'agent')
-                    .onSnapshot(() => {
-                        console.log('🔄 تحديث تلقائي للوكلاء');
-                        this.loadAgents();
-                        this.loadStats();
-                    }, error => {
-                        console.error('❌ خطأ في listener الوكلاء:', error);
-                    });
-            }
-        }
-
-        // دوال الإجراءات
-        async function approveApplication(applicationId) {
-            if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
-                try {
-                    console.log('✅ قبول الطلب:', applicationId);
-                    const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
-                    const applicationData = applicationDoc.data();
-                    
-                    // تحديث حالة الطلب
-                    await db.collection('agent_applications').doc(applicationId).update({
-                        status: 'approved',
-                        approvedAt: new Date(),
-                        approvedBy: auth.currentUser.uid
-                    });
-                    
-                    // إنشاء مستخدم وكيل جديد
-                    await db.collection('users').add({
-                        name: applicationData.name,
-                        phone: applicationData.phone,
-                        email: applicationData.userEmail || '',
-                        role: 'agent',
-                        status: 'active',
-                        address: applicationData.address,
-                        transport: applicationData.transport,
-                        experience: applicationData.experience,
-                        createdAt: new Date(),
-                        joinedAt: new Date()
-                    });
-                    
-                    showSystemMessage('🎉 تم قبول الوكيل بنجاح!', 'success');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في قبول الطلب:', error);
-                    showSystemMessage('حدث خطأ في قبول الطلب: ' + error.message, 'error');
-                }
-            }
-        }
-        
-        async function rejectApplication(applicationId) {
-            if (confirm('❌ هل أنت متأكد من رفض هذا الطلب؟')) {
-                try {
-                    console.log('❌ رفض الطلب:', applicationId);
-                    await db.collection('agent_applications').doc(applicationId).update({
-                        status: 'rejected',
-                        rejectedAt: new Date(),
-                        rejectedBy: auth.currentUser.uid,
-                        rejectionReason: 'مرفوض من قبل الإدارة'
-                    });
-                    
-                    showSystemMessage('✅ تم رفض الطلب بنجاح', 'success');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في رفض الطلب:', error);
-                    showSystemMessage('حدث خطأ في رفض الطلب: ' + error.message, 'error');
-                }
-            }
-        }
-        
-        async function viewApplication(applicationId) {
-            try {
-                const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
-                const applicationData = applicationDoc.data();
-                
-                document.getElementById('applicationDetails').innerHTML = `
-                    <div style="margin-bottom: 1rem;">
-                        <p><strong>👤 الاسم:</strong> ${applicationData.name || 'غير محدد'}</p>
-                        <p><strong>📞 الهاتف:</strong> ${applicationData.phone || 'غير محدد'}</p>
-                        <p><strong>📧 البريد:</strong> ${applicationData.userEmail || 'غير محدد'}</p>
-                        <p><strong>📍 العنوان:</strong> ${applicationData.address || 'غير محدد'}</p>
-                        <p><strong>🚗 وسيلة النقل:</strong> ${new AgentsManager().getTransportText(applicationData.transport)}</p>
-                        <p><strong>📅 تاريخ التقديم:</strong> ${applicationData.timestamp ? applicationData.timestamp.toDate().toLocaleString('ar-SA') : 'غير محدد'}</p>
-                    </div>
-                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                        <p><strong>💼 الخبرة السابقة:</strong></p>
-                        <p>${applicationData.experience || 'لا توجد خبرة سابقة'}</p>
-                    </div>
-                    <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                        <p><strong>🎯 الدوافع:</strong></p>
-                        <p>${applicationData.motivation || 'غير محددة'}</p>
-                    </div>
-                    ${applicationData.status === 'pending' ? `
-                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
-                        <button class="btn btn-success" onclick="approveApplication('${applicationId}')">✅ قبول الطلب</button>
-                        <button class="btn btn-danger" onclick="rejectApplication('${applicationId}')">❌ رفض الطلب</button>
-                    </div>
-                    ` : ''}
-                `;
-                
-                document.getElementById('applicationModal').style.display = 'flex';
-                currentApplication = applicationId;
-                
-            } catch (error) {
-                console.error('❌ خطأ في عرض التفاصيل:', error);
-                showSystemMessage('حدث خطأ في تحميل التفاصيل: ' + error.message, 'error');
-            }
-        }
-        
         function closeApplicationModal() {
             document.getElementById('applicationModal').style.display = 'none';
-            currentApplication = null;
         }
-        
-        async function viewAgent(agentId) {
+
+        // تقديم طلب الانضمام
+        document.getElementById('agentApplicationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const applicationData = {
+                userId: user.uid,
+                userName: user.displayName,
+                userEmail: user.email,
+                name: document.getElementById('applicantName').value,
+                phone: document.getElementById('applicantPhone').value,
+                address: document.getElementById('applicantAddress').value,
+                transport: document.getElementById('applicantTransport').value,
+                experience: document.getElementById('applicantExperience').value,
+                motivation: document.getElementById('applicantMotivation').value,
+                timestamp: new Date(),
+                status: 'pending',
+                type: 'agent_application'
+            };
+
             try {
-                const agentDoc = await db.collection('users').doc(agentId).get();
-                const agentData = agentDoc.data();
+                await db.collection('agent_applications').add(applicationData);
                 
-                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nوسيلة النقل: ${agentData.transport}\nتاريخ الانضمام: ${agentData.createdAt ? agentData.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}`);
+                // إرسال إشعار للواتساب
+                const message = `🆕 طلب انضمام جديد كوسيط\n👤 الاسم: ${applicationData.name}\n📞 الهاتف: ${applicationData.phone}\n📍 العنوان: ${applicationData.address}\n🚲 المواصلات: ${applicationData.transport}`;
+                const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك خلال 24 ساعة.');
+                closeApplicationModal();
+                
+                // تحديث الواجهة
+                await checkUserApplication(user);
                 
             } catch (error) {
-                console.error('❌ خطأ في عرض تفاصيل الوكيل:', error);
-                showSystemMessage('حدث خطأ في عرض التفاصيل: ' + error.message, 'error');
+                console.error('❌ خطأ في إرسال الطلب:', error);
+                alert('⚠️ حدث خطأ في إرسال الطلب. يرجى المحاولة مرة أخرى.');
             }
-        }
-        
-        async function deactivateAgent(agentId) {
-            if (confirm('🚫 هل أنت متأكد من إلغاء تفعيل هذا الوكيل؟')) {
-                try {
-                    await db.collection('users').doc(agentId).update({
-                        status: 'inactive',
-                        deactivatedAt: new Date(),
-                        deactivatedBy: auth.currentUser.uid
-                    });
-                    
-                    showSystemMessage('✅ تم إلغاء تفعيل الوكيل بنجاح', 'success');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في إلغاء التفعيل:', error);
-                    showSystemMessage('حدث خطأ في إلغاء التفعيل', 'error');
-                }
-            }
+        });
+
+        // دوال المصادقة
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
         }
 
-        async function activateAgent(agentId) {
-            if (confirm('✅ هل أنت متأكد من تفعيل هذا الوكيل؟')) {
-                try {
-                    await db.collection('users').doc(agentId).update({
-                        status: 'active',
-                        activatedAt: new Date(),
-                        activatedBy: auth.currentUser.uid
-                    });
-                    
-                    showSystemMessage('✅ تم تفعيل الوكيل بنجاح', 'success');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في التفعيل:', error);
-                    showSystemMessage('حدث خطأ في التفعيل', 'error');
-                }
-            }
-        }
-        
-        // بدء النظام
-        function initAgentsManager() {
-            new AgentsManager();
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
         }
 
-        // دالة لاختبار Firestore
-        async function testFirestore() {
+        function showSignupModal() {
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+
+        function hideSignupModal() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
             try {
-                const testSnapshot = await db.collection('agent_applications').limit(1).get();
-                if (testSnapshot.empty) {
-                    showSystemMessage('✅ الاتصال ناجح لكن لا توجد بيانات', 'success');
-                } else {
-                    showSystemMessage('✅ تم قراءة البيانات بنجاح!', 'success');
-                }
+                await auth.signInWithEmailAndPassword(email, password);
+                hideLoginModal();
             } catch (error) {
-                showSystemMessage('❌ خطأ في الاتصال: ' + error.message, 'error');
+                alert('❌ ' + getErrorMessage(error.code));
             }
         }
 
-        // تشغيل الاختبار تلقائياً عند التحميل
-        setTimeout(testFirestore, 1000);
+        async function signupUser() {
+            const name = document.getElementById('signupName').value;
+            const phone = document.getElementById('signupPhone').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            if (password.length < 6) {
+                alert('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({
+                    displayName: name
+                });
+
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    role: 'user',
+                    createdAt: new Date(),
+                    status: 'active'
+                });
+
+                hideSignupModal();
+                alert('✅ تم إنشاء حسابك بنجاح!');
+            } catch (error) {
+                alert('❌ ' + getErrorMessage(error.code));
+            }
+        }
+
+        async function logoutUser() {
+            try {
+                await auth.signOut();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        function getErrorMessage(errorCode) {
+            const messages = {
+                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
+                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+                'auth/weak-password': 'كلمة المرور ضعيفة',
+                'auth/user-not-found': 'لم يتم العثور على المستخدم',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة'
+            };
+            return messages[errorCode] || 'حدث خطأ غير متوقع';
+        }
+
+        // تتبع الزوار في Firebase
+        async function trackVisitor() {
+            try {
+                await db.collection('visitors').add({
+                    page: 'انضم كوكيل',
+                    timestamp: new Date(),
+                    referrer: document.referrer || 'direct',
+                    userAgent: navigator.userAgent,
+                    screenResolution: `${screen.width}x${screen.height}`
+                });
+            } catch (error) {
+                console.log('⚠️ لا يمكن تتبع الزائر في Firebase');
+            }
+        }
+
+        // تتبع الزوار عند تحميل الصفحة
+        trackVisitor();
     </script>
 </body>
 </html>
