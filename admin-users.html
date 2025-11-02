@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المستخدمين - Mauri Services</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-nav {
+            background: #2c5aa0;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #2c5aa0;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-active { background: #28a745; color: white; }
+        .status-inactive { background: #6c757d; color: white; }
+        .status-suspended { background: #dc3545; color: white; }
+        .status-pending { background: #ffc107; color: #212529; }
+
+        .role-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .role-admin { background: #dc3545; color: white; }
+        .role-agent { background: #17a2b8; color: white; }
+        .role-user { background: #6c757d; color: white; }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            min-width: 150px;
+        }
+
+        .search-box {
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            min-width: 250px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2c5aa0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background: #2c5aa0;
+            color: white;
+            border-color: #2c5aa0;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .admin-header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>🚀 إدارة المستخدمين - Mauri Services</h1>
+        <div>
+            <span id="adminName">مرحباً، المدير</span>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <a href="admin-dashboard.html">📊 لوحة التحكم</a>
+        <a href="admin-visitors.html">👥 الزوار</a>
+        <a href="admin-orders.html">📦 الطلبات</a>
+        <a href="admin-messages.html">💬 الرسائل</a>
+        <a href="admin-agents.html">👥 الوكلاء</a>
+        <a href="admin-users.html" class="active">👤 المستخدمين</a>
+        <a href="admin-settings.html">⚙️ الإعدادات</a>
+    </nav>
+    
+    <div class="content">
+        <!-- الإحصائيات -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <span class="stat-number" id="totalUsers">0</span>
+                <p>إجمالي المستخدمين</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="activeUsers">0</span>
+                <p>مستخدمين نشطين</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="adminUsers">0</span>
+                <p>مديرين</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="agentUsers">0</span>
+                <p>وكلاء</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="newUsers">0</span>
+                <p>مستخدمين جدد</p>
+            </div>
+        </div>
+
+        <!-- جميع المستخدمين -->
+        <div class="section">
+            <div class="section-header">
+                <h2>👤 جميع المستخدمين</h2>
+                <div>
+                    <button class="btn btn-success" onclick="exportUsers()">📥 تصدير البيانات</button>
+                    <button class="btn btn-primary" onclick="showAddUserModal()">➕ إضافة مستخدم</button>
+                </div>
+            </div>
+            
+            <div class="filters">
+                <input type="text" id="searchUsers" class="search-box" placeholder="🔍 بحث بالاسم أو البريد..." onkeyup="searchUsers()">
+                <select class="filter-select" onchange="filterByRole(this.value)">
+                    <option value="all">جميع الصلاحيات</option>
+                    <option value="admin">مدير</option>
+                    <option value="agent">وكيل</option>
+                    <option value="user">مستخدم عادي</option>
+                </select>
+                <select class="filter-select" onchange="filterByStatus(this.value)">
+                    <option value="all">جميع الحالات</option>
+                    <option value="active">نشط</option>
+                    <option value="inactive">غير نشط</option>
+                </select>
+            </div>
+            
+            <div id="usersTable">
+                <!-- سيتم ملؤها بالبيانات الحقيقية -->
+            </div>
+
+            <div class="pagination" id="pagination">
+                <!-- سيتم ملؤها بالترقيم -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal إضافة مستخدم -->
+    <div id="addUserModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px;">
+            <h3>➕ إضافة مستخدم جديد</h3>
+            <div style="margin: 1rem 0;">
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="newUserName" class="form-control" placeholder="أدخل الاسم الكامل">
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="newUserEmail" class="form-control" placeholder="أدخل البريد الإلكتروني">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="newUserPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                </div>
+                <div class="form-group">
+                    <label>الصلة</label>
+                    <select id="newUserRole" class="form-control">
+                        <option value="user">مستخدم عادي</option>
+                        <option value="agent">وكيل</option>
+                        <option value="admin">مدير</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-success" onclick="createNewUser()">إنشاء مستخدم</button>
+                <button class="btn btn-danger" onclick="hideAddUserModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal تفاصيل المستخدم -->
+    <div id="userDetailsModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px;">
+            <h3>👤 تفاصيل المستخدم</h3>
+            <div id="userDetailsContent" style="margin: 1rem 0;">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+            <button class="btn btn-danger" onclick="hideUserDetailsModal()">إغلاق</button>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // التحقق من تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                // التحقق من دور المستخدم
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().role === 'admin') {
+                        document.getElementById('adminName').textContent = `مرحباً، ${doc.data().name}`;
+                        initUsersPage();
+                    } else {
+                        alert('❌ ليس لديك صلاحية الدخول للوحة التحكم');
+                        logout();
+                    }
+                });
+            }
+        });
+        
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = 'admin-login.html';
+            });
+        }
+        
+        // نظام إدارة المستخدمين مع Firebase
+        class UsersManager {
+            constructor() {
+                this.users = [];
+                this.filteredUsers = [];
+                this.currentPage = 1;
+                this.usersPerPage = 10;
+                this.currentRoleFilter = 'all';
+                this.currentStatusFilter = 'all';
+                this.searchTerm = '';
+                this.init();
+            }
+            
+            async init() {
+                await this.loadUsers();
+                this.setupRealtimeListeners();
+            }
+            
+            async loadUsers() {
+                try {
+                    const usersSnapshot = await db.collection('users').get();
+                    
+                    this.users = usersSnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    
+                    this.updateStats();
+                    this.applyFilters();
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل المستخدمين:', error);
+                }
+            }
+            
+            updateStats() {
+                const totalUsers = this.users.length;
+                const activeUsers = this.users.filter(user => user.status !== 'inactive').length;
+                const adminUsers = this.users.filter(user => user.role === 'admin').length;
+                const agentUsers = this.users.filter(user => user.role === 'agent').length;
+                
+                // مستخدمين جدد (آخر 7 أيام)
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const newUsers = this.users.filter(user => {
+                    const userDate = user.createdAt?.toDate ? user.createdAt.toDate() : new Date(user.createdAt);
+                    return userDate >= weekAgo;
+                }).length;
+                
+                document.getElementById('totalUsers').textContent = totalUsers;
+                document.getElementById('activeUsers').textContent = activeUsers;
+                document.getElementById('adminUsers').textContent = adminUsers;
+                document.getElementById('agentUsers').textContent = agentUsers;
+                document.getElementById('newUsers').textContent = newUsers;
+            }
+            
+            applyFilters() {
+                this.filteredUsers = this.users.filter(user => {
+                    const roleMatch = this.currentRoleFilter === 'all' || user.role === this.currentRoleFilter;
+                    const statusMatch = this.currentStatusFilter === 'all' || 
+                        (this.currentStatusFilter === 'active' && user.status !== 'inactive') ||
+                        (this.currentStatusFilter === 'inactive' && user.status === 'inactive');
+                    
+                    const searchMatch = this.searchTerm === '' || 
+                        user.name?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                        user.email?.toLowerCase().includes(this.searchTerm.toLowerCase());
+                    
+                    return roleMatch && statusMatch && searchMatch;
+                });
+                
+                this.renderUsers();
+                this.renderPagination();
+            }
+            
+            renderUsers() {
+                const startIndex = (this.currentPage - 1) * this.usersPerPage;
+                const endIndex = startIndex + this.usersPerPage;
+                const usersToShow = this.filteredUsers.slice(startIndex, endIndex);
+                
+                const table = document.getElementById('usersTable');
+                
+                if (this.filteredUsers.length === 0) {
+                    table.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">لا توجد مستخدمين</div>';
+                    return;
+                }
+                
+                const html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المستخدم</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>الصلة</th>
+                                <th>الحالة</th>
+                                <th>تاريخ التسجيل</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${usersToShow.map(user => `
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                ${user.name ? user.name.charAt(0) : 'U'}
+                                            </div>
+                                            <div>
+                                                <strong>${user.name || 'بدون اسم'}</strong>
+                                                <br>
+                                                <small style="color: #666;">${user.phone || 'لا يوجد'}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${user.email}</td>
+                                    <td>
+                                        <span class="role-badge role-${user.role}">
+                                            ${this.getRoleText(user.role)}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-${user.status || 'active'}">
+                                            ${this.getStatusText(user.status)}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        ${user.createdAt?.toDate ? 
+                                            user.createdAt.toDate().toLocaleDateString('ar-SA') : 
+                                            'غير معروف'}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-info" onclick="viewUserDetails('${user.id}')">👁️ عرض</button>
+                                        <button class="btn btn-warning" onclick="editUserRole('${user.id}')">✏️ تعديل</button>
+                                        ${user.role !== 'admin' ? 
+                                            `<button class="btn btn-danger" onclick="deleteUser('${user.id}')">🗑️ حذف</button>` : 
+                                            ''}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                table.innerHTML = html;
+            }
+            
+            renderPagination() {
+                const totalPages = Math.ceil(this.filteredUsers.length / this.usersPerPage);
+                const pagination = document.getElementById('pagination');
+                
+                if (totalPages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+                
+                let html = '';
+                
+                // زر السابق
+                if (this.currentPage > 1) {
+                    html += `<button class="page-btn" onclick="usersManager.goToPage(${this.currentPage - 1})">السابق</button>`;
+                }
+                
+                // أرقام الصفحات
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `<button class="page-btn ${i === this.currentPage ? 'active' : ''}" onclick="usersManager.goToPage(${i})">${i}</button>`;
+                }
+                
+                // زر التالي
+                if (this.currentPage < totalPages) {
+                    html += `<button class="page-btn" onclick="usersManager.goToPage(${this.currentPage + 1})">التالي</button>`;
+                }
+                
+                pagination.innerHTML = html;
+            }
+            
+            goToPage(page) {
+                this.currentPage = page;
+                this.renderUsers();
+            }
+            
+            getRoleText(role) {
+                const roleMap = {
+                    'admin': 'مدير',
+                    'agent': 'وكيل',
+                    'user': 'مستخدم'
+                };
+                return roleMap[role] || role;
+            }
+            
+            getStatusText(status) {
+                const statusMap = {
+                    'active': 'نشط',
+                    'inactive': 'غير نشط',
+                    'suspended': 'موقوف'
+                };
+                return statusMap[status] || 'نشط';
+            }
+            
+            setupRealtimeListeners() {
+                // تحديث فوري عند تغيير المستخدمين
+                db.collection('users').onSnapshot(() => {
+                    this.loadUsers();
+                });
+            }
+        }
+        
+        // وظائف عامة
+        function filterByRole(role) {
+            usersManager.currentRoleFilter = role;
+            usersManager.currentPage = 1;
+            usersManager.applyFilters();
+        }
+        
+        function filterByStatus(status) {
+            usersManager.currentStatusFilter = status;
+            usersManager.currentPage = 1;
+            usersManager.applyFilters();
+        }
+        
+        function searchUsers() {
+            usersManager.searchTerm = document.getElementById('searchUsers').value;
+            usersManager.currentPage = 1;
+            usersManager.applyFilters();
+        }
+        
+        function showAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'flex';
+        }
+        
+        function hideAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+        }
+        
+        async function createNewUser() {
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            
+            if (!name || !email || !password) {
+                alert('❌ يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            try {
+                // إنشاء المستخدم في Authentication
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // حفظ بيانات المستخدم في Firestore
+                await db.collection('users').doc(user.uid).set({
+                    name: name,
+                    email: email,
+                    role: role,
+                    status: 'active',
+                    createdAt: new Date(),
+                    createdBy: auth.currentUser.uid
+                });
+                
+                alert('✅ تم إنشاء المستخدم بنجاح');
+                hideAddUserModal();
+                
+                // مسح الحقول
+                document.getElementById('newUserName').value = '';
+                document.getElementById('newUserEmail').value = '';
+                document.getElementById('newUserPassword').value = '';
+                
+            } catch (error) {
+                console.error('❌ خطأ في إنشاء المستخدم:', error);
+                alert('❌ حدث خطأ في إنشاء المستخدم: ' + error.message);
+            }
+        }
+        
+        async function viewUserDetails(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                if (userDoc.exists) {
+                    const user = userDoc.data();
+                    const content = document.getElementById('userDetailsContent');
+                    
+                    content.innerHTML = `
+                        <div style="margin-bottom: 1rem;">
+                            <strong>الاسم:</strong> ${user.name || 'غير محدد'}<br>
+                            <strong>البريد:</strong> ${user.email}<br>
+                            <strong>الهاتف:</strong> ${user.phone || 'غير محدد'}<br>
+                            <strong>الصلة:</strong> ${usersManager.getRoleText(user.role)}<br>
+                            <strong>الحالة:</strong> ${usersManager.getStatusText(user.status)}<br>
+                            <strong>تاريخ التسجيل:</strong> ${user.createdAt?.toDate ? user.createdAt.toDate().toLocaleString('ar-SA') : 'غير معروف'}<br>
+                            ${user.lastLogin ? `<strong>آخر دخول:</strong> ${user.lastLogin.toDate().toLocaleString('ar-SA')}<br>` : ''}
+                        </div>
+                    `;
+                    
+                    document.getElementById('userDetailsModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('❌ خطأ في عرض تفاصيل المستخدم:', error);
+            }
+        }
+        
+        function hideUserDetailsModal() {
+            document.getElementById('userDetailsModal').style.display = 'none';
+        }
+        
+        async function editUserRole(userId) {
+            const newRole = prompt('اختر الصلة الجديدة:\n1. admin - مدير\n2. agent - وكيل\n3. user - مستخدم', 'user');
+            
+            if (newRole && ['admin', 'agent', 'user'].includes(newRole)) {
+                try {
+                    await db.collection('users').doc(userId).update({
+                        role: newRole
+                    });
+                    alert('✅ تم تحديث صلاحية المستخدم بنجاح');
+                } catch (error) {
+                    console.error('❌ خطأ في تحديث الصلاحية:', error);
+                    alert('❌ حدث خطأ في تحديث الصلاحية');
+                }
+            }
+        }
+        
+        async function deleteUser(userId) {
+            if (confirm('⚠️ هل أنت متأكد من حذف هذا المستخدم؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                try {
+                    await db.collection('users').doc(userId).delete();
+                    alert('✅ تم حذف المستخدم بنجاح');
+                } catch (error) {
+                    console.error('❌ خطأ في حذف المستخدم:', error);
+                    alert('❌ حدث خطأ في حذف المستخدم');
+                }
+            }
+        }
+        
+        function exportUsers() {
+            const data = usersManager.filteredUsers.map(user => ({
+                'الاسم': user.name || 'غير محدد',
+                'البريد الإلكتروني': user.email,
+                'الهاتف': user.phone || 'غير محدد',
+                'الصلة': usersManager.getRoleText(user.role),
+                'الحالة': usersManager.getStatusText(user.status),
+                'تاريخ التسجيل': user.createdAt?.toDate ? user.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير معروف'
+            }));
+            
+            const csv = convertToCSV(data);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `مستخدمين_mauri-services_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function convertToCSV(objArray) {
+            const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            let str = '\uFEFF' + Object.keys(array[0]).join(',') + '\r\n';
+            
+            for (let i = 0; i < array.length; i++) {
+                let line = '';
+                for (let index in array[i]) {
+                    if (line !== '') line += ',';
+                    line += `"${array[i][index]}"`;
+                }
+                str += line + '\r\n';
+            }
+            return str;
+        }
+        
+        // بدء النظام
+        let usersManager;
+        function initUsersPage() {
+            usersManager = new UsersManager();
+        }
+    </script>
+</body>
+</html>
