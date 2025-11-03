@@ -733,11 +733,11 @@
                     
                     <div class="commission-breakdown">
                         <div class="commission-item">
-                            <span class="commission-value" id="completedTasks">0</span>
+                            <span class="commission-value" id="completedTasksCount">0</span>
                             <span>مهمة مكتملة</span>
                         </div>
                         <div class="commission-item">
-                            <span class="commission-value" id="pendingTasks">0</span>
+                            <span class="commission-value" id="pendingTasksCount">0</span>
                             <span>مهمة قيد التنفيذ</span>
                         </div>
                         <div class="commission-item">
@@ -1310,8 +1310,8 @@
                 });
 
                 // تحديث الإحصائيات
-                document.getElementById('completedTasks').textContent = completedTasks.length;
-                document.getElementById('pendingTasks').textContent = assignedTasks.length + inProgressTasks.length;
+                document.getElementById('completedTasksCount').textContent = completedTasks.length;
+                document.getElementById('pendingTasksCount').textContent = assignedTasks.length + inProgressTasks.length;
 
                 // عرض المهام الموكلة
                 const assignedContainer = document.getElementById('assignedTasks');
