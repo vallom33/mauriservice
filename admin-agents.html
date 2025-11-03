@@ -1026,64 +1026,82 @@
         }
 
         // دوال الإجراءات
-        async function approveApplication(applicationId) {
-            if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
-                try {
-                    const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
-                    const applicationData = applicationDoc.data();
-                    
-                    if (!applicationData) {
-                        alert('❌ لم يتم العثور على بيانات الطلب');
-                        return;
-                    }
-                    
-                    await db.collection('agent_applications').doc(applicationId).update({
-                        status: 'approved',
-                        approvedAt: new Date(),
-                        approvedBy: auth.currentUser.uid
-                    });
-                    
-                    await db.collection('users').add({
-                        name: applicationData.name,
-                        phone: applicationData.phone,
-                        email: applicationData.userEmail || '',
-                        role: 'agent',
-                        status: 'active',
-                        district: applicationData.district,
-                        address: applicationData.address,
-                        transport: applicationData.transport,
-                        experience: applicationData.experience,
-                        createdAt: new Date(),
-                        joinedAt: new Date()
-                    });
-                    
-                    alert('🎉 تم قبول الوكيل بنجاح!');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في قبول الطلب:', error);
-                    alert('❌ حدث خطأ في قبول الطلب: ' + error.message);
-                }
+        // 🔧 إصلاح دالة قبول الطلب - استبدل هذا الكود في admin-agents.html
+async function approveApplication(applicationId) {
+    if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
+        try {
+            const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
+            const applicationData = applicationDoc.data();
+            
+            if (!applicationData) {
+                alert('❌ لم يتم العثور على بيانات الطلب');
+                return;
             }
-        }
-        
-        async function rejectApplication(applicationId) {
-            if (confirm('❌ هل أنت متأكد من رفض هذا الطلب؟')) {
-                try {
-                    await db.collection('agent_applications').doc(applicationId).update({
-                        status: 'rejected',
-                        rejectedAt: new Date(),
-                        rejectedBy: auth.currentUser.uid,
-                        rejectionReason: 'مرفوض من قبل الإدارة'
-                    });
-                    
-                    alert('✅ تم رفض الطلب بنجاح');
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في رفض الطلب:', error);
-                    alert('❌ حدث خطأ في رفض الطلب: ' + error.message);
-                }
+            
+            // أولاً: البحث عن المستخدم الحالي بواسطة البريد الإلكتروني
+            const usersSnapshot = await db.collection('users')
+                .where('email', '==', applicationData.userEmail)
+                .get();
+            
+            let userDocRef;
+            
+            if (!usersSnapshot.empty) {
+                // إذا وجد المستخدم، نحدث بياناته
+                userDocRef = usersSnapshot.docs[0].ref;
+                await userDocRef.update({
+                    role: 'agent',
+                    status: 'active',
+                    district: applicationData.district,
+                    address: applicationData.address,
+                    transport: applicationData.transport,
+                    experience: applicationData.experience,
+                    approvedAt: new Date(),
+                    approvedBy: auth.currentUser.uid
+                });
+            } else {
+                // إذا لم يوجد المستخدم، ننشئ مستخدم جديد
+                userDocRef = await db.collection('users').add({
+                    name: applicationData.name,
+                    phone: applicationData.phone,
+                    email: applicationData.userEmail || '',
+                    role: 'agent',
+                    status: 'active',
+                    district: applicationData.district,
+                    address: applicationData.address,
+                    transport: applicationData.transport,
+                    experience: applicationData.experience,
+                    createdAt: new Date(),
+                    approvedAt: new Date(),
+                    approvedBy: auth.currentUser.uid
+                });
             }
+            
+            // ثانياً: تحديث حالة الطلب
+            await db.collection('agent_applications').doc(applicationId).update({
+                status: 'approved',
+                approvedAt: new Date(),
+                approvedBy: auth.currentUser.uid,
+                userId: userDocRef.id // حفظ رابط المستخدم
+            });
+            
+            // ثالثاً: إرسال إشعار للمستخدم
+            await db.collection('notifications').add({
+                userId: userDocRef.id,
+                title: '🎉 تم قبول طلبك!',
+                message: `مبروك ${applicationData.name}! تم قبول طلبك كـ وكيل في Mauri Services. يمكنك الآن تسجيل الدخول وعرض المهام المتاحة.`,
+                type: 'application_approved',
+                read: false,
+                timestamp: new Date()
+            });
+            
+            alert('🎉 تم قبول الوكيل بنجاح!');
+            
+        } catch (error) {
+            console.error('❌ خطأ في قبول الطلب:', error);
+            alert('❌ حدث خطأ في قبول الطلب: ' + error.message);
         }
+    }
+}
         
         async function viewApplication(applicationId) {
             try {
