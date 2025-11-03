@@ -900,8 +900,8 @@
             const userData = userDoc.data();
             const availableBalance = document.querySelector('#earningsDetails .bg-\\[\\#fff3e0\\] div')?.textContent || '0';
 
-            if (parseInt(availableBalance) < 1000) {
-                showSystemMessage('❌ الحد الأدنى للسحب هو 1000 MRU');
+            if (parseInt(availableBalance) < 100) {
+                showSystemMessage('❌ الحد الأدنى للسحب هو 100 MRU');
                 return;
             }
 

@@ -872,13 +872,15 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-primary" onclick="viewAgent('${doc.id}')">👁️ تفاصيل</button>
-                                                <button class="btn btn-info" onclick="assignTaskToAgent('${doc.id}')">➕ مهمة</button>
-                                                ${status === 'active' ? 
-                                                    `<button class="btn btn-danger" onclick="deactivateAgent('${doc.id}')">🚫 إلغاء التفعيل</button>` :
-                                                    `<button class="btn btn-success" onclick="activateAgent('${doc.id}')">✅ تفعيل</button>`
-                                                }
-                                            </td>
+    <button class="btn btn-primary" onclick="viewAgent('${doc.id}')">👁️ تفاصيل</button>
+    <button class="btn btn-info" onclick="assignTaskToAgent('${doc.id}')">➕ مهمة</button>
+    ${status === 'active' ? 
+        `<button class="btn btn-warning" onclick="deactivateAgent('${doc.id}')">🚫 إلغاء التفعيل</button>` :
+        `<button class="btn btn-success" onclick="activateAgent('${doc.id}')">✅ تفعيل</button>`
+    }
+    <!-- إضافة زر الحذف -->
+    <button class="btn btn-danger" onclick="deleteAgent('${doc.id}')" style="background: #dc3545; margin-top: 0.25rem; display: block; width: 100%;">🗑️ حذف الوكيل</button>
+</td>
                                         </tr>
                                     `;
                                 }).join('')}
@@ -1284,6 +1286,43 @@
                 }
             }
         }
+
+
+        // 🔥 دالة حذف الوكيل
+async function deleteAgent(agentId) {
+    if (confirm('🗑️ هل أنت متأكد من حذف هذا الوكيل؟ سيتم حذف جميع بياناته.')) {
+        try {
+            // أولاً، التحقق من وجود مهام نشطة للوكيل
+            const tasksSnapshot = await db.collection('agent_tasks')
+                .where('agentId', '==', agentId)
+                .where('status', 'in', ['assigned', 'in-progress'])
+                .get();
+            
+            if (!tasksSnapshot.empty) {
+                alert('❌ لا يمكن حذف الوكيل لأنه لديه مهام نشطة. يرجى إعادة تعيين المهام أولاً.');
+                return;
+            }
+            
+            // حذف الوكيل من مجموعة المستخدمين
+            await db.collection('users').doc(agentId).delete();
+            
+            // أيضاً حذف من طلبات الوكالة إذا موجود
+            const agentApps = await db.collection('agent_applications')
+                .where('userId', '==', agentId)
+                .get();
+            
+            agentApps.forEach(async (doc) => {
+                await db.collection('agent_applications').doc(doc.id).delete();
+            });
+            
+            showSystemMessage('✅ تم حذف الوكيل بنجاح', 'success');
+            
+        } catch (error) {
+            console.error('❌ خطأ في حذف الوكيل:', error);
+            showSystemMessage('❌ حدث خطأ في حذف الوكيل: ' + error.message);
+        }
+    }
+}
         
         // بدء النظام
         function initAgentsManager() {
