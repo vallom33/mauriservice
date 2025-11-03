@@ -333,6 +333,26 @@
         .status-in-progress { background: #ffc107; color: #212529; }
         .status-completed { background: #28a745; color: white; }
 
+        .district-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .location-info {
+            background: #fff3e0;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #e65100;
+            border-right: 3px solid #ff9800;
+        }
+
         @media (max-width: 768px) {
             .admin-nav {
                 flex-direction: column;
@@ -476,6 +496,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label>📍 منطقة/حي الوكيل</label>
+                    <div id="agentDistrictInfo" class="location-info">
+                        💡 سيتم عرض منطقة الوكيل بعد اختياره
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label>عنوان المهمة</label>
                     <input type="text" id="taskTitle" placeholder="عنوان المهمة" required>
                 </div>
@@ -505,10 +532,50 @@
                 </div>
 
                 <div class="form-group">
+                    <label>📍 منطقة/حي العميل</label>
+                    <select id="customerDistrict" required class="form-select">
+                        <option value="">اختر منطقة/حي العميل</option>
+                        <optgroup label="نواكشوط الشمالية">
+                            <option value="تفرغ زينة">تفرغ زينة</option>
+                            <option value="الميناء">الميناء</option>
+                            <option value="دار النعيم">دار النعيم</option>
+                            <option value="لكصر">لكصر</option>
+                            <option value="تياريت">تياريت</option>
+                        </optgroup>
+                        <optgroup label="نواكشوط الغربية">
+                            <option value="توجونين">توجونين</option>
+                            <option value="العرفان">العرفان</option>
+                            <option value="الرياض">الرياض</option>
+                            <option value="الميناء القديم">الميناء القديم</option>
+                        </optgroup>
+                        <optgroup label="نواكشوط الجنوبية">
+                            <option value="عين التاه">عين التاه</option>
+                            <option value="السوق">السوق</option>
+                            <option value="السبخة">السبخة</option>
+                            <option value="المساكن الشعبية">المساكن الشعبية</option>
+                            <option value="البساتين">البساتين</option>
+                        </optgroup>
+                        <optgroup label="أحياء أخرى">
+                            <option value="أرفود">أرفود</option>
+                            <option value="العقبة">العقبة</option>
+                            <option value="الرياض 2">الرياض 2</option>
+                            <option value="الصداقة">الصداقة</option>
+                            <option value="الطالب حميد">الطالب حميد</option>
+                            <option value="الخليج">الخليج</option>
+                            <option value="ألاك">ألاك</option>
+                            <option value="المذرذرة">المذرذرة</option>
+                        </optgroup>
+                    </select>
+                    <div class="location-info">
+                        💡 <strong>مهم:</strong> ننصح باختيار منطقة قريبة من الوكيل لضمان خدمة أسرع
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label>معلومات العميل</label>
                     <input type="text" id="customerName" placeholder="اسم العميل" required>
                     <input type="tel" id="customerPhone" placeholder="هاتف العميل" required style="margin-top: 0.5rem;">
-                    <textarea id="customerAddress" placeholder="عنوان العميل" rows="2" style="margin-top: 0.5rem;"></textarea>
+                    <textarea id="customerAddress" placeholder="العنوان التفصيلي للعميل (اختياري)" rows="2" style="margin-top: 0.5rem;"></textarea>
                 </div>
 
                 <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
@@ -681,6 +748,8 @@
                                 <tr>
                                     <th>المهمة</th>
                                     <th>الوكيل</th>
+                                    <th>منطقة الوكيل</th>
+                                    <th>منطقة العميل</th>
                                     <th>العمولة</th>
                                     <th>الأولوية</th>
                                     <th>الحالة</th>
@@ -692,12 +761,16 @@
                                 ${tasksSnapshot.docs.map(doc => {
                                     const task = doc.data();
                                     const agentName = task.agentName || 'غير محدد';
+                                    const agentDistrict = task.agentDistrict || 'غير محدد';
+                                    const customerDistrict = task.customerDistrict || 'غير محدد';
                                     const deadline = task.deadline ? task.deadline.toDate().toLocaleString('ar-SA') : 'غير محدد';
                                     
                                     return `
                                         <tr>
                                             <td><strong>${task.title || 'بدون عنوان'}</strong></td>
                                             <td>${agentName}</td>
+                                            <td><span class="district-badge">${agentDistrict}</span></td>
+                                            <td><span class="district-badge">${customerDistrict}</span></td>
                                             <td><strong>${task.commission || 0} MRU</strong></td>
                                             <td>
                                                 <span class="task-priority priority-${task.priority || 'medium'}">
@@ -763,7 +836,7 @@
                                 <tr>
                                     <th>الاسم</th>
                                     <th>الهاتف</th>
-                                    <th>العنوان</th>
+                                    <th>📍 المنطقة/الحي</th>
                                     <th>البريد الإلكتروني</th>
                                     <th>وسيلة النقل</th>
                                     <th>التاريخ</th>
@@ -773,11 +846,12 @@
                             <tbody>
                                 ${pendingApplications.map(doc => {
                                     const data = doc.data();
+                                    const district = data.district || data.address || 'غير محدد';
                                     return `
                                         <tr>
                                             <td><strong>${data.name || 'غير محدد'}</strong></td>
                                             <td>${data.phone || 'غير محدد'}</td>
-                                            <td>${data.address || 'غير محدد'}</td>
+                                            <td><span class="district-badge">${district}</span></td>
                                             <td>${data.userEmail || 'غير محدد'}</td>
                                             <td>${this.getTransportText(data.transport)}</td>
                                             <td>${data.timestamp ? data.timestamp.toDate().toLocaleString('ar-SA') : 'غير محدد'}</td>
@@ -824,7 +898,8 @@
                         if (agent.status === 'active') {
                             const option = document.createElement('option');
                             option.value = doc.id;
-                            option.textContent = `${agent.name} - ${agent.phone}`;
+                            option.textContent = `${agent.name} - ${agent.district || agent.address || 'غير محدد'}`;
+                            option.setAttribute('data-district', agent.district || agent.address || 'غير محدد');
                             agentsSelect.appendChild(option);
                         }
                     });
@@ -846,8 +921,8 @@
                                 <tr>
                                     <th>الاسم</th>
                                     <th>الهاتف</th>
+                                    <th>📍 المنطقة/الحي</th>
                                     <th>البريد الإلكتروني</th>
-                                    <th>العنوان</th>
                                     <th>وسيلة النقل</th>
                                     <th>تاريخ الانضمام</th>
                                     <th>الحالة</th>
@@ -858,12 +933,13 @@
                                 ${agents.map(doc => {
                                     const data = doc.data();
                                     const status = data.status || 'active';
+                                    const district = data.district || data.address || 'غير محدد';
                                     return `
                                         <tr>
                                             <td><strong>${data.name || 'غير محدد'}</strong></td>
                                             <td>${data.phone || 'غير محدد'}</td>
+                                            <td><span class="district-badge">${district}</span></td>
                                             <td>${data.email || 'غير محدد'}</td>
-                                            <td>${data.address || 'غير محدد'}</td>
                                             <td>${this.getTransportText(data.transport)}</td>
                                             <td>${data.createdAt ? data.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}</td>
                                             <td>
@@ -973,6 +1049,7 @@
                         email: applicationData.userEmail || '',
                         role: 'agent',
                         status: 'active',
+                        district: applicationData.district,
                         address: applicationData.address,
                         transport: applicationData.transport,
                         experience: applicationData.experience,
@@ -1023,7 +1100,8 @@
                         <p><strong>👤 الاسم:</strong> ${applicationData.name || 'غير محدد'}</p>
                         <p><strong>📞 الهاتف:</strong> ${applicationData.phone || 'غير محدد'}</p>
                         <p><strong>📧 البريد:</strong> ${applicationData.userEmail || 'غير محدد'}</p>
-                        <p><strong>📍 العنوان:</strong> ${applicationData.address || 'غير محدد'}</p>
+                        <p><strong>📍 المنطقة/الحي:</strong> <span class="district-badge">${applicationData.district || 'غير محدد'}</span></p>
+                        <p><strong>🏠 العنوان التفصيلي:</strong> ${applicationData.address || 'غير محدد'}</p>
                         <p><strong>🚗 وسيلة النقل:</strong> ${new AgentsManager().getTransportText(applicationData.transport)}</p>
                         <p><strong>📅 تاريخ التقديم:</strong> ${applicationData.timestamp ? applicationData.timestamp.toDate().toLocaleString('ar-SA') : 'غير محدد'}</p>
                     </div>
@@ -1065,12 +1143,32 @@
         function closeAssignTaskModal() {
             document.getElementById('assignTaskModal').style.display = 'none';
             document.getElementById('assignTaskForm').reset();
+            document.getElementById('agentDistrictInfo').innerHTML = '💡 سيتم عرض منطقة الوكيل بعد اختياره';
         }
 
         async function assignTaskToAgent(agentId) {
             document.getElementById('taskAgent').value = agentId;
+            
+            // عرض منطقة الوكيل المختار
+            const selectedOption = document.querySelector(`#taskAgent option[value="${agentId}"]`);
+            if (selectedOption) {
+                const district = selectedOption.getAttribute('data-district');
+                document.getElementById('agentDistrictInfo').innerHTML = `📍 منطقة الوكيل: <strong>${district}</strong>`;
+            }
+            
             openAssignTaskModal();
         }
+
+        // تحديث معلومات المنطقة عند اختيار وكيل
+        document.getElementById('taskAgent').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                const district = selectedOption.getAttribute('data-district');
+                document.getElementById('agentDistrictInfo').innerHTML = `📍 منطقة الوكيل: <strong>${district}</strong>`;
+            } else {
+                document.getElementById('agentDistrictInfo').innerHTML = '💡 سيتم عرض منطقة الوكيل بعد اختياره';
+            }
+        });
 
         document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1084,8 +1182,9 @@
             const customerName = document.getElementById('customerName').value;
             const customerPhone = document.getElementById('customerPhone').value;
             const customerAddress = document.getElementById('customerAddress').value;
+            const customerDistrict = document.getElementById('customerDistrict').value;
 
-            if (!agentId || !title || !description || !commission || !deadline || !customerName || !customerPhone) {
+            if (!agentId || !title || !description || !commission || !deadline || !customerName || !customerPhone || !customerDistrict) {
                 showSystemMessage('⚠️ يرجى ملء جميع الحقول المطلوبة');
                 return;
             }
@@ -1105,6 +1204,7 @@
                     agentId: agentId,
                     agentName: agentData.name,
                     agentPhone: agentData.phone,
+                    agentDistrict: agentData.district || agentData.address,
                     title: title,
                     description: description,
                     priority: priority,
@@ -1113,6 +1213,7 @@
                     customerName: customerName,
                     customerPhone: customerPhone,
                     customerAddress: customerAddress,
+                    customerDistrict: customerDistrict,
                     status: 'assigned',
                     createdAt: new Date(),
                     createdBy: auth.currentUser.uid,
@@ -1123,7 +1224,7 @@
                 await db.collection('notifications').add({
                     userId: agentId,
                     title: '🎯 مهمة جديدة',
-                    message: `تم تعيين مهمة جديدة لك: "${title}" - العمولة: ${commission} MRU`,
+                    message: `تم تعيين مهمة جديدة لك: "${title}" - العمولة: ${commission} MRU - منطقة العميل: ${customerDistrict}`,
                     type: 'task_assigned',
                     read: false,
                     timestamp: new Date()
@@ -1174,11 +1275,19 @@
                     </div>
 
                     <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: #2c5aa0; margin-bottom: 1rem;">📍 معلومات المناطق</h4>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                            <p><strong>منطقة الوكيل:</strong> <span class="district-badge">${task.agentDistrict || 'غير محدد'}</span></p>
+                            <p><strong>منطقة العميل:</strong> <span class="district-badge">${task.customerDistrict || 'غير محدد'}</span></p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
                         <h4 style="color: #2c5aa0; margin-bottom: 1rem;">👤 معلومات العميل</h4>
                         <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
                             <p><strong>الاسم:</strong> ${task.customerName || 'غير محدد'}</p>
                             <p><strong>الهاتف:</strong> ${task.customerPhone || 'غير محدد'}</p>
-                            <p><strong>العنوان:</strong> ${task.customerAddress || 'غير محدد'}</p>
+                            <p><strong>العنوان التفصيلي:</strong> ${task.customerAddress || 'غير محدد'}</p>
                         </div>
                     </div>
 
@@ -1243,7 +1352,7 @@
                     return;
                 }
                 
-                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\nالعنوان: ${agentData.address}\nوسيلة النقل: ${agentData.transport}\nتاريخ الانضمام: ${agentData.createdAt ? agentData.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}`);
+                alert(`👤 تفاصيل الوكيل:\n\nالاسم: ${agentData.name}\nالهاتف: ${agentData.phone}\nالبريد: ${agentData.email}\n📍 المنطقة/الحي: ${agentData.district || agentData.address}\nوسيلة النقل: ${agentData.transport}\nتاريخ الانضمام: ${agentData.createdAt ? agentData.createdAt.toDate().toLocaleDateString('ar-SA') : 'غير محدد'}`);
                 
             } catch (error) {
                 console.error('❌ خطأ في عرض تفاصيل الوكيل:', error);
