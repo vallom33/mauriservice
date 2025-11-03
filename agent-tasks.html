@@ -377,6 +377,7 @@
                 padding: 1rem;
                 box-shadow: 0 5px 10px rgba(0,0,0,0.1);
                 border-radius: 0 0 10px 10px;
+                z-index: 1000;
             }
             
             .nav-links.active {
@@ -595,8 +596,34 @@
         </div>
     </footer>
 
-    <!-- باقي الـ JavaScript يبقى كما هو بدون تغيير -->
-     <script>
+    <script>
+        // إضافة JavaScript لإدارة القائمة المتنقلة
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+                
+                // إغلاق القائمة عند النقر على رابط
+                const navLinksItems = navLinks.querySelectorAll('.nav-link');
+                navLinksItems.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navLinks.classList.remove('active');
+                    });
+                });
+                
+                // إغلاق القائمة عند النقر خارجها
+                document.addEventListener('click', function(event) {
+                    if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            }
+        });
+
         // تهيئة Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",

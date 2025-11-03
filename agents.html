@@ -117,6 +117,38 @@
             text-align: center;
         }
         
+        .location-importance {
+            background: #e8f4ff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-right: 4px solid #2c5aa0;
+            text-align: right;
+        }
+        
+        .location-importance h3 {
+            color: #2c5aa0;
+            margin-bottom: 1rem;
+        }
+        
+        .location-importance ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .location-importance li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .location-importance li:before {
+            content: "📍";
+            font-size: 1.2rem;
+        }
+        
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -225,6 +257,61 @@
             font-weight: bold;
             color: #2c5aa0;
             display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #2c5aa0;
+            outline: none;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .location-info {
+            background: #fff3e0;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #e65100;
+            border-right: 3px solid #ff9800;
         }
         
         .btn-primary {
@@ -421,6 +508,20 @@
                 انضم كوسيط خدمات واربح عمولة على كل طلب تنفذه. ابدأ رحلتك نحو الاستقلال المالي اليوم!
             </p>
             
+            <!-- أهمية العنوان والمنطقة -->
+            <div class="location-importance">
+                <h3>📍 لماذا العنوان والمنطقة مهمان جداً؟</h3>
+                <p style="margin-bottom: 1rem; line-height: 1.6;">
+                    نحرص على إرسال الطلبات للوكلاء في نفس المنطقة لتوفير الوقت والجهد وضمان خدمة أسرع للعملاء.
+                </p>
+                <ul>
+                    <li>🚀 طلبات أسرع: نرسل لك طلبات من منطقتك لتوفير الوقت</li>
+                    <li>💰 توفير النفقات: لا حاجة للتنقل لمسافات بعيدة</li>
+                    <li>👥 عملاء محليون: خدمة عملاء من منطقتك ومعارفك</li>
+                    <li>📱 كفاءة أعلى: إنجاز مزيد من الطلبات في وقت أقل</li>
+                </ul>
+            </div>
+
             <!-- إحصائيات سريعة -->
             <div class="stats-section">
                 <h3 style="text-align: center; margin-bottom: 1rem;">📊 إحصائيات وكلائنا</h3>
@@ -523,7 +624,7 @@
                     🚀 قدم طلب الانضمام
                 </button>
                 <p style="color: #666; margin-top: 1rem;">
-                    سيتم مراجعة طلبك خلال 24 ساعة وسنتصل بك لتأكيد التفاصيل
+                    سيتم مراجعة طلبك خلال  ساعة وسنتصل بك لتأكيد التفاصيل
                 </p>
             </div>
         </div>
@@ -545,40 +646,79 @@
             </div>
             
             <form id="agentApplicationForm">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">الاسم الكامل</label>
-                    <input type="text" id="applicantName" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                <div class="form-group">
+                    <label class="form-label">الاسم الكامل</label>
+                    <input type="text" id="applicantName" required class="form-input">
                 </div>
                 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">رقم الهاتف</label>
-                    <input type="tel" id="applicantPhone" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                <div class="form-group">
+                    <label class="form-label">رقم الهاتف</label>
+                    <input type="tel" id="applicantPhone" required class="form-input">
                 </div>
                 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">العنوان</label>
-                    <input type="text" id="applicantAddress" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;" placeholder="المنطقة/الحي">
+                <div class="form-group">
+                    <label class="form-label">📍 العنوان والمنطقة/الحي</label>
+                    <select id="applicantDistrict" required class="form-select">
+                        <option value="">اختر منطقتك/حيّك</option>
+                        <optgroup label="نواكشوط الشمالية">
+                            <option value="تفرغ زينة">تفرغ زينة</option>
+                            <option value="الميناء">الميناء</option>
+                            <option value="دار النعيم">دار النعيم</option>
+                            <option value="لكصر">لكصر</option>
+                            <option value="تياريت">تياريت</option>
+                        </optgroup>
+                        <optgroup label="نواكشوط الغربية">
+                            <option value="توجونين">توجونين</option>
+                            <option value="عرفات">عرفات</option>
+                            <option value="الرياض">الرياض</option>
+                            <option value="الميناء القديم">الميناء القديم</option>
+                        </optgroup>
+                        <optgroup label="نواكشوط الجنوبية">
+                            <option value="عين الطلح">عين الطلح</option>
+                            <option value="السوق">السوق</option>
+                            <option value="السبخة">السبخة</option>
+                            <option value="البساتين">البساتين</option>
+                        </optgroup>
+                        <optgroup label=" أخرى">
+                            <option value="NDB">NDB</option>
+                            <option value="Magtaa Lihjar">Magtaa Lihjar</option>
+                            <option value="Aioun"> Aioun</option>
+                            <option value="kifa">kifa</option>
+                            <option value="Rkiz"> Rkiz</option>
+                            <option value="Atar">Atar</option>
+                            <option value="Aleg">Aleg</option>
+                            <option value="المذرذرة">المذرذرة</option>
+                        </optgroup>
+                    </select>
+                    <div class="location-info">
+                        💡 <strong>مهم:</strong> سيتم إرسال الطلبات لك بناءً على منطقتك لضمان سرعة الخدمة
+                    </div>
                 </div>
                 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">وسيلة المواصلات</label>
-                    <select id="applicantTransport" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                <div class="form-group">
+                    <label class="form-label">العنوان التفصيلي (اختياري)</label>
+                    <input type="text" id="applicantAddress" class="form-input" placeholder="اسم الشارع، رقم المنزل، معلم قريب...">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">وسيلة المواصلات</label>
+                    <select id="applicantTransport" required class="form-select">
                         <option value="">اختر وسيلة المواصلات</option>
-                        <option value="motorcycle">دراجة نارية</option>
-                        <option value="car">سيارة</option>
-                        <option value="bicycle">دراجة هوائية</option>
-                        <option value="walking">سيراً على الأقدام</option>
+                        <option value="motorcycle">🏍️ دراجة نارية</option>
+                        <option value="car">🚗 سيارة</option>
+                        <option value="bicycle">🚲 دراجة هوائية</option>
+                        <option value="walking">🚶 سيراً على الأقدام</option>
                     </select>
                 </div>
                 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">الخبرة السابقة (اختياري)</label>
-                    <textarea id="applicantExperience" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; height: 80px;" placeholder="أي خبرة سابقة في مجال التوصيل أو الخدمات..."></textarea>
+                <div class="form-group">
+                    <label class="form-label">الخبرة السابقة (اختياري)</label>
+                    <textarea id="applicantExperience" class="form-textarea" placeholder="أي خبرة سابقة في مجال التوصيل أو الخدمات..."></textarea>
                 </div>
                 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">لماذا تريد الانضمام إلينا؟</label>
-                    <textarea id="applicantMotivation" required style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; height: 80px;" placeholder="أخبرنا عن دوافعك للانضمام..."></textarea>
+                <div class="form-group">
+                    <label class="form-label">لماذا تريد الانضمام إلينا؟</label>
+                    <textarea id="applicantMotivation" required class="form-textarea" placeholder="أخبرنا عن دوافعك للانضمام..."></textarea>
                 </div>
                 
                 <button type="submit" class="btn-success" style="width: 100%;">
@@ -826,6 +966,7 @@
                 userEmail: user.email,
                 name: document.getElementById('applicantName').value,
                 phone: document.getElementById('applicantPhone').value,
+                district: document.getElementById('applicantDistrict').value,
                 address: document.getElementById('applicantAddress').value,
                 transport: document.getElementById('applicantTransport').value,
                 experience: document.getElementById('applicantExperience').value,
@@ -839,7 +980,7 @@
                 await db.collection('agent_applications').add(applicationData);
                 
                 // إرسال إشعار للواتساب
-                const message = `🆕 طلب انضمام جديد كوسيط\n👤 الاسم: ${applicationData.name}\n📞 الهاتف: ${applicationData.phone}\n📍 العنوان: ${applicationData.address}\n🚲 المواصلات: ${applicationData.transport}`;
+                const message = `🆕 طلب انضمام جديد كوسيط\n👤 الاسم: ${applicationData.name}\n📞 الهاتف: ${applicationData.phone}\n📍 المنطقة: ${applicationData.district}\n🚲 المواصلات: ${applicationData.transport}`;
                 const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
                 
