@@ -399,172 +399,6 @@
             border: 1px solid #c3e6cb;
             text-align: center;
         }
-
-        /* أنماط جديدة لنظام المهام */
-        .tasks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .task-card {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .task-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        .task-card.high-priority {
-            border-color: #dc3545;
-            background: #fff5f5;
-        }
-
-        .task-card.medium-priority {
-            border-color: #ffc107;
-            background: #fffbf0;
-        }
-
-        .task-card.low-priority {
-            border-color: #28a745;
-            background: #f8fff8;
-        }
-
-        .task-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .task-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #2c5aa0;
-            margin: 0;
-        }
-
-        .task-priority {
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .priority-high { background: #dc3545; color: white; }
-        .priority-medium { background: #ffc107; color: #212529; }
-        .priority-low { background: #28a745; color: white; }
-
-        .task-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 1rem 0;
-            padding: 1rem 0;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-        }
-
-        .task-reward {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #28a745;
-        }
-
-        .task-deadline {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .commission-stats {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            text-align: center;
-        }
-
-        .commission-amount {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 0.5rem 0;
-        }
-
-        .commission-breakdown {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .commission-item {
-            background: rgba(255,255,255,0.2);
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .commission-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: block;
-        }
-
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #ddd;
-            flex-wrap: wrap;
-        }
-        
-        .tab-btn {
-            padding: 1rem 2rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .tab-btn.active {
-            border-bottom-color: #2c5aa0;
-            color: #2c5aa0;
-            font-weight: bold;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-
-        .task-status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .status-assigned { background: #17a2b8; color: white; }
-        .status-in-progress { background: #ffc107; color: #212529; }
-        .status-completed { background: #28a745; color: white; }
-        .status-cancelled { background: #6c757d; color: white; }
         
         @media (max-width: 768px) {
             .nav-links {
@@ -615,31 +449,6 @@
             .section-header .btn {
                 width: 100%;
             }
-
-            .tasks-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .task-header {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .task-actions {
-                flex-direction: column;
-            }
-
-            .commission-breakdown {
-                grid-template-columns: 1fr;
-            }
-
-            .tab-buttons {
-                flex-direction: column;
-            }
-            
-            .tab-btn {
-                padding: 0.8rem 1rem;
-            }
         }
         
         @media (min-width: 768px) {
@@ -670,6 +479,7 @@
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link">الخدمات</a>
             <a href="agents.html" class="nav-link" id="agentsLink">انضم كوكيل</a>
+            <a href="agent-tasks.html" class="nav-link" id="agentTasksLink" style="display: none;">📋 مهامي</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
             <a href="me.html" class="nav-link active">👤 حسابي</a>
         </div>
@@ -721,77 +531,6 @@
             <!-- حالة الوكيل -->
             <div id="agentStatusSection" style="display: none;">
                 <!-- سيتم تعبئتها بحالة طلب الوكالة -->
-            </div>
-
-            <!-- قسم الوكلاء - الإحصائيات والعمولات -->
-            <div id="agentDashboard" style="display: none;">
-                <!-- إحصائيات العمولات -->
-                <div class="commission-stats">
-                    <h3>💰 أرباحي كـ وكيل</h3>
-                    <div class="commission-amount" id="totalCommission">0 MRU</div>
-                    <p>إجمالي الأرباح من المهام المكتملة</p>
-                    
-                    <div class="commission-breakdown">
-                        <div class="commission-item">
-                            <span class="commission-value" id="completedTasksCount">0</span>
-                            <span>مهمة مكتملة</span>
-                        </div>
-                        <div class="commission-item">
-                            <span class="commission-value" id="pendingTasksCount">0</span>
-                            <span>مهمة قيد التنفيذ</span>
-                        </div>
-                        <div class="commission-item">
-                            <span class="commission-value" id="totalEarnings">0 MRU</span>
-                            <span>إجمالي الأرباح</span>
-                        </div>
-                        <div class="commission-item">
-                            <span class="commission-value" id="availableBalance">0 MRU</span>
-                            <span>رصيد متاح للسحب</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- تبويبات المهام -->
-                <div class="section">
-                    <div class="tab-buttons">
-                        <button class="tab-btn active" onclick="openTaskTab('assigned')">📋 المهام الموكلة</button>
-                        <button class="tab-btn" onclick="openTaskTab('inProgress')">🔄 قيد التنفيذ</button>
-                        <button class="tab-btn" onclick="openTaskTab('completed')">✅ المكتملة</button>
-                        <button class="tab-btn" onclick="openTaskTab('earnings')">💰 الأرباح</button>
-                    </div>
-
-                    <!-- المهام الموكلة -->
-                    <div id="assigned" class="tab-content active">
-                        <h3>📋 المهام الموكلة إليك</h3>
-                        <div id="assignedTasks" class="tasks-grid">
-                            <!-- سيتم تعبئتها بالمهام -->
-                        </div>
-                    </div>
-
-                    <!-- المهام قيد التنفيذ -->
-                    <div id="inProgress" class="tab-content">
-                        <h3>🔄 المهام قيد التنفيذ</h3>
-                        <div id="inProgressTasks" class="tasks-grid">
-                            <!-- سيتم تعبئتها بالمهام -->
-                        </div>
-                    </div>
-
-                    <!-- المهام المكتملة -->
-                    <div id="completed" class="tab-content">
-                        <h3>✅ المهام المكتملة</h3>
-                        <div id="completedTasksList" class="tasks-grid">
-                            <!-- سيتم تعبئتها بالمهام -->
-                        </div>
-                    </div>
-
-                    <!-- الأرباح -->
-                    <div id="earnings" class="tab-content">
-                        <h3>💰 تفاصيل الأرباح</h3>
-                        <div id="earningsDetails">
-                            <!-- سيتم تعبئتها بتفاصيل الأرباح -->
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- الإحصائيات العامة -->
@@ -929,19 +668,6 @@
             <p style="text-align: center; margin-top: 1rem;">
                 <a onclick="showLoginModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🚀 لديك حساب؟ سجل الدخول</a>
             </p>
-        </div>
-    </div>
-
-    <!-- نموذج تفاصيل المهمة -->
-    <div id="taskModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 id="taskModalTitle">تفاصيل المهمة</h3>
-                <button onclick="closeTaskModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
-            </div>
-            <div id="taskModalContent">
-                <!-- سيتم تعبئتها بتفاصيل المهمة -->
-            </div>
         </div>
     </div>
 
@@ -1171,12 +897,6 @@
                                    userData.role === 'admin' ? '👑 مدير النظام' : '👤 مستخدم عادي';
                     document.getElementById('userRole').textContent = roleText;
 
-                    // إذا كان وكيلاً، تحميل بيانات المهام
-                    if (userData.role === 'agent') {
-                        document.getElementById('agentDashboard').style.display = 'block';
-                        await loadAgentTasks(user);
-                        await loadAgentEarnings(user);
-                    }
                 } else {
                     await db.collection('users').doc(user.uid).set({
                         name: user.displayName || 'مستخدم',
@@ -1231,796 +951,339 @@
                         </div>
                     `;
                 } else {
-                    let ordersHtml = '';
+                    let ordersHTML = '';
+                    
                     userOrders.forEach(doc => {
                         const order = doc.data();
+                        const orderId = doc.id;
                         totalOrders++;
-                        if (order.status === 'جديد' || order.status === 'قيد التنفيذ') pendingOrders++;
-                        if (order.status === 'مكتمل') completedOrders++;
-                        totalSpent += parseInt(order.price) || 0;
-
-                        const orderDate = order.timestamp?.toDate?.();
-                        const dateText = orderDate ? orderDate.toLocaleString('ar-SA') : 'غير محدد';
-
-                        ordersHtml += `
+                        
+                        if (order.status === 'completed') {
+                            completedOrders++;
+                        } else if (order.status === 'pending' || order.status === 'in-progress') {
+                            pendingOrders++;
+                        }
+                        
+                        if (order.price && !isNaN(order.price)) {
+                            totalSpent += parseFloat(order.price);
+                        }
+                        
+                        const orderDate = order.timestamp?.toDate?.() || new Date();
+                        const statusText = getStatusText(order.status);
+                        const statusClass = getStatusClass(order.status);
+                        
+                        ordersHTML += `
                             <div class="order-item">
-                                <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
-                                    <div style="flex: 1;">
-                                        <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0;">${order.service || 'خدمة غير محددة'}</h4>
-                                        <p style="color: #666; margin: 0.5rem 0; line-height: 1.5;">${order.details || 'لا توجد تفاصيل إضافية'}</p>
-                                        <small style="color: #888;">${dateText}</small>
-                                    </div>
-                                    <div style="text-align: left; min-width: 120px;">
-                                        <span class="status-badge status-${getStatusClass(order.status)}">${order.status || 'جديد'}</span>
-                                        <div style="font-weight: bold; margin-top: 0.5rem; font-size: 1.1rem;">${order.price || 0} MRU</div>
-                                    </div>
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                    <h4>${order.serviceName || 'خدمة'}</h4>
+                                    <span class="status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                                <p style="color: #666; margin-bottom: 0.5rem;">
+                                    ${order.description || 'لا يوجد وصف'}
+                                </p>
+                                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+                                    <span style="color: #2c5aa0; font-weight: bold;">
+                                        ${order.price ? order.price + ' MRU' : 'السعر غير محدد'}
+                                    </span>
+                                    <span style="color: #888;">
+                                        ${orderDate.toLocaleDateString('ar-SA')}
+                                    </span>
                                 </div>
                             </div>
                         `;
                     });
-                    ordersContainer.innerHTML = ordersHtml;
+                    
+                    ordersContainer.innerHTML = ordersHTML;
                 }
-
+                
+                // تحديث الإحصائيات
                 document.getElementById('totalOrders').textContent = totalOrders;
                 document.getElementById('pendingOrders').textContent = pendingOrders;
                 document.getElementById('completedOrders').textContent = completedOrders;
-                document.getElementById('totalSpent').textContent = totalSpent.toLocaleString();
-
+                document.getElementById('totalSpent').textContent = totalSpent.toFixed(0);
+                
             } catch (error) {
                 console.error('❌ Error loading orders:', error);
                 document.getElementById('userOrders').innerHTML = `
-                    <div class="empty-state">
-                        <div>❌</div>
-                        <h3>حدث خطأ في تحميل الطلبات</h3>
-                        <p>${error.message}</p>
-                        <button class="btn btn-primary" onclick="loadUserOrders(auth.currentUser)" style="margin-top: 1rem;">
-                            🔄 إعادة المحاولة
-                        </button>
+                    <div class="error-message">
+                        ❌ حدث خطأ في تحميل الطلبات: ${error.message}
                     </div>
                 `;
             }
         }
 
-        // تحميل مهام الوكيل - الإصدار المصحح
-        async function loadAgentTasks(user) {
-            try {
-                console.log('📋 Loading agent tasks for:', user.uid);
-                
-                // البحث في مجموعة agent_tasks حيث agentId يساوي uid المستخدم
-                const tasksSnapshot = await db.collection('agent_tasks')
-                    .where('agentId', '==', user.uid)
-                    .get();
-                
-                console.log('✅ Found tasks:', tasksSnapshot.docs.length);
-
-                // تصنيف المهام حسب الحالة
-                const assignedTasks = [];
-                const inProgressTasks = [];
-                const completedTasks = [];
-
-                tasksSnapshot.forEach(doc => {
-                    const task = doc.data();
-                    if (task.status === 'assigned') {
-                        assignedTasks.push({ id: doc.id, ...task });
-                    } else if (task.status === 'in-progress') {
-                        inProgressTasks.push({ id: doc.id, ...task });
-                    } else if (task.status === 'completed') {
-                        completedTasks.push({ id: doc.id, ...task });
-                    }
-                });
-
-                // تحديث الإحصائيات
-                document.getElementById('completedTasksCount').textContent = completedTasks.length;
-                document.getElementById('pendingTasksCount').textContent = assignedTasks.length + inProgressTasks.length;
-
-                // عرض المهام الموكلة
-                const assignedContainer = document.getElementById('assignedTasks');
-                if (assignedTasks.length === 0) {
-                    assignedContainer.innerHTML = `
-                        <div class="empty-state">
-                            <div>📭</div>
-                            <h3>لا توجد مهام موكلة</h3>
-                            <p>لا توجد مهام جديدة موكلة إليك حالياً</p>
-                        </div>
-                    `;
-                } else {
-                    assignedContainer.innerHTML = assignedTasks.map(task => 
-                        createTaskCard(task.id, task)
-                    ).join('');
-                }
-
-                // عرض المهام قيد التنفيذ
-                const inProgressContainer = document.getElementById('inProgressTasks');
-                if (inProgressTasks.length === 0) {
-                    inProgressContainer.innerHTML = `
-                        <div class="empty-state">
-                            <div>🔄</div>
-                            <h3>لا توجد مهام قيد التنفيذ</h3>
-                            <p>لم تبدأ في تنفيذ أي مهام بعد</p>
-                        </div>
-                    `;
-                } else {
-                    inProgressContainer.innerHTML = inProgressTasks.map(task => 
-                        createTaskCard(task.id, task)
-                    ).join('');
-                }
-
-                // عرض المهام المكتملة
-                const completedContainer = document.getElementById('completedTasksList');
-                if (completedTasks.length === 0) {
-                    completedContainer.innerHTML = `
-                        <div class="empty-state">
-                            <div>✅</div>
-                            <h3>لا توجد مهام مكتملة</h3>
-                            <p>لم تكمل أي مهام بعد</p>
-                        </div>
-                    `;
-                } else {
-                    completedContainer.innerHTML = completedTasks.map(task => 
-                        createTaskCard(task.id, task)
-                    ).join('');
-                }
-
-            } catch (error) {
-                console.error('❌ Error loading agent tasks:', error);
-                showSystemMessage('حدث خطأ في تحميل المهام: ' + error.message);
-                
-                // عرض رسالة خطأ في كل قسم
-                const errorHtml = `
-                    <div class="empty-state">
-                        <div>❌</div>
-                        <h3>حدث خطأ في تحميل المهام</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
-                document.getElementById('assignedTasks').innerHTML = errorHtml;
-                document.getElementById('inProgressTasks').innerHTML = errorHtml;
-                document.getElementById('completedTasksList').innerHTML = errorHtml;
-            }
-        }
-
-        // تحميل أرباح الوكيل
-        async function loadAgentEarnings(user) {
-            try {
-                console.log('💰 Loading agent earnings for:', user.uid);
-                
-                const tasksSnapshot = await db.collection('agent_tasks')
-                    .where('agentId', '==', user.uid)
-                    .get();
-                
-                const completedTasks = tasksSnapshot.docs.filter(doc => {
-                    const task = doc.data();
-                    return task.status === 'completed';
-                });
-
-                let totalEarnings = 0;
-                let availableBalance = 0;
-
-                completedTasks.forEach(doc => {
-                    const task = doc.data();
-                    totalEarnings += task.commission || 0;
-                    if (task.paymentStatus === 'paid') {
-                        availableBalance += task.commission || 0;
-                    }
-                });
-
-                // تحديث الإحصائيات
-                document.getElementById('totalCommission').textContent = totalEarnings.toLocaleString() + ' MRU';
-                document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString() + ' MRU';
-                document.getElementById('availableBalance').textContent = availableBalance.toLocaleString() + ' MRU';
-
-                // تحديث تفاصيل الأرباح
-                const earningsContainer = document.getElementById('earningsDetails');
-                earningsContainer.innerHTML = `
-                    <div class="commission-breakdown">
-                        <div class="commission-item">
-                            <span class="commission-value">${totalEarnings.toLocaleString()} MRU</span>
-                            <span>إجمالي الأرباح</span>
-                        </div>
-                        <div class="commission-item">
-                            <span class="commission-value">${availableBalance.toLocaleString()} MRU</span>
-                            <span>رصيد متاح</span>
-                        </div>
-                        <div class="commission-item">
-                            <span class="commission-value">${(totalEarnings - availableBalance).toLocaleString()} MRU</span>
-                            <span>في انتظار الدفع</span>
-                        </div>
-                    </div>
-                    <div style="margin-top: 2rem; text-align: center;">
-                        <button class="btn btn-success" onclick="requestPayout()">
-                            💳 طلب سداد الرصيد
-                        </button>
-                        <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                            الحد الأدنى للسحب: 1000 MRU
-                        </p>
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error('❌ Error loading agent earnings:', error);
-            }
-        }
-
-        // إنشاء بطاقة مهمة
-        function createTaskCard(taskId, task) {
-            const priorityClass = `priority-${task.priority || 'medium'}`;
-            const statusClass = `status-${task.status?.replace('-', '') || 'assigned'}`;
-            
-            const deadline = task.deadline ? task.deadline.toDate().toLocaleString('ar-SA') : 'غير محدد';
-            const createdAt = task.createdAt ? task.createdAt.toDate().toLocaleString('ar-SA') : 'غير محدد';
-
-            let actions = '';
-            if (task.status === 'assigned') {
-                actions = `
-                    <button class="btn btn-success btn-sm" onclick="startTask('${taskId}')">
-                        🚀 بدء التنفيذ
-                    </button>
-                `;
-            } else if (task.status === 'in-progress') {
-                actions = `
-                    <button class="btn btn-primary btn-sm" onclick="completeTask('${taskId}')">
-                        ✅ إكمال المهمة
-                    </button>
-                    <button class="btn btn-warning btn-sm" onclick="requestHelp('${taskId}')">
-                        🆘 طلب مساعدة
-                    </button>
-                `;
-            } else if (task.status === 'completed') {
-                actions = `
-                    <span class="task-status-badge ${statusClass}">مكتملة</span>
-                    ${task.paymentStatus === 'paid' ? 
-                        '<span class="task-status-badge status-completed">💳 مدفوعة</span>' : 
-                        '<span class="task-status-badge status-pending">⏳ في انتظار الدفع</span>'
-                    }
-                `;
-            }
-
-            return `
-                <div class="task-card ${task.priority || 'medium'}-priority">
-                    <div class="task-header">
-                        <h4 class="task-title">${task.title || 'مهمة بدون عنوان'}</h4>
-                        <span class="task-priority ${priorityClass}">
-                            ${getPriorityText(task.priority)}
-                        </span>
-                    </div>
-                    
-                    <p style="color: #666; line-height: 1.5; margin-bottom: 1rem;">
-                        ${task.description || 'لا توجد تفاصيل'}
-                    </p>
-                    
-                    <div class="task-meta">
-                        <div class="task-reward">${task.commission || 0} MRU</div>
-                        <div class="task-deadline">⏰ ${deadline}</div>
-                    </div>
-                    
-                    <div style="color: #888; font-size: 0.9rem; margin-bottom: 1rem;">
-                        <strong>العميل:</strong> ${task.customerName || 'غير محدد'} | 
-                        <strong>التليفون:</strong> ${task.customerPhone || 'غير محدد'}
-                    </div>
-                    
-                    <div class="task-actions">
-                        ${actions}
-                        <button class="btn btn-info btn-sm" onclick="viewTaskDetails('${taskId}')">
-                            👁️ التفاصيل
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // دوال إدارة المهام
-        async function startTask(taskId) {
-            if (confirm('🚀 هل تريد بدء تنفيذ هذه المهمة؟')) {
-                try {
-                    await db.collection('agent_tasks').doc(taskId).update({
-                        status: 'in-progress',
-                        startedAt: new Date()
-                    });
-                    showSystemMessage('✅ تم بدء تنفيذ المهمة بنجاح', 'success');
-                } catch (error) {
-                    console.error('❌ Error starting task:', error);
-                    showSystemMessage('❌ حدث خطأ في بدء المهمة');
-                }
-            }
-        }
-
-        async function completeTask(taskId) {
-            if (confirm('✅ هل أكملت هذه المهمة بنجاح؟')) {
-                try {
-                    await db.collection('agent_tasks').doc(taskId).update({
-                        status: 'completed',
-                        completedAt: new Date()
-                    });
-                    showSystemMessage('🎉 تم إكمال المهمة بنجاح!', 'success');
-                } catch (error) {
-                    console.error('❌ Error completing task:', error);
-                    showSystemMessage('❌ حدث خطأ في إكمال المهمة');
-                }
-            }
-        }
-
-        async function requestHelp(taskId) {
-            const helpReason = prompt('🆘 ما هي المشكلة التي تواجهها؟');
-            if (helpReason) {
-                try {
-                    await db.collection('agent_help_requests').add({
-                        taskId: taskId,
-                        agentId: auth.currentUser.uid,
-                        reason: helpReason,
-                        status: 'pending',
-                        createdAt: new Date()
-                    });
-                    showSystemMessage('✅ تم إرسال طلب المساعدة للإدارة', 'success');
-                } catch (error) {
-                    console.error('❌ Error requesting help:', error);
-                    showSystemMessage('❌ حدث خطأ في إرسال طلب المساعدة');
-                }
-            }
-        }
-
-        async function viewTaskDetails(taskId) {
-            try {
-                const taskDoc = await db.collection('agent_tasks').doc(taskId).get();
-                if (!taskDoc.exists) {
-                    showSystemMessage('❌ لم يتم العثور على المهمة');
-                    return;
-                }
-
-                const task = taskDoc.data();
-                document.getElementById('taskModalTitle').textContent = task.title || 'تفاصيل المهمة';
-                
-                const deadline = task.deadline ? task.deadline.toDate().toLocaleString('ar-SA') : 'غير محدد';
-                const createdAt = task.createdAt ? task.createdAt.toDate().toLocaleString('ar-SA') : 'غير محدد';
-                const startedAt = task.startedAt ? task.startedAt.toDate().toLocaleString('ar-SA') : 'لم يبدأ بعد';
-                const completedAt = task.completedAt ? task.completedAt.toDate().toLocaleString('ar-SA') : 'لم تكتمل بعد';
-
-                document.getElementById('taskModalContent').innerHTML = `
-                    <div style="margin-bottom: 1.5rem;">
-                        <h4 style="color: #2c5aa0; margin-bottom: 1rem;">📋 وصف المهمة</h4>
-                        <p style="line-height: 1.6; background: #f8f9fa; padding: 1rem; border-radius: 8px;">
-                            ${task.description || 'لا توجد تفاصيل إضافية'}
-                        </p>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                        <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px;">
-                            <strong>💰 العمولة</strong>
-                            <div style="font-size: 1.5rem; font-weight: bold; color: #28a745;">${task.commission || 0} MRU</div>
-                        </div>
-                        <div style="background: #fff3e0; padding: 1rem; border-radius: 8px;">
-                            <strong>⏰ الموعد النهائي</strong>
-                            <div style="font-size: 1.1rem; font-weight: bold;">${deadline}</div>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 1.5rem;">
-                        <h4 style="color: #2c5aa0; margin-bottom: 1rem;">👤 معلومات العميل</h4>
-                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
-                            <p><strong>الاسم:</strong> ${task.customerName || 'غير محدد'}</p>
-                            <p><strong>الهاتف:</strong> ${task.customerPhone || 'غير محدد'}</p>
-                            <p><strong>العنوان:</strong> ${task.customerAddress || 'غير محدد'}</p>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 1.5rem;">
-                        <h4 style="color: #2c5aa0; margin-bottom: 1rem;">📊 حالة المهمة</h4>
-                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
-                            <p><strong>الحالة:</strong> <span class="task-status-badge status-${task.status?.replace('-', '')}">${getTaskStatusText(task.status)}</span></p>
-                            <p><strong>الأولوية:</strong> <span class="task-priority priority-${task.priority}">${getPriorityText(task.priority)}</span></p>
-                            <p><strong>تاريخ الإنشاء:</strong> ${createdAt}</p>
-                            <p><strong>تاريخ البدء:</strong> ${startedAt}</p>
-                            <p><strong>تاريخ الإكمال:</strong> ${completedAt}</p>
-                        </div>
-                    </div>
-
-                    ${task.status === 'assigned' ? `
-                    <button class="btn btn-success" onclick="startTask('${taskId}'); closeTaskModal();" style="width: 100%; margin-bottom: 0.5rem;">
-                        🚀 بدء تنفيذ المهمة
-                    </button>
-                    ` : ''}
-
-                    ${task.status === 'in-progress' ? `
-                    <button class="btn btn-primary" onclick="completeTask('${taskId}'); closeTaskModal();" style="width: 100%; margin-bottom: 0.5rem;">
-                        ✅ إكمال المهمة
-                    </button>
-                    <button class="btn btn-warning" onclick="requestHelp('${taskId}'); closeTaskModal();" style="width: 100%;">
-                        🆘 طلب مساعدة
-                    </button>
-                    ` : ''}
-                `;
-
-                document.getElementById('taskModal').style.display = 'flex';
-
-            } catch (error) {
-                console.error('❌ Error viewing task details:', error);
-                showSystemMessage('❌ حدث خطأ في تحميل تفاصيل المهمة');
-            }
-        }
-
-        function closeTaskModal() {
-            document.getElementById('taskModal').style.display = 'none';
-        }
-
-        function openTaskTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            document.getElementById(tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        async function requestPayout() {
-            const user = auth.currentUser;
-            if (!user) return;
-
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            const userData = userDoc.data();
-            const availableBalance = document.getElementById('availableBalance').textContent;
-
-            if (parseInt(availableBalance) < 1000) {
-                showSystemMessage('❌ الحد الأدنى للسحب هو 1000 MRU');
-                return;
-            }
-
-            if (confirm(`💳 هل تريد طلب سداد مبلغ ${availableBalance}؟`)) {
-                try {
-                    await db.collection('payout_requests').add({
-                        agentId: user.uid,
-                        agentName: userData.name,
-                        amount: parseInt(availableBalance),
-                        status: 'pending',
-                        requestedAt: new Date(),
-                        paymentMethod: 'bank_transfer' // يمكن تعديله حسب طريقة الدفع
-                    });
-                    showSystemMessage('✅ تم إرسال طلب السداد بنجاح، سيتم التحويل خلال 24-48 ساعة', 'success');
-                } catch (error) {
-                    console.error('❌ Error requesting payout:', error);
-                    showSystemMessage('❌ حدث خطأ في طلب السداد');
-                }
-            }
-        }
-
-        // دوال مساعدة
-        function getPriorityText(priority) {
-            const texts = {
-                'high': 'عالي',
-                'medium': 'متوسط', 
-                'low': 'منخفض'
-            };
-            return texts[priority] || 'متوسط';
-        }
-
-        function getTaskStatusText(status) {
-            const texts = {
-                'assigned': 'موكلة',
-                'in-progress': 'قيد التنفيذ',
-                'completed': 'مكتملة',
-                'cancelled': 'ملغاة'
-            };
-            return texts[status] || status;
-        }
-
-        function getStatusClass(status) {
-            const classes = {
-                'جديد': 'new',
-                'قيد التنفيذ': 'pending',
-                'مكتمل': 'completed',
-                'new': 'new',
-                'pending': 'pending', 
-                'completed': 'completed'
-            };
-            return classes[status] || 'new';
-        }
-
-        function getAgentStatusText(status) {
-            const texts = {
-                'pending': 'قيد المراجعة',
-                'approved': 'مقبول',
-                'rejected': 'مرفوض'
-            };
-            return texts[status] || status;
-        }
-
-        function getErrorMessage(errorCode) {
-            const messages = {
-                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
-                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
-                'auth/weak-password': 'كلمة المرور ضعيفة',
-                'auth/user-not-found': 'لم يتم العثور على المستخدم',
-                'auth/wrong-password': 'كلمة المرور غير صحيحة',
-                'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت',
-                'auth/too-many-requests': 'محاولات تسجيل دخول كثيرة، حاول لاحقاً'
-            };
-            return messages[errorCode] || 'حدث خطأ غير متوقع';
-        }
-
-        // تحميل حالة الوكالة
+        // تحميل حالة الوكيل
         async function loadAgentStatus(user) {
             try {
-                const agentAppsSnapshot = await db.collection('agent_applications').get();
-                
-                const userApplications = agentAppsSnapshot.docs.filter(doc => {
-                    const app = doc.data();
-                    return app.userEmail === user.email || app.userId === user.uid;
-                }).sort((a, b) => {
-                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
-                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
-                    return timeB - timeA;
-                });
-
+                const agentDoc = await db.collection('agents').doc(user.uid).get();
                 const agentStatusSection = document.getElementById('agentStatusSection');
                 
-                if (userApplications.length === 0) {
+                if (agentDoc.exists) {
+                    const agentData = agentDoc.data();
+                    console.log('👤 Agent data loaded:', agentData);
+                    
+                    let statusHTML = '';
+                    const statusClass = getAgentStatusClass(agentData.status);
+                    const statusText = getAgentStatusText(agentData.status);
+                    
+                    statusHTML = `
+                        <div class="agent-status-card">
+                            <h3>💼 حالة طلب الوكالة</h3>
+                            <p style="font-size: 1.2rem; margin: 1rem 0;">
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </p>
+                            ${agentData.status === 'approved' ? `
+                                <p>🎉 تم قبول طلبك كوكيل! يمكنك الآن البدء في تلقي المهام.</p>
+                                <button class="btn btn-success" onclick="window.location.href='agent-tasks.html'">
+                                    📋 الانتقال إلى المهام
+                                </button>
+                            ` : agentData.status === 'pending' ? `
+                                <p>⏳ طلبك قيد المراجعة من قبل المدير</p>
+                                <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                                    سيتم إشعارك فور اتخاذ القرار
+                                </p>
+                            ` : agentData.status === 'rejected' ? `
+                                <p>❌ تم رفض طلبك للوكالة</p>
+                                ${agentData.rejectionReason ? `
+                                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                                        <strong>السبب:</strong> ${agentData.rejectionReason}
+                                    </p>
+                                ` : ''}
+                                <button class="btn btn-warning" onclick="reapplyAsAgent()" style="margin-top: 1rem;">
+                                    🔄 إعادة التقديم
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    agentStatusSection.innerHTML = statusHTML;
+                    agentStatusSection.style.display = 'block';
+                    
+                } else {
                     agentStatusSection.style.display = 'none';
-                    return;
                 }
-
-                const latestApp = userApplications[0].data();
-                const status = latestApp.status || 'pending';
                 
-                let statusText = '';
-                let statusClass = '';
-                
-                switch(status) {
-                    case 'pending':
-                        statusText = '⏳ طلبك قيد المراجعة';
-                        statusClass = 'status-agent-pending';
-                        break;
-                    case 'approved':
-                        statusText = '✅ تم قبول طلبك كـ وكيل';
-                        statusClass = 'status-agent-approved';
-                        break;
-                    case 'rejected':
-                        statusText = '❌ تم رفض طلب الوكالة';
-                        statusClass = 'status-agent-rejected';
-                        break;
-                }
-
-                agentStatusSection.innerHTML = `
-                    <div class="agent-status-card">
-                        <h3>💼 حالة طلب الوكالة</h3>
-                        <p style="margin: 1rem 0; font-size: 1.2rem;">${statusText}</p>
-                        <span class="status-badge ${statusClass}">${getAgentStatusText(status)}</span>
-                        ${status === 'rejected' ? `
-                            <p style="margin-top: 1rem; font-size: 0.9rem;">
-                                ${latestApp.rejectionReason || 'للأسف لا تنطبق عليك الشروط حالياً'}
-                            </p>
-                        ` : ''}
-                        ${status === 'pending' ? `
-                            <p style="margin-top: 1rem; font-size: 0.9rem;">
-                                سيتم مراجعة طلبك خلال 24 ساعة
-                            </p>
-                        ` : ''}
-                    </div>
-                `;
-                agentStatusSection.style.display = 'block';
-
             } catch (error) {
                 console.error('❌ Error loading agent status:', error);
-            }
-        }
-
-        // التحقق من حالة الوكيل وإخفاء الأزرار إذا لزم الأمر
-        async function checkAgentStatusAndHideButtons(user) {
-            try {
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                if (userDoc.exists) {
-                    const userData = userDoc.data();
-                    
-                    // إذا كان المستخدم وكيلاً أو لديه طلب وكالة قيد المراجعة
-                    if (userData.role === 'agent' || userData.role === 'admin') {
-                        // إخفاء زر "انضم كوكيل" من القائمة
-                        const agentsLink = document.getElementById('agentsLink');
-                        if (agentsLink) {
-                            agentsLink.style.display = 'none';
-                        }
-                        
-                        // إخفاء بطاقة "كن وكيلاً" من الإجراءات السريعة
-                        const becomeAgentCard = document.getElementById('becomeAgentCard');
-                        if (becomeAgentCard) {
-                            becomeAgentCard.style.display = 'none';
-                        }
-                    } else {
-                        // التحقق من طلبات الوكالة
-                        const agentAppsSnapshot = await db.collection('agent_applications').get();
-                        const userApplications = agentAppsSnapshot.docs.filter(doc => {
-                            const app = doc.data();
-                            return app.userEmail === user.email || app.userId === user.uid;
-                        });
-
-                        if (userApplications.length > 0) {
-                            const latestApp = userApplications[0].data();
-                            // إذا كان هناك طلب قيد المراجعة أو مقبول
-                            if (latestApp.status === 'pending' || latestApp.status === 'approved') {
-                                // إخفاء زر "انضم كوكيل" من القائمة
-                                const agentsLink = document.getElementById('agentsLink');
-                                if (agentsLink) {
-                                    agentsLink.style.display = 'none';
-                                }
-                                
-                                // إخفاء بطاقة "كن وكيلاً" من الإجراءات السريعة
-                                const becomeAgentCard = document.getElementById('becomeAgentCard');
-                                if (becomeAgentCard) {
-                                    becomeAgentCard.style.display = 'none';
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('❌ Error checking agent status:', error);
             }
         }
 
         // تحميل الإشعارات
         async function loadNotifications(user) {
             try {
-                const notificationsSnapshot = await db.collection('notifications').get();
+                const notificationsSnapshot = await db.collection('notifications')
+                    .where('userId', '==', user.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(10)
+                    .get();
                 
-                const userNotifications = notificationsSnapshot.docs.filter(doc => {
-                    const notification = doc.data();
-                    return notification.userId === user.uid;
-                }).sort((a, b) => {
-                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
-                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
-                    return timeB - timeA;
-                }).slice(0, 10);
-
-                const notificationsSection = document.getElementById('notificationsSection');
-                const notificationsList = document.getElementById('notificationsList');
+                const notificationsContainer = document.getElementById('notificationsList');
                 const notificationCount = document.getElementById('notificationCount');
-
-                if (userNotifications.length === 0) {
-                    notificationsSection.style.display = 'none';
-                    return;
-                }
-
-                let unreadCount = userNotifications.filter(doc => !doc.data().read).length;
-                let notificationsHtml = '';
-
-                userNotifications.forEach(doc => {
-                    const notification = doc.data();
-                    const isUnread = !notification.read;
-
-                    notificationsHtml += `
-                        <div class="notification-item" style="${isUnread ? 'background: #fff3e0; border-right-color: #ffc107;' : ''}">
-                            <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
-                                <div style="flex: 1;">
-                                    <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0;">${notification.title || 'إشعار'}</h4>
-                                    <p style="margin: 0; color: #666; line-height: 1.5;">${notification.message || 'لا توجد تفاصيل'}</p>
-                                    <small style="color: #888;">${notification.timestamp?.toDate?.().toLocaleString('ar-SA') || ''}</small>
-                                </div>
-                                ${isUnread ? `<span style="color: #dc3545; font-weight: bold; font-size: 0.8rem;">جديد</span>` : ''}
-                            </div>
+                const notificationsSection = document.getElementById('notificationsSection');
+                
+                if (notificationsSnapshot.empty) {
+                    notificationsContainer.innerHTML = `
+                        <div class="empty-state" style="padding: 2rem;">
+                            <div>🔔</div>
+                            <p>لا توجد إشعارات جديدة</p>
                         </div>
                     `;
-                });
-
-                notificationsList.innerHTML = notificationsHtml;
-                notificationCount.textContent = unreadCount;
-                notificationsSection.style.display = 'block';
-
+                    notificationCount.textContent = '0';
+                    notificationsSection.style.display = 'none';
+                } else {
+                    let notificationsHTML = '';
+                    let unreadCount = 0;
+                    
+                    notificationsSnapshot.forEach(doc => {
+                        const notification = doc.data();
+                        if (!notification.read) unreadCount++;
+                        
+                        notificationsHTML += `
+                            <div class="notification-item" style="${!notification.read ? 'background: #fff3cd;' : ''}">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <h4 style="margin-bottom: 0.5rem;">${notification.title}</h4>
+                                    <small style="color: #888;">
+                                        ${notification.timestamp?.toDate?.().toLocaleDateString('ar-SA') || ''}
+                                    </small>
+                                </div>
+                                <p style="margin: 0;">${notification.message}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    notificationsContainer.innerHTML = notificationsHTML;
+                    notificationCount.textContent = unreadCount;
+                    notificationsSection.style.display = 'block';
+                }
+                
             } catch (error) {
                 console.error('❌ Error loading notifications:', error);
             }
         }
 
-        // تحديث الملف الشخصي
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        // التحقق من حالة الوكيل وإخفاء الأزرار
+        async function checkAgentStatusAndHideButtons(user) {
+            try {
+                const agentDoc = await db.collection('agents').doc(user.uid).get();
+                const becomeAgentCard = document.getElementById('becomeAgentCard');
+                const agentsLink = document.getElementById('agentsLink');
+                const agentTasksLink = document.getElementById('agentTasksLink');
+                
+                if (agentDoc.exists) {
+                    const agentData = agentDoc.data();
+                    
+                    if (agentData.status === 'approved') {
+                        // إذا كان وكيل معتمد، إخفاء "انضم كوكيل" وإظهار "مهامي"
+                        becomeAgentCard.style.display = 'none';
+                        agentsLink.style.display = 'none';
+                        agentTasksLink.style.display = 'block';
+                    } else if (agentData.status === 'pending') {
+                        // إذا كان طلب الوكالة قيد المراجعة
+                        becomeAgentCard.style.display = 'none';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ Error checking agent status:', error);
+            }
+        }
+
+        // دوال المساعدة
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'قيد الانتظار',
+                'in-progress': 'قيد التنفيذ',
+                'completed': 'مكتمل',
+                'cancelled': 'ملغي'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getStatusClass(status) {
+            const classMap = {
+                'pending': 'status-pending',
+                'in-progress': 'status-pending',
+                'completed': 'status-completed',
+                'cancelled': 'status-new'
+            };
+            return classMap[status] || 'status-pending';
+        }
+
+        function getAgentStatusText(status) {
+            const statusMap = {
+                'pending': 'قيد المراجعة',
+                'approved': 'مقبول',
+                'rejected': 'مرفوض'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getAgentStatusClass(status) {
+            const classMap = {
+                'pending': 'status-agent-pending',
+                'approved': 'status-agent-approved',
+                'rejected': 'status-agent-rejected'
+            };
+            return classMap[status] || 'status-agent-pending';
+        }
+
+        function getErrorMessage(errorCode) {
+            const errorMessages = {
+                'auth/invalid-email': 'البريد الإلكتروني غير صالح',
+                'auth/user-disabled': 'هذا الحساب معطل',
+                'auth/user-not-found': 'لا يوجد حساب بهذا البريد الإلكتروني',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة',
+                'auth/email-already-in-use': 'هذا البريد الإلكتروني مستخدم بالفعل',
+                'auth/weak-password': 'كلمة المرور ضعيفة، يجب أن تكون 6 أحرف على الأقل',
+                'auth/network-request-failed': 'خطأ في الشبكة، يرجى المحاولة مرة أخرى'
+            };
+            return errorMessages[errorCode] || 'حدث خطأ غير متوقع';
+        }
+
+        // دوال الإجراءات
+        function applyAsAgent() {
+            window.location.href = 'agents.html';
+        }
+
+        function reapplyAsAgent() {
+            window.location.href = 'agents.html?reapply=true';
+        }
+
+        function editProfile() {
+            document.getElementById('profileForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // إعداد المستمعين للتحديث التلقائي
+        function setupRealtimeListeners(user) {
+            // الاستماع للتغييرات في طلبات المستخدم
+            db.collection('orders')
+                .where('userId', '==', user.uid)
+                .onSnapshot(() => {
+                    loadUserOrders(user);
+                }, error => {
+                    console.error('❌ Orders listener error:', error);
+                });
+
+            // الاستماع للتغييرات في حالة الوكيل
+            db.collection('agents').doc(user.uid)
+                .onSnapshot(() => {
+                    loadAgentStatus(user);
+                    checkAgentStatusAndHideButtons(user);
+                }, error => {
+                    console.error('❌ Agent status listener error:', error);
+                });
+
+            // الاستماع للإشعارات
+            db.collection('notifications')
+                .where('userId', '==', user.uid)
+                .onSnapshot(() => {
+                    loadNotifications(user);
+                }, error => {
+                    console.error('❌ Notifications listener error:', error);
+                });
+        }
+
+        // حفظ الملف الشخصي
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const user = auth.currentUser;
             if (!user) {
-                showSystemMessage('⚠️ يرجى تسجيل الدخول أولاً');
+                showSystemMessage('❌ يرجى تسجيل الدخول أولاً');
                 return;
             }
-
-            const updatedData = {
+            
+            const userData = {
                 name: document.getElementById('fullName').value,
                 phone: document.getElementById('phone').value,
                 city: document.getElementById('city').value,
                 address: document.getElementById('address').value,
                 updatedAt: new Date()
             };
-
-            try {
-                await db.collection('users').doc(user.uid).update(updatedData);
-                await user.updateProfile({
-                    displayName: updatedData.name
-                });
-                showSystemMessage('✅ تم تحديث الملف الشخصي بنجاح', 'success');
-                showUserSection(user);
-            } catch (error) {
-                console.error('❌ Error updating profile:', error);
-                showSystemMessage('❌ حدث خطأ في تحديث الملف الشخصي');
-            }
-        });
-
-        function editProfile() {
-            document.getElementById('profileForm').scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-
-        function applyAsAgent() {
-            window.location.href = 'agents.html';
-        }
-
-        // إضافة مستمعين للتحديث التلقائي
-        function setupRealtimeListeners(user) {
-            console.log('🔔 Setting up realtime listeners for user:', user.uid);
             
-            // تحديث الطلبات
-            db.collection('orders').onSnapshot(() => {
-                console.log('🔄 Orders updated, reloading...');
-                loadUserOrders(user);
-            });
-
-            // تحديث طلبات الوكالة
-            db.collection('agent_applications').onSnapshot(() => {
-                console.log('🔄 Agent applications updated, reloading...');
-                loadAgentStatus(user);
-                checkAgentStatusAndHideButtons(user);
-            });
-
-            // تحديث الإشعارات
-            db.collection('notifications').onSnapshot(() => {
-                console.log('🔄 Notifications updated, reloading...');
-                loadNotifications(user);
-            });
-
-            // تحديث بيانات المستخدم
-            db.collection('users').doc(user.uid).onSnapshot(() => {
-                console.log('🔄 User data updated, reloading...');
-                loadUserData(user);
-                checkAgentStatusAndHideButtons(user);
-            });
-
-            // تحديث مهام الوكيل
-            db.collection('agent_tasks').where('agentId', '==', user.uid)
-                .onSnapshot(() => {
-                    console.log('🔄 Agent tasks updated, reloading...');
-                    loadAgentTasks(user);
-                    loadAgentEarnings(user);
+            try {
+                await db.collection('users').doc(user.uid).set(userData, { merge: true });
+                
+                // تحديث الاسم المعروض في Firebase Auth
+                await user.updateProfile({
+                    displayName: userData.name
                 });
-        }
-
-        // منع إرسال النموذج عند الضغط على Enter
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const focused = document.activeElement;
-                if (focused && focused.form && focused.form.id === 'profileForm') {
-                    e.preventDefault();
-                }
+                
+                // تحديث الواجهة
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+                
+                showSystemMessage('✅ تم حفظ التغييرات بنجاح', 'success');
+            } catch (error) {
+                console.error('❌ Error saving profile:', error);
+                showSystemMessage('❌ حدث خطأ في حفظ التغييرات: ' + error.message);
             }
         });
 
-        // إغلاق النماذج عند النقر خارجها
-        document.addEventListener('click', function(e) {
-            if (e.target.id === 'loginModal') {
-                hideLoginModal();
-            }
-            if (e.target.id === 'signupModal') {
-                hideSignupModal();
-            }
-            if (e.target.id === 'taskModal') {
-                closeTaskModal();
-            }
-        });
-
-        // تهيئة الصفحة عند التحميل
+        // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Page loaded successfully');
-            if (auth.currentUser) {
-                showUserSection(auth.currentUser);
-            }
+            console.log('✅ me.html loaded successfully');
         });
-
     </script>
 </body>
 </html>

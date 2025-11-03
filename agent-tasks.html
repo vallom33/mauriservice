@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مهامي - Mauri Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            text-decoration: none;
+        }
+        
+        .nav-logo i {
+            font-size: 1.5rem;
+            color: #2c5aa0;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .nav-link.active {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .page-hero {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 40px 1rem 30px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            padding: 0 1rem;
+            margin: 0 auto;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #2c5aa0;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .task-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .task-card.high-priority {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        
+        .task-card.medium-priority {
+            border-color: #ffc107;
+            background: #fffbf0;
+        }
+        
+        .task-card.low-priority {
+            border-color: #28a745;
+            background: #f8fff8;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .task-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin: 0;
+        }
+        
+        .task-priority {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .priority-high { background: #dc3545; color: white; }
+        .priority-medium { background: #ffc107; color: #212529; }
+        .priority-low { background: #28a745; color: white; }
+        
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .task-reward {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .task-deadline {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .task-status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-assigned { background: #17a2b8; color: white; }
+        .status-in-progress { background: #ffc107; color: #212529; }
+        .status-completed { background: #28a745; color: white; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #2c5aa0;
+            color: #2c5aa0;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .tasks-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-actions {
+                flex-direction: column;
+            }
+            
+            .tab-buttons {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                padding: 0.8rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <i class="fas fa-concierge-bell"></i>
+            <span>Mauri-Services</span>
+        </a>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <a href="services.html" class="nav-link">الخدمات</a>
+            <a href="me.html" class="nav-link">👤 حسابي</a>
+            <a href="agent-tasks.html" class="nav-link active">📋 مهامي</a>
+            <a href="contact.html" class="nav-link">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1>📋 مهامي كـ وكيل</h1>
+            <p>إدارة المهام الموكلة إليك ومتابعة أرباحك</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div id="systemMessage"></div>
+
+        <!-- للمستخدمين غير المسجلين -->
+        <div id="guestSection" class="section">
+            <div class="empty-state">
+                <div>🔒</div>
+                <h3>يجب تسجيل الدخول</h3>
+                <p>يجب أن تكون مسجلاً الدخول كـ وكيل لمشاهدة المهام</p>
+                <button class="btn btn-primary" onclick="window.location.href='me.html'" style="margin-top: 1rem;">
+                    🔐 تسجيل الدخول
+                </button>
+            </div>
+        </div>
+
+        <!-- للمستخدمين المسجلين -->
+        <div id="userSection" style="display: none;">
+            <!-- إحصائيات سريعة -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalTasks">0</span>
+                    <p>إجمالي المهام</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="assignedTasks">0</span>
+                    <p>مهام موكلة</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="inProgressTasks">0</span>
+                    <p>قيد التنفيذ</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalEarnings">0 MRU</span>
+                    <p>إجمالي الأرباح</p>
+                </div>
+            </div>
+
+            <!-- تبويبات المهام -->
+            <div class="section">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="openTab('assigned')">📋 المهام الموكلة</button>
+                    <button class="tab-btn" onclick="openTab('inProgress')">🔄 قيد التنفيذ</button>
+                    <button class="tab-btn" onclick="openTab('completed')">✅ المكتملة</button>
+                    <button class="tab-btn" onclick="openTab('earnings')">💰 الأرباح</button>
+                </div>
+
+                <!-- المهام الموكلة -->
+                <div id="assigned" class="tab-content active">
+                    <h3>📋 المهام الموكلة إليك</h3>
+                    <div id="assignedTasksList" class="tasks-grid">
+                        <div class="loading">⏳ جاري تحميل المهام...</div>
+                    </div>
+                </div>
+
+                <!-- المهام قيد التنفيذ -->
+                <div id="inProgress" class="tab-content">
+                    <h3>🔄 المهام قيد التنفيذ</h3>
+                    <div id="inProgressTasksList" class="tasks-grid">
+                        <div class="loading">⏳ جاري تحميل المهام...</div>
+                    </div>
+                </div>
+
+                <!-- المهام المكتملة -->
+                <div id="completed" class="tab-content">
+                    <h3>✅ المهام المكتملة</h3>
+                    <div id="completedTasksList" class="tasks-grid">
+                        <div class="loading">⏳ جاري تحميل المهام...</div>
+                    </div>
+                </div>
+
+                <!-- الأرباح -->
+                <div id="earnings" class="tab-content">
+                    <h3>💰 تفاصيل الأرباح</h3>
+                    <div id="earningsDetails">
+                        <div class="loading">⏳ جاري تحميل بيانات الأرباح...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تفاصيل المهمة -->
+    <div id="taskModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 id="taskModalTitle">تفاصيل المهمة</h3>
+                <button onclick="closeTaskModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            <div id="taskModalContent">
+                <!-- سيتم تعبئتها بتفاصيل المهمة -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
+            authDomain: "mauri-services.firebaseapp.com",
+            projectId: "mauri-services",
+            storageBucket: "mauri-services.firebasestorage.app",
+            messagingSenderId: "324986363643",
+            appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
+        };
+
+        let app;
+        try {
+            if (!firebase.apps.length) {
+                app = firebase.initializeApp(firebaseConfig);
+            } else {
+                app = firebase.app();
+            }
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // دالة لعرض رسائل النظام
+        function showSystemMessage(message, type = 'error') {
+            const messageDiv = document.getElementById('systemMessage');
+            const messageClass = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // نظام المصادقة
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                checkUserRole(user);
+            } else {
+                showGuestSection();
+            }
+        });
+
+        async function checkUserRole(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    if (userData.role === 'agent') {
+                        showAgentSection(user);
+                    } else {
+                        showNotAgentSection();
+                    }
+                } else {
+                    showNotAgentSection();
+                }
+            } catch (error) {
+                console.error('Error checking user role:', error);
+                showNotAgentSection();
+            }
+        }
+
+        function showGuestSection() {
+            document.getElementById('guestSection').style.display = 'block';
+            document.getElementById('userSection').style.display = 'none';
+        }
+
+        function showNotAgentSection() {
+            document.getElementById('guestSection').innerHTML = `
+                <div class="empty-state">
+                    <div>🚫</div>
+                    <h3>غير مصرح لك</h3>
+                    <p>يجب أن تكون وكيلاً لمشاهدة هذه الصفحة</p>
+                    <button class="btn btn-primary" onclick="window.location.href='me.html'" style="margin-top: 1rem;">
+                        👤 العودة للحساب
+                    </button>
+                </div>
+            `;
+            document.getElementById('userSection').style.display = 'none';
+        }
+
+        async function showAgentSection(user) {
+            document.getElementById('guestSection').style.display = 'none';
+            document.getElementById('userSection').style.display = 'block';
+            
+            await loadAgentTasks(user);
+            await loadAgentEarnings(user);
+            setupRealtimeListeners(user);
+        }
+
+        // تحميل مهام الوكيل
+        async function loadAgentTasks(user) {
+            try {
+                const tasksSnapshot = await db.collection('agent_tasks')
+                    .where('agentId', '==', user.uid)
+                    .get();
+                
+                const assignedTasks = [];
+                const inProgressTasks = [];
+                const completedTasks = [];
+
+                tasksSnapshot.forEach(doc => {
+                    const task = doc.data();
+                    if (task.status === 'assigned') {
+                        assignedTasks.push({ id: doc.id, ...task });
+                    } else if (task.status === 'in-progress') {
+                        inProgressTasks.push({ id: doc.id, ...task });
+                    } else if (task.status === 'completed') {
+                        completedTasks.push({ id: doc.id, ...task });
+                    }
+                });
+
+                // تحديث الإحصائيات
+                document.getElementById('totalTasks').textContent = tasksSnapshot.size;
+                document.getElementById('assignedTasks').textContent = assignedTasks.length;
+                document.getElementById('inProgressTasks').textContent = inProgressTasks.length;
+
+                // عرض المهام الموكلة
+                displayTasks('assignedTasksList', assignedTasks);
+                
+                // عرض المهام قيد التنفيذ
+                displayTasks('inProgressTasksList', inProgressTasks);
+                
+                // عرض المهام المكتملة
+                displayTasks('completedTasksList', completedTasks);
+
+            } catch (error) {
+                console.error('Error loading agent tasks:', error);
+                showSystemMessage('حدث خطأ في تحميل المهام: ' + error.message);
+            }
+        }
+
+        // عرض المهام
+        function displayTasks(containerId, tasks) {
+            const container = document.getElementById(containerId);
+            
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div>📭</div>
+                        <h3>لا توجد مهام</h3>
+                        <p>لا توجد مهام في هذا القسم حالياً</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tasks.map(task => createTaskCard(task.id, task)).join('');
+        }
+
+        // إنشاء بطاقة مهمة
+        function createTaskCard(taskId, task) {
+            const priorityClass = `priority-${task.priority || 'medium'}`;
+            const statusClass = `status-${task.status?.replace('-', '') || 'assigned'}`;
+            
+            const deadline = task.deadline ? task.deadline.toDate().toLocaleString('ar-SA') : 'غير محدد';
+
+            let actions = '';
+            if (task.status === 'assigned') {
+                actions = `
+                    <button class="btn btn-success btn-sm" onclick="startTask('${taskId}')">
+                        🚀 بدء التنفيذ
+                    </button>
+                `;
+            } else if (task.status === 'in-progress') {
+                actions = `
+                    <button class="btn btn-primary btn-sm" onclick="completeTask('${taskId}')">
+                        ✅ إكمال المهمة
+                    </button>
+                    <button class="btn btn-warning btn-sm" onclick="requestHelp('${taskId}')">
+                        🆘 طلب مساعدة
+                    </button>
+                `;
+            } else if (task.status === 'completed') {
+                actions = `
+                    <span class="task-status-badge ${statusClass}">مكتملة</span>
+                    ${task.paymentStatus === 'paid' ? 
+                        '<span class="task-status-badge status-completed">💳 مدفوعة</span>' : 
+                        '<span class="task-status-badge status-pending">⏳ في انتظار الدفع</span>'
+                    }
+                `;
+            }
+
+            return `
+                <div class="task-card ${task.priority || 'medium'}-priority">
+                    <div class="task-header">
+                        <h4 class="task-title">${task.title || 'مهمة بدون عنوان'}</h4>
+                        <span class="task-priority ${priorityClass}">
+                            ${getPriorityText(task.priority)}
+                        </span>
+                    </div>
+                    
+                    <p style="color: #666; line-height: 1.5; margin-bottom: 1rem;">
+                        ${task.description || 'لا توجد تفاصيل'}
+                    </p>
+                    
+                    <div class="task-meta">
+                        <div class="task-reward">${task.commission || 0} MRU</div>
+                        <div class="task-deadline">⏰ ${deadline}</div>
+                    </div>
+                    
+                    <div style="color: #888; font-size: 0.9rem; margin-bottom: 1rem;">
+                        <strong>العميل:</strong> ${task.customerName || 'غير محدد'} | 
+                        <strong>التليفون:</strong> ${task.customerPhone || 'غير محدد'}
+                    </div>
+                    
+                    <div class="task-actions">
+                        ${actions}
+                        <button class="btn btn-info btn-sm" onclick="viewTaskDetails('${taskId}')">
+                            👁️ التفاصيل
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // تحميل أرباح الوكيل
+        async function loadAgentEarnings(user) {
+            try {
+                const tasksSnapshot = await db.collection('agent_tasks')
+                    .where('agentId', '==', user.uid)
+                    .get();
+                
+                const completedTasks = tasksSnapshot.docs.filter(doc => 
+                    doc.data().status === 'completed'
+                );
+
+                let totalEarnings = 0;
+                let availableBalance = 0;
+
+                completedTasks.forEach(doc => {
+                    const task = doc.data();
+                    totalEarnings += task.commission || 0;
+                    if (task.paymentStatus === 'paid') {
+                        availableBalance += task.commission || 0;
+                    }
+                });
+
+                document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString() + ' MRU';
+
+                const earningsContainer = document.getElementById('earningsDetails');
+                earningsContainer.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0;">
+                        <div style="background: #e8f5e8; padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #28a745;">${totalEarnings.toLocaleString()} MRU</div>
+                            <div>إجمالي الأرباح</div>
+                        </div>
+                        <div style="background: #fff3e0; padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #ffc107;">${availableBalance.toLocaleString()} MRU</div>
+                            <div>رصيد متاح</div>
+                        </div>
+                        <div style="background: #e3f2fd; padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #2196f3;">${completedTasks.length}</div>
+                            <div>مهام مكتملة</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="btn btn-success" onclick="requestPayout()">
+                            💳 طلب سداد الرصيد
+                        </button>
+                        <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                            الحد الأدنى للسحب: 1000 MRU
+                        </p>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading agent earnings:', error);
+            }
+        }
+
+        // دوال إدارة المهام
+        async function startTask(taskId) {
+            if (confirm('🚀 هل تريد بدء تنفيذ هذه المهمة؟')) {
+                try {
+                    await db.collection('agent_tasks').doc(taskId).update({
+                        status: 'in-progress',
+                        startedAt: new Date()
+                    });
+                    showSystemMessage('✅ تم بدء تنفيذ المهمة بنجاح', 'success');
+                } catch (error) {
+                    console.error('Error starting task:', error);
+                    showSystemMessage('❌ حدث خطأ في بدء المهمة');
+                }
+            }
+        }
+
+        async function completeTask(taskId) {
+            if (confirm('✅ هل أكملت هذه المهمة بنجاح؟')) {
+                try {
+                    await db.collection('agent_tasks').doc(taskId).update({
+                        status: 'completed',
+                        completedAt: new Date()
+                    });
+                    showSystemMessage('🎉 تم إكمال المهمة بنجاح!', 'success');
+                } catch (error) {
+                    console.error('Error completing task:', error);
+                    showSystemMessage('❌ حدث خطأ في إكمال المهمة');
+                }
+            }
+        }
+
+        async function requestHelp(taskId) {
+            const helpReason = prompt('🆘 ما هي المشكلة التي تواجهها؟');
+            if (helpReason) {
+                try {
+                    await db.collection('agent_help_requests').add({
+                        taskId: taskId,
+                        agentId: auth.currentUser.uid,
+                        reason: helpReason,
+                        status: 'pending',
+                        createdAt: new Date()
+                    });
+                    showSystemMessage('✅ تم إرسال طلب المساعدة للإدارة', 'success');
+                } catch (error) {
+                    console.error('Error requesting help:', error);
+                    showSystemMessage('❌ حدث خطأ في إرسال طلب المساعدة');
+                }
+            }
+        }
+
+        async function viewTaskDetails(taskId) {
+            try {
+                const taskDoc = await db.collection('agent_tasks').doc(taskId).get();
+                if (!taskDoc.exists) {
+                    showSystemMessage('❌ لم يتم العثور على المهمة');
+                    return;
+                }
+
+                const task = taskDoc.data();
+                document.getElementById('taskModalTitle').textContent = task.title || 'تفاصيل المهمة';
+                
+                const deadline = task.deadline ? task.deadline.toDate().toLocaleString('ar-SA') : 'غير محدد';
+                const createdAt = task.createdAt ? task.createdAt.toDate().toLocaleString('ar-SA') : 'غير محدد';
+                const startedAt = task.startedAt ? task.startedAt.toDate().toLocaleString('ar-SA') : 'لم يبدأ بعد';
+                const completedAt = task.completedAt ? task.completedAt.toDate().toLocaleString('ar-SA') : 'لم تكتمل بعد';
+
+                document.getElementById('taskModalContent').innerHTML = `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: #2c5aa0; margin-bottom: 1rem;">📋 وصف المهمة</h4>
+                        <p style="line-height: 1.6; background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                            ${task.description || 'لا توجد تفاصيل إضافية'}
+                        </p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px;">
+                            <strong>💰 العمولة</strong>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #28a745;">${task.commission || 0} MRU</div>
+                        </div>
+                        <div style="background: #fff3e0; padding: 1rem; border-radius: 8px;">
+                            <strong>⏰ الموعد النهائي</strong>
+                            <div style="font-size: 1.1rem; font-weight: bold;">${deadline}</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: #2c5aa0; margin-bottom: 1rem;">👤 معلومات العميل</h4>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                            <p><strong>الاسم:</strong> ${task.customerName || 'غير محدد'}</p>
+                            <p><strong>الهاتف:</strong> ${task.customerPhone || 'غير محدد'}</p>
+                            <p><strong>العنوان:</strong> ${task.customerAddress || 'غير محدد'}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: #2c5aa0; margin-bottom: 1rem;">📊 حالة المهمة</h4>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                            <p><strong>الحالة:</strong> <span class="task-status-badge status-${task.status?.replace('-', '')}">${getTaskStatusText(task.status)}</span></p>
+                            <p><strong>الأولوية:</strong> <span class="task-priority priority-${task.priority}">${getPriorityText(task.priority)}</span></p>
+                            <p><strong>تاريخ الإنشاء:</strong> ${createdAt}</p>
+                            <p><strong>تاريخ البدء:</strong> ${startedAt}</p>
+                            <p><strong>تاريخ الإكمال:</strong> ${completedAt}</p>
+                        </div>
+                    </div>
+
+                    ${task.status === 'assigned' ? `
+                    <button class="btn btn-success" onclick="startTask('${taskId}'); closeTaskModal();" style="width: 100%; margin-bottom: 0.5rem;">
+                        🚀 بدء تنفيذ المهمة
+                    </button>
+                    ` : ''}
+
+                    ${task.status === 'in-progress' ? `
+                    <button class="btn btn-primary" onclick="completeTask('${taskId}'); closeTaskModal();" style="width: 100%; margin-bottom: 0.5rem;">
+                        ✅ إكمال المهمة
+                    </button>
+                    <button class="btn btn-warning" onclick="requestHelp('${taskId}'); closeTaskModal();" style="width: 100%;">
+                        🆘 طلب مساعدة
+                    </button>
+                    ` : ''}
+                `;
+
+                document.getElementById('taskModal').style.display = 'flex';
+
+            } catch (error) {
+                console.error('Error viewing task details:', error);
+                showSystemMessage('❌ حدث خطأ في تحميل تفاصيل المهمة');
+            }
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        async function requestPayout() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.data();
+            const availableBalance = document.querySelector('#earningsDetails .bg-\\[\\#fff3e0\\] div')?.textContent || '0';
+
+            if (parseInt(availableBalance) < 1000) {
+                showSystemMessage('❌ الحد الأدنى للسحب هو 1000 MRU');
+                return;
+            }
+
+            if (confirm(`💳 هل تريد طلب سداد مبلغ ${availableBalance}؟`)) {
+                try {
+                    await db.collection('payout_requests').add({
+                        agentId: user.uid,
+                        agentName: userData.name,
+                        amount: parseInt(availableBalance),
+                        status: 'pending',
+                        requestedAt: new Date(),
+                        paymentMethod: 'bank_transfer'
+                    });
+                    showSystemMessage('✅ تم إرسال طلب السداد بنجاح، سيتم التحويل خلال 24-48 ساعة', 'success');
+                } catch (error) {
+                    console.error('Error requesting payout:', error);
+                    showSystemMessage('❌ حدث خطأ في طلب السداد');
+                }
+            }
+        }
+
+        // دوال مساعدة
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function getPriorityText(priority) {
+            const texts = {
+                'high': 'عالي',
+                'medium': 'متوسط', 
+                'low': 'منخفض'
+            };
+            return texts[priority] || 'متوسط';
+        }
+
+        function getTaskStatusText(status) {
+            const texts = {
+                'assigned': 'موكلة',
+                'in-progress': 'قيد التنفيذ',
+                'completed': 'مكتملة'
+            };
+            return texts[status] || status;
+        }
+
+        // إضافة مستمعين للتحديث التلقائي
+        function setupRealtimeListeners(user) {
+            db.collection('agent_tasks').where('agentId', '==', user.uid)
+                .onSnapshot(() => {
+                    loadAgentTasks(user);
+                    loadAgentEarnings(user);
+                });
+        }
+
+        // إغلاق النماذج عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'taskModal') {
+                closeTaskModal();
+            }
+        });
+    </script>
+</body>
+</html>
