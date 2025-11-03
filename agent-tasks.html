@@ -11,6 +11,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c5aa0">
+    
+    <!-- الأيقونات الجديدة -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
+    <meta name="theme-color" content="#2c5aa0">
+    <meta name="msapplication-TileColor" content="#2c5aa0">
+    
     <style>
         * {
             margin: 0;
@@ -22,7 +32,6 @@
         body {
             background: #f5f5f5;
             color: #333;
-            min-height: 100vh;
         }
         
         .navbar {
@@ -42,7 +51,6 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #2c5aa0;
-            text-decoration: none;
         }
         
         .nav-logo i {
@@ -52,7 +60,6 @@
         
         .nav-links {
             display: flex;
-            align-items: center;
             gap: 0.5rem;
         }
         
@@ -71,24 +78,52 @@
             color: white;
         }
         
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #2c5aa0;
+            cursor: pointer;
+        }
+        
         .page-hero {
             background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
             color: white;
-            padding: 40px 1rem 30px;
+            padding: 60px 1rem 40px;
             text-align: center;
         }
         
+        .page-hero h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .page-hero p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             padding: 0 1rem;
-            margin: 0 auto;
+        }
+        
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1rem;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
         
         .stat-card {
@@ -101,74 +136,50 @@
         }
         
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #2c5aa0;
             display: block;
         }
         
-        .section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        
-        .section-header {
+        .tab-buttons {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         
-        .btn {
-            padding: 0.8rem 1.5rem;
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
             border: none;
-            border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .btn-primary {
-            background: #2c5aa0;
-            color: white;
-        }
-        
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-warning {
-            background: #ffc107;
-            color: #212529;
-        }
-        
-        .btn-info {
-            background: #17a2b8;
-            color: white;
-        }
-        
-        .btn-sm {
-            padding: 0.5rem 1rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
             font-size: 0.9rem;
+            border-radius: 8px 8px 0 0;
         }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        .tab-btn.active {
+            border-bottom-color: #2c5aa0;
+            color: #2c5aa0;
+            font-weight: bold;
+            background: #f8f9fa;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .tasks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
             margin: 1rem 0;
         }
         
@@ -178,11 +189,12 @@
             border-radius: 12px;
             padding: 1.5rem;
             transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .task-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
         }
         
         .task-card.high-priority {
@@ -208,10 +220,11 @@
         }
         
         .task-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #2c5aa0;
             margin: 0;
+            line-height: 1.4;
         }
         
         .task-priority {
@@ -264,6 +277,47 @@
         .status-in-progress { background: #ffc107; color: #212529; }
         .status-completed { background: #28a745; color: white; }
         
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -271,7 +325,7 @@
         }
         
         .empty-state i {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
             opacity: 0.5;
         }
@@ -302,43 +356,62 @@
             text-align: center;
         }
         
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #ddd;
-            flex-wrap: wrap;
+        .footer {
+            background: #1e3a8a;
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: 3rem;
         }
         
-        .tab-btn {
-            padding: 1rem 2rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .tab-btn.active {
-            border-bottom-color: #2c5aa0;
-            color: #2c5aa0;
-            font-weight: bold;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .tasks-grid {
-                grid-template-columns: 1fr;
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                left: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                border-radius: 0 0 10px 10px;
             }
             
-            .task-actions {
-                flex-direction: column;
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .page-hero {
+                padding: 35px 1rem 25px !important;
+            }
+            
+            .page-hero h1 {
+                font-size: 1.4rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+            
+            .page-hero p {
+                font-size: 0.9rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
             }
             
             .tab-buttons {
@@ -347,18 +420,65 @@
             
             .tab-btn {
                 padding: 0.8rem 1rem;
+                text-align: center;
+            }
+            
+            .task-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .tasks-grid {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .navbar {
+                padding: 1rem 2rem;
+            }
+            
+            .page-hero {
+                padding: 80px 2rem 60px;
+            }
+            
+            .page-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 2rem;
+            }
+            
+            .section {
+                padding: 2rem;
             }
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <a href="index.html" class="nav-logo">
+        <div class="nav-logo">
             <i class="fas fa-concierge-bell"></i>
             <span>Mauri-Services</span>
-        </a>
+        </div>
         
-        <div class="nav-links">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link">الخدمات</a>
             <a href="me.html" class="nav-link">👤 حسابي</a>
@@ -422,7 +542,7 @@
 
                 <!-- المهام الموكلة -->
                 <div id="assigned" class="tab-content active">
-                    <h3>📋 المهام الموكلة إليك</h3>
+                    <h3 style="color: #2c5aa0; margin-bottom: 1.5rem;">📋 المهام الموكلة إليك</h3>
                     <div id="assignedTasksList" class="tasks-grid">
                         <div class="loading">⏳ جاري تحميل المهام...</div>
                     </div>
@@ -430,7 +550,7 @@
 
                 <!-- المهام قيد التنفيذ -->
                 <div id="inProgress" class="tab-content">
-                    <h3>🔄 المهام قيد التنفيذ</h3>
+                    <h3 style="color: #2c5aa0; margin-bottom: 1.5rem;">🔄 المهام قيد التنفيذ</h3>
                     <div id="inProgressTasksList" class="tasks-grid">
                         <div class="loading">⏳ جاري تحميل المهام...</div>
                     </div>
@@ -438,7 +558,7 @@
 
                 <!-- المهام المكتملة -->
                 <div id="completed" class="tab-content">
-                    <h3>✅ المهام المكتملة</h3>
+                    <h3 style="color: #2c5aa0; margin-bottom: 1.5rem;">✅ المهام المكتملة</h3>
                     <div id="completedTasksList" class="tasks-grid">
                         <div class="loading">⏳ جاري تحميل المهام...</div>
                     </div>
@@ -446,7 +566,7 @@
 
                 <!-- الأرباح -->
                 <div id="earnings" class="tab-content">
-                    <h3>💰 تفاصيل الأرباح</h3>
+                    <h3 style="color: #2c5aa0; margin-bottom: 1.5rem;">💰 تفاصيل الأرباح</h3>
                     <div id="earningsDetails">
                         <div class="loading">⏳ جاري تحميل بيانات الأرباح...</div>
                     </div>
@@ -468,7 +588,15 @@
         </div>
     </div>
 
-    <script>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Mauri-Services. جميع الحقوق محفوظة.</p>
+            <p>نواكشوط، موريتانيا - واتساب: 31573340</p>
+        </div>
+    </footer>
+
+    <!-- باقي الـ JavaScript يبقى كما هو بدون تغيير -->
+     <script>
         // تهيئة Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
