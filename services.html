@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الخدمات - Mauri-Services</title>
+    <title>جميع الخدمات - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase -->
@@ -15,7 +15,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c5aa0">
     
-    <!-- الأيقونات الجديدة -->
+    <!-- الأيقونات -->
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>">
     <meta name="theme-color" content="#2c5aa0">
@@ -51,6 +51,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #2c5aa0;
+            text-decoration: none;
         }
         
         .nav-logo i {
@@ -139,6 +140,7 @@
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
+            justify-content: center;
         }
         
         .filter-btn {
@@ -149,6 +151,7 @@
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
         .filter-btn.active {
@@ -159,7 +162,7 @@
         .services-categories {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 1.5rem;
             margin: 2rem 0;
         }
         
@@ -169,6 +172,7 @@
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
+            border: 1px solid #e0e0e0;
         }
         
         .category-card:hover {
@@ -241,6 +245,24 @@
             font-weight: bold;
         }
         
+        .service-new {
+            background: #28a745;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .service-digital {
+            background: #17a2b8;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
         .btn-primary {
             background: #2c5aa0;
             color: white;
@@ -255,6 +277,23 @@
         
         .btn-primary:hover {
             background: #1e3a8a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .btn-secondary:hover {
+            background: #218838;
             transform: translateY(-2px);
         }
         
@@ -372,7 +411,7 @@
                 width: 100%;
             }
             
-            .btn-primary {
+            .btn-primary, .btn-secondary {
                 width: 100%;
             }
             
@@ -417,24 +456,24 @@
     </style>
 </head>
 <body>
-<nav class="navbar">
-        <div class="nav-logo">
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
             <i class="fas fa-concierge-bell"></i>
             <span>Mauri-Services</span>
-        </div>
+        </a>
         
         <button class="mobile-menu-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
         </button>
         
-<div class="nav-links" id="navLinks">
-    <a href="index.html" class="nav-link">الرئيسية</a>
-    <a href="services.html" class="nav-link active">الخدمات</a>
-    <a href="agents.html" class="nav-link">انضم كوكيل</a>
-    <a href="contact.html" class="nav-link">اتصل بنا</a>
-    <a href="me.html" class="nav-link">👤 حسابي</a>
-</div>
-</nav>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <a href="services.html" class="nav-link active">الخدمات</a>
+            <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="contact.html" class="nav-link">اتصل بنا</a>
+            <a href="me.html" class="nav-link">👤 حسابي</a>
+        </div>
+    </nav>
 
     <section class="page-hero">
         <div class="container">
@@ -456,7 +495,7 @@
         <!-- إحصائيات سريعة -->
         <div class="quick-stats" id="quickStats">
             <div class="stat-item">
-                <span class="stat-number" id="totalServices">20+</span>
+                <span class="stat-number" id="totalServices">30+</span>
                 <span>خدمة متاحة</span>
             </div>
             <div class="stat-item">
@@ -485,6 +524,7 @@
                 <button class="filter-btn active" onclick="filterServices('all')">الكل</button>
                 <button class="filter-btn" onclick="filterServices('delivery')">توصيل</button>
                 <button class="filter-btn" onclick="filterServices('documents')">مستندات</button>
+                <button class="filter-btn" onclick="filterServices('digital')">خدمات رقمية</button>
                 <button class="filter-btn" onclick="filterServices('payment')">دفع</button>
                 <button class="filter-btn" onclick="filterServices('home')">منزلية</button>
                 <button class="filter-btn" onclick="filterServices('government')">حكومية</button>
@@ -520,7 +560,7 @@
         </div>
     </div>
 
-    <!-- نماذج المصادقة (نفسها من contact.html) -->
+    <!-- نماذج المصادقة -->
     <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
         <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
             <h3>تسجيل الدخول</h3>
@@ -579,7 +619,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // بيانات الخدمات
+        // بيانات الخدمات المحسنة
         const servicesData = {
             delivery: {
                 title: "خدمات التوصيل",
@@ -599,13 +639,25 @@
                     { name: "ترجمة مستندات", description: "فرنسي - عربي والعكس", price: 20, popular: false, type: "documents" }
                 ]
             },
+            digital: {
+                title: "الخدمات الرقمية",
+                icon: "🤖",
+                services: [
+                    { name: "Netflix & منصات البث", description: "اشتراكات Netflix, Shahid, Amazon Prime", price: 200, popular: true, type: "digital", badge: "new" },
+                    { name: "ChatGPT Plus & AI", description: "اشتراكات ChatGPT Plus وأدوات الذكاء الاصطناعي", price: 300, popular: true, type: "digital", badge: "ai" },
+                    { name: "إنشاء مواقع ويب", description: "تصميم وتطوير مواقع ويب احترافية", price: 5000, popular: false, type: "digital", badge: "digital" },
+                    { name: "TikTok Coins & رصيد", description: "شحن عملات TikTok وبطاقات الهدايا", price: 150, popular: true, type: "digital", badge: "digital" },
+                    { name: "Binance & عملات رقمية", description: "خدمات Binance وتداول العملات الرقمية", price: 100, popular: false, type: "digital", badge: "digital" },
+                    { name: "إعلانات فيسبوك", description: "إدارة حملات إعلانية على فيسبوك وإنستغرام", price: 1000, popular: false, type: "digital", badge: "digital" }
+                ]
+            },
             payment: {
                 title: "خدمات الدفع",
                 icon: "💳",
                 services: [
-                    { name: " Netflix ,amazon,Shahid", description: "شحن  جميع المنصات", price: 200, popular: true, type: "payment" },
                     { name: "دفع فواتير", description: "كهرباء، ماء، إنترنت", price: 50, popular: true, type: "payment" },
-                    { name: "شراء بطاقات", description: "Netflix, Stream, Google Play", price: 200, popular: false, type: "payment" }
+                    { name: "شراء من Amazon", description: "شراء وتوصيل منتجات من Amazon", price: 200, popular: true, type: "payment" },
+                    { name: "بطاقات الهدايا", description: "Google Play, Apple Store, Steam", price: 200, popular: false, type: "payment" }
                 ]
             },
             home: {
@@ -627,10 +679,10 @@
                 ]
             },
             information: {
-                title: "خدمات  الكتب والبحث",
+                title: "خدمات البحث والمعلومات",
                 icon: "🔍",
                 services: [
-                    { name: "بحث عن  أي كتاب ", description: "أي موضوع تحتاج معلومات عنه", price: 50, popular: false, type: "information" },
+                    { name: "بحث عن الكتب", description: "أي موضوع تحتاج معلومات عنه", price: 50, popular: false, type: "information" },
                     { name: "بحث عن أسعار المنتجات", description: "مقارنة أسعار محلية ودولية", price: 30, popular: true, type: "information" },
                     { name: "بحث أكاديمي", description: "معلومات للدراسة والأبحاث", price: 500, popular: false, type: "information" },
                     { name: "بحث عن فرص عمل", description: "وظائف شاغرة ومتطلباتها", price: 20, popular: true, type: "information" }
@@ -725,11 +777,14 @@
                                     <p>${service.description}</p>
                                     <div class="service-meta">
                                         ${service.popular ? '<span class="service-popular">🔥 الأكثر طلباً</span>' : ''}
+                                        ${service.badge === 'new' ? '<span class="service-new">🆕 جديد</span>' : ''}
+                                        ${service.badge === 'ai' ? '<span class="service-digital">🤖 AI</span>' : ''}
+                                        ${service.badge === 'digital' ? '<span class="service-digital">🌐 رقمي</span>' : ''}
                                         <span>⏱️ 1-4 ساعات</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <button class="btn-primary" onclick="showServiceDetails('${categoryKey}', '${service.name}')">
+                                    <button class="${service.type === 'digital' ? 'btn-secondary' : 'btn-primary'}" onclick="showServiceDetails('${categoryKey}', '${service.name}')">
                                         ${service.price > 0 ? service.price + ' MRU' : 'اسأل عن السعر'}
                                     </button>
                                 </div>
@@ -867,7 +922,7 @@
             }
         }
 
-        // دوال المصادقة (نفسها من contact.html)
+        // دوال المصادقة
         function showLoginModal() {
             document.getElementById('loginModal').style.display = 'flex';
         }

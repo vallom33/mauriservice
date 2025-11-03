@@ -133,6 +133,7 @@
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid #e0e0e0;
+            position: relative;
         }
         
         .service-card:hover {
@@ -153,6 +154,18 @@
             font-size: 1.5rem;
         }
         
+        .service-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff6b6b;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
         .btn-primary {
             background: #2c5aa0;
             color: white;
@@ -169,6 +182,24 @@
         
         .btn-primary:hover {
             background: #1e3a8a;
+        }
+        
+        .btn-secondary {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+            transition: background 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn-secondary:hover {
+            background: #218838;
         }
         
         .footer {
@@ -455,6 +486,27 @@
             color: #666;
             line-height: 1.5;
         }
+        
+        .category-section {
+            margin: 3rem 0;
+        }
+        
+        .category-title {
+            text-align: center;
+            font-size: 2rem;
+            color: #2c5aa0;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .category-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: #2c5aa0;
+            margin: 0.5rem auto;
+        }
     </style>
 </head>
 <body>
@@ -492,16 +544,16 @@
     <section class="page-hero">
         <div class="container">
             <h1>منصة الخدمات المتكاملة في موريتانيا</h1>
-            <p>من توصيل , إلى استخراج الوثائق, لإنشاء موقعك الخاص  - كل ما تحتاجه في مكان واحد</p>
+            <p>من توصيل، إلى خدمات إلكترونية، إلى إنشاء مواقع ويب - كل ما تحتاجه في مكان واحد</p>
             
             <div class="hero-buttons">
-                <button class="btn-primary" onclick="window.location.href='services.html'">اكتشف خدماتنا</button>
+                <button class="btn-primary" onclick="window.location.href='services.html'">اكتشف جميع الخدمات</button>
                 <button class="btn-primary btn-outline" onclick="window.location.href='contact.html'">اطلب خدمة مخصصة</button>
             </div>
             
             <div class="hero-stats">
                 <div class="stat">
-                    <h3>20+</h3>
+                    <h3>30+</h3>
                     <p>خدمة متاحة</p>
                 </div>
                 <div class="stat">
@@ -512,15 +564,21 @@
                     <h3>100%</h3>
                     <p>رضا عملاء</p>
                 </div>
+                <div class="stat">
+                    <h3>500+</h3>
+                    <p>عميل راضي</p>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- خدمات التوصيل والخدمات المحلية -->
     <section class="container">
-        <h2 class="section-title">خدماتنا الشعبية</h2>
+        <h2 class="category-title">خدمات التوصيل والخدمات المحلية</h2>
         
         <div class="services-grid">
             <div class="service-card">
+                <div class="service-badge">🔥 الأكثر طلباً</div>
                 <div class="service-icon">🛒</div>
                 <h3>توصيل المشتريات</h3>
                 <p>خضروات، فواكه، لحوم، شاي - من السوق إلى باب منزلك</p>
@@ -549,17 +607,97 @@
             </div>
             
             <div class="service-card">
-                <div class="service-icon">💳</div>
-                <h3>خدمات الدفع</h3>
-                <p> Netflix ، دفع فواتير، شراء بطاقات الهدايا</p>
-                <button class="btn-primary" onclick="orderService('خدمات دفع', 200)">اطلب الآن - 200 MRU</button>
+                <div class="service-icon">🔧</div>
+                <h3>خدمات منزلية</h3>
+                <p>سباكة، كهرباء، نجارة - إصلاحات منزلية متكاملة</p>
+                <button class="btn-primary" onclick="orderService('خدمات منزلية', 1000)">اطلب الآن - 1000 MRU</button>
             </div>
             
             <div class="service-card">
                 <div class="service-icon">🔍</div>
-                <h3>خدمة البحث أي كتاب </h3>
+                <h3>خدمة البحث عن الكتب</h3>
                 <p>أبحاث، دراسات، أسعار، منتجات - نوفر لك أي معلومات تحتاجها</p>
                 <button class="btn-primary" onclick="orderService('خدمة البحث عن المعلومات', 50)">اطلب الآن - 50 MRU</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- الخدمات الإلكترونية والرقمية -->
+    <section class="container">
+        <h2 class="category-title">الخدمات الإلكترونية والرقمية</h2>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-badge">🆕 جديد</div>
+                <div class="service-icon">🎬</div>
+                <h3>Netflix & منصات البث</h3>
+                <p>اشتراكات Netflix, Shahid, Amazon Prime وغيرها من منصات البث</p>
+                <button class="btn-secondary" onclick="orderService('Netflix & منصات البث', 200)">اطلب الآن - 200 MRU</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-badge">🤖 AI</div>
+                <div class="service-icon">🤖</div>
+                <h3>ChatGPT Plus & AI</h3>
+                <p>اشتراكات ChatGPT Plus وأدوات الذكاء الاصطناعي المتقدمة</p>
+                <button class="btn-secondary" onclick="orderService('ChatGPT Plus & AI', 300)">اطلب الآن - 300 MRU</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🌐</div>
+                <h3>إنشاء مواقع ويب</h3>
+                <p>تصميم وتطوير مواقع ويب احترافية لتجارتك أو مشروعك</p>
+                <button class="btn-secondary" onclick="orderService('إنشاء مواقع ويب', 5000)">اطلب الآن - 5000 MRU</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📱</div>
+                <h3>TikTok Coins & رصيد</h3>
+                <p>شحن عملات TikTok وبطاقات الهدايا للمنصات الاجتماعية</p>
+                <button class="btn-secondary" onclick="orderService('TikTok Coins & رصيد', 150)">اطلب الآن - 150 MRU</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">💸</div>
+                <h3>Binance & عملات رقمية</h3>
+                <p>خدمات Binance، تداول، وتحويل العملات الرقمية</p>
+                <button class="btn-secondary" onclick="orderService('Binance & عملات رقمية', 100)">اطلب الآن - 100 MRU</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📢</div>
+                <h3>إعلانات فيسبوك</h3>
+                <p>إدارة حملات إعلانية على فيسبوك وإنستغرام لزيادة المبيعات</p>
+                <button class="btn-secondary" onclick="orderService('إعلانات فيسبوك', 1000)">اطلب الآن - 1000 MRU</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- خدمات الدفع الإلكتروني -->
+    <section class="container">
+        <h2 class="category-title">خدمات الدفع الإلكتروني</h2>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-badge">💳</div>
+                <div class="service-icon">💳</div>
+                <h3>دفع فواتير</h3>
+                <p>دفع فواتير الكهرباء، الماء، الإنترنت والخدمات الأخرى</p>
+                <button class="btn-primary" onclick="orderService('دفع فواتير', 50)">اطلب الآن - 50 MRU</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🛍️</div>
+                <h3>شراء من Amazon</h3>
+                <p>شراء وتوصيل منتجات من Amazon إلى موريتانيا</p>
+                <button class="btn-primary" onclick="orderService('شراء من Amazon', 200)">اطلب الآن - 200 MRU</button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🎁</div>
+                <h3>بطاقات الهدايا</h3>
+                <p>Google Play, Apple Store, Steam وغيرها من البطاقات</p>
+                <button class="btn-primary" onclick="orderService('بطاقات الهدايا', 200)">اطلب الآن - 200 MRU</button>
             </div>
         </div>
     </section>
@@ -632,10 +770,8 @@
             const userChoice = confirm(`هل تريد طلب "${serviceName}" بسعر ${price} MRU؟\n\n✅ نعم: سجل الدخول لمتابعة الطلب\n❌ لا: أرسل طلب مباشر عبر الواتساب`);
             
             if (userChoice) {
-                // إذا وافق، انتقل لصفحة الخدمات مع تسجيل الدخول
                 window.location.href = 'services.html';
             } else {
-                // إذا رفض، أرسل مباشرة للواتساب
                 const message = `مرحباً، أريد طلب خدمة: ${serviceName} - السعر: ${price} MRU`;
                 const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
@@ -676,7 +812,6 @@
             e.preventDefault();
             deferredPrompt = e;
             
-            // Show install prompt after 3 seconds
             setTimeout(() => {
                 installPrompt.classList.add('show');
             }, 3000);
@@ -710,7 +845,7 @@
             });
         }
 
-        // Handle page visibility for better performance hh
+        // Handle page visibility for better performance
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
                 console.log('Page is hidden');
