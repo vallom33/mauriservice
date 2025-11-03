@@ -1220,7 +1220,7 @@ async function approveApplication(applicationId) {
                 await db.collection('agent_tasks').add({
                     agentId: agentId,
                     agentName: agentData.name,
-                    agentPhone: agentData.phone,
+                    agentPhone: agentData.phone || 'غير محدد',
                     agentDistrict: agentData.district || agentData.address,
                     title: title,
                     description: description,
