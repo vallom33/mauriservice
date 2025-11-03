@@ -669,7 +669,7 @@
         <div class="nav-links" id="navLinks">
             <a href="index.html" class="nav-link">الرئيسية</a>
             <a href="services.html" class="nav-link">الخدمات</a>
-            <a href="agents.html" class="nav-link">انضم كوكيل</a>
+            <a href="agents.html" class="nav-link" id="agentsLink">انضم كوكيل</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
             <a href="me.html" class="nav-link active">👤 حسابي</a>
         </div>
@@ -821,7 +821,7 @@
                     <h3>طلب خدمة جديدة</h3>
                     <p>اطلب خدمة من متجرنا</p>
                 </div>
-                <div class="action-card" onclick="applyAsAgent()">
+                <div class="action-card" onclick="applyAsAgent()" id="becomeAgentCard">
                     <div class="action-icon">💼</div>
                     <h3>كن وكيلاً</h3>
                     <p>اربح عمولات معنا</p>
@@ -902,6 +902,32 @@
             <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
             <p style="text-align: center; margin-top: 1rem;">
                 <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">📝 إنشاء حساب جديد</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- نموذج التسجيل -->
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+            <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">إنشاء حساب جديد</h3>
+            <div class="form-group">
+                <input type="text" id="signupName" placeholder="👤 الاسم الكامل" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <input type="tel" id="signupPhone" placeholder="📞 رقم الهاتف" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <input type="email" id="signupEmail" placeholder="📧 البريد الإلكتروني" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <input type="password" id="signupPassword" placeholder="🔒 كلمة المرور" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <button onclick="signupUser()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                🎉 إنشاء حساب
+            </button>
+            <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a onclick="showLoginModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🚀 لديك حساب؟ سجل الدخول</a>
             </p>
         </div>
     </div>
@@ -1013,13 +1039,8 @@
                 await loadAgentStatus(user);
                 await loadNotifications(user);
                 
-                // إذا كان وكيلاً، تحميل بيانات المهام
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                if (userDoc.exists && userDoc.data().role === 'agent') {
-                    document.getElementById('agentDashboard').style.display = 'block';
-                    await loadAgentTasks(user);
-                    await loadAgentEarnings(user);
-                }
+                // التحقق من حالة الوكيل وإخفاء الأزرار إذا لزم الأمر
+                await checkAgentStatusAndHideButtons(user);
                 
                 // إعداد المستمعين للتحديث التلقائي
                 setupRealtimeListeners(user);
@@ -1149,6 +1170,13 @@
                     const roleText = userData.role === 'agent' ? '👤 وكيل معتمد' : 
                                    userData.role === 'admin' ? '👑 مدير النظام' : '👤 مستخدم عادي';
                     document.getElementById('userRole').textContent = roleText;
+
+                    // إذا كان وكيلاً، تحميل بيانات المهام
+                    if (userData.role === 'agent') {
+                        document.getElementById('agentDashboard').style.display = 'block';
+                        await loadAgentTasks(user);
+                        await loadAgentEarnings(user);
+                    }
                 } else {
                     await db.collection('users').doc(user.uid).set({
                         name: user.displayName || 'مستخدم',
@@ -1253,24 +1281,33 @@
             }
         }
 
-        // تحميل مهام الوكيل
+        // تحميل مهام الوكيل - الإصدار المصحح
         async function loadAgentTasks(user) {
             try {
                 console.log('📋 Loading agent tasks for:', user.uid);
                 
-                const tasksSnapshot = await db.collection('agent_tasks').get();
+                // البحث في مجموعة agent_tasks حيث agentId يساوي uid المستخدم
+                const tasksSnapshot = await db.collection('agent_tasks')
+                    .where('agentId', '==', user.uid)
+                    .get();
                 
-                const agentTasks = tasksSnapshot.docs.filter(doc => {
-                    const task = doc.data();
-                    return task.agentId === user.uid;
-                });
-
-                console.log('✅ Found tasks:', agentTasks.length);
+                console.log('✅ Found tasks:', tasksSnapshot.docs.length);
 
                 // تصنيف المهام حسب الحالة
-                const assignedTasks = agentTasks.filter(doc => doc.data().status === 'assigned');
-                const inProgressTasks = agentTasks.filter(doc => doc.data().status === 'in-progress');
-                const completedTasks = agentTasks.filter(doc => doc.data().status === 'completed');
+                const assignedTasks = [];
+                const inProgressTasks = [];
+                const completedTasks = [];
+
+                tasksSnapshot.forEach(doc => {
+                    const task = doc.data();
+                    if (task.status === 'assigned') {
+                        assignedTasks.push({ id: doc.id, ...task });
+                    } else if (task.status === 'in-progress') {
+                        inProgressTasks.push({ id: doc.id, ...task });
+                    } else if (task.status === 'completed') {
+                        completedTasks.push({ id: doc.id, ...task });
+                    }
+                });
 
                 // تحديث الإحصائيات
                 document.getElementById('completedTasks').textContent = completedTasks.length;
@@ -1287,10 +1324,9 @@
                         </div>
                     `;
                 } else {
-                    assignedContainer.innerHTML = assignedTasks.map(doc => {
-                        const task = doc.data();
-                        return createTaskCard(doc.id, task);
-                    }).join('');
+                    assignedContainer.innerHTML = assignedTasks.map(task => 
+                        createTaskCard(task.id, task)
+                    ).join('');
                 }
 
                 // عرض المهام قيد التنفيذ
@@ -1304,10 +1340,9 @@
                         </div>
                     `;
                 } else {
-                    inProgressContainer.innerHTML = inProgressTasks.map(doc => {
-                        const task = doc.data();
-                        return createTaskCard(doc.id, task);
-                    }).join('');
+                    inProgressContainer.innerHTML = inProgressTasks.map(task => 
+                        createTaskCard(task.id, task)
+                    ).join('');
                 }
 
                 // عرض المهام المكتملة
@@ -1321,15 +1356,26 @@
                         </div>
                     `;
                 } else {
-                    completedContainer.innerHTML = completedTasks.map(doc => {
-                        const task = doc.data();
-                        return createTaskCard(doc.id, task);
-                    }).join('');
+                    completedContainer.innerHTML = completedTasks.map(task => 
+                        createTaskCard(task.id, task)
+                    ).join('');
                 }
 
             } catch (error) {
                 console.error('❌ Error loading agent tasks:', error);
                 showSystemMessage('حدث خطأ في تحميل المهام: ' + error.message);
+                
+                // عرض رسالة خطأ في كل قسم
+                const errorHtml = `
+                    <div class="empty-state">
+                        <div>❌</div>
+                        <h3>حدث خطأ في تحميل المهام</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                document.getElementById('assignedTasks').innerHTML = errorHtml;
+                document.getElementById('inProgressTasks').innerHTML = errorHtml;
+                document.getElementById('completedTasksList').innerHTML = errorHtml;
             }
         }
 
@@ -1338,11 +1384,13 @@
             try {
                 console.log('💰 Loading agent earnings for:', user.uid);
                 
-                const tasksSnapshot = await db.collection('agent_tasks').get();
+                const tasksSnapshot = await db.collection('agent_tasks')
+                    .where('agentId', '==', user.uid)
+                    .get();
                 
                 const completedTasks = tasksSnapshot.docs.filter(doc => {
                     const task = doc.data();
-                    return task.agentId === user.uid && task.status === 'completed';
+                    return task.status === 'completed';
                 });
 
                 let totalEarnings = 0;
@@ -1757,6 +1805,58 @@
             }
         }
 
+        // التحقق من حالة الوكيل وإخفاء الأزرار إذا لزم الأمر
+        async function checkAgentStatusAndHideButtons(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    // إذا كان المستخدم وكيلاً أو لديه طلب وكالة قيد المراجعة
+                    if (userData.role === 'agent' || userData.role === 'admin') {
+                        // إخفاء زر "انضم كوكيل" من القائمة
+                        const agentsLink = document.getElementById('agentsLink');
+                        if (agentsLink) {
+                            agentsLink.style.display = 'none';
+                        }
+                        
+                        // إخفاء بطاقة "كن وكيلاً" من الإجراءات السريعة
+                        const becomeAgentCard = document.getElementById('becomeAgentCard');
+                        if (becomeAgentCard) {
+                            becomeAgentCard.style.display = 'none';
+                        }
+                    } else {
+                        // التحقق من طلبات الوكالة
+                        const agentAppsSnapshot = await db.collection('agent_applications').get();
+                        const userApplications = agentAppsSnapshot.docs.filter(doc => {
+                            const app = doc.data();
+                            return app.userEmail === user.email || app.userId === user.uid;
+                        });
+
+                        if (userApplications.length > 0) {
+                            const latestApp = userApplications[0].data();
+                            // إذا كان هناك طلب قيد المراجعة أو مقبول
+                            if (latestApp.status === 'pending' || latestApp.status === 'approved') {
+                                // إخفاء زر "انضم كوكيل" من القائمة
+                                const agentsLink = document.getElementById('agentsLink');
+                                if (agentsLink) {
+                                    agentsLink.style.display = 'none';
+                                }
+                                
+                                // إخفاء بطاقة "كن وكيلاً" من الإجراءات السريعة
+                                const becomeAgentCard = document.getElementById('becomeAgentCard');
+                                if (becomeAgentCard) {
+                                    becomeAgentCard.style.display = 'none';
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error checking agent status:', error);
+            }
+        }
+
         // تحميل الإشعارات
         async function loadNotifications(user) {
             try {
@@ -1855,32 +1955,39 @@
         function setupRealtimeListeners(user) {
             console.log('🔔 Setting up realtime listeners for user:', user.uid);
             
+            // تحديث الطلبات
             db.collection('orders').onSnapshot(() => {
                 console.log('🔄 Orders updated, reloading...');
                 loadUserOrders(user);
             });
 
+            // تحديث طلبات الوكالة
             db.collection('agent_applications').onSnapshot(() => {
                 console.log('🔄 Agent applications updated, reloading...');
                 loadAgentStatus(user);
+                checkAgentStatusAndHideButtons(user);
             });
 
+            // تحديث الإشعارات
             db.collection('notifications').onSnapshot(() => {
                 console.log('🔄 Notifications updated, reloading...');
                 loadNotifications(user);
             });
 
-            // مستمع لمهام الوكيل
-            db.collection('agent_tasks').onSnapshot(() => {
-                console.log('🔄 Agent tasks updated, reloading...');
-                const userDoc = db.collection('users').doc(user.uid);
-                userDoc.get().then(doc => {
-                    if (doc.exists && doc.data().role === 'agent') {
-                        loadAgentTasks(user);
-                        loadAgentEarnings(user);
-                    }
-                });
+            // تحديث بيانات المستخدم
+            db.collection('users').doc(user.uid).onSnapshot(() => {
+                console.log('🔄 User data updated, reloading...');
+                loadUserData(user);
+                checkAgentStatusAndHideButtons(user);
             });
+
+            // تحديث مهام الوكيل
+            db.collection('agent_tasks').where('agentId', '==', user.uid)
+                .onSnapshot(() => {
+                    console.log('🔄 Agent tasks updated, reloading...');
+                    loadAgentTasks(user);
+                    loadAgentEarnings(user);
+                });
         }
 
         // منع إرسال النموذج عند الضغط على Enter
