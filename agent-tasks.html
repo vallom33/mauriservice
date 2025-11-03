@@ -734,10 +734,7 @@
                             <div style="font-size: 2rem; font-weight: bold; color: #28a745;">${totalEarnings.toLocaleString()} MRU</div>
                             <div>إجمالي الأرباح</div>
                         </div>
-                        <div style="background: #fff3e0; padding: 1.5rem; border-radius: 12px; text-align: center;">
-                            <div style="font-size: 2rem; font-weight: bold; color: #ffc107;">${availableBalance.toLocaleString()} MRU</div>
-                            <div>رصيد متاح</div>
-                        </div>
+                        
                         <div style="background: #e3f2fd; padding: 1.5rem; border-radius: 12px; text-align: center;">
                             <div style="font-size: 2rem; font-weight: bold; color: #2196f3;">${completedTasks.length}</div>
                             <div>مهام مكتملة</div>
@@ -748,9 +745,7 @@
                         <button class="btn btn-success" onclick="requestPayout()">
                             💳 طلب سداد الرصيد
                         </button>
-                        <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                            الحد الأدنى للسحب: 1000 MRU
-                        </p>
+                        
                     </div>
                 `;
 
@@ -892,36 +887,42 @@
             document.getElementById('taskModal').style.display = 'none';
         }
 
-        async function requestPayout() {
-            const user = auth.currentUser;
-            if (!user) return;
+    async function requestPayout() {
+    const user = auth.currentUser;
+    if (!user) return;
 
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            const userData = userDoc.data();
-            const availableBalance = document.querySelector('#earningsDetails .bg-\\[\\#fff3e0\\] div')?.textContent || '0';
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    const userData = userDoc.data();
+    const availableBalance = document.querySelector('#earningsDetails .bg-\\[\\#fff3e0\\] div')?.textContent || '0';
 
-            if (parseInt(availableBalance) < 100) {
-                showSystemMessage('❌ الحد الأدنى للسحب هو 100 MRU');
-                return;
-            }
+    // إزالة شرط الحد الأدنى - أي مبلغ ممكن
+    if (parseInt(availableBalance) <= 0) {
+        showSystemMessage('❌ لا يوجد رصيد متاح للسحب');
+        return;
+    }
 
-            if (confirm(`💳 هل تريد طلب سداد مبلغ ${availableBalance}؟`)) {
-                try {
-                    await db.collection('payout_requests').add({
-                        agentId: user.uid,
-                        agentName: userData.name,
-                        amount: parseInt(availableBalance),
-                        status: 'pending',
-                        requestedAt: new Date(),
-                        paymentMethod: 'bank_transfer'
-                    });
-                    showSystemMessage('✅ تم إرسال طلب السداد بنجاح، سيتم التحويل خلال 24-48 ساعة', 'success');
-                } catch (error) {
-                    console.error('Error requesting payout:', error);
-                    showSystemMessage('❌ حدث خطأ في طلب السداد');
-                }
-            }
+    if (confirm(`💳 هل تريد طلب سداد مبلغ ${availableBalance} MRU؟`)) {
+        try {
+            await db.collection('payout_requests').add({
+                agentId: user.uid,
+                agentName: userData.name,
+                agentPhone: userData.phone, // إضافة رقم الهاتف
+                amount: parseInt(availableBalance),
+                status: 'pending',
+                requestedAt: new Date(),
+                paymentMethod: 'bank_transfer',
+                note: 'طلب سداد من الوكيل'
+            });
+            
+            // رسالة النجاح الجديدة
+            showSystemMessage('✅ تم إرسال طلب السداد للإدارة بنجاح! سيتم الإيداع في حسابك البنكي قريباً.', 'success');
+            
+        } catch (error) {
+            console.error('Error requesting payout:', error);
+            showSystemMessage('❌ حدث خطأ في طلب السداد');
         }
+    }
+}
 
         // دوال مساعدة
         function openTab(tabName) {
