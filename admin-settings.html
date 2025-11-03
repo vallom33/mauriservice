@@ -133,6 +133,16 @@
             color: #212529;
         }
         
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 3px 10px rgba(0,0,0,0.2);
@@ -216,6 +226,103 @@
             color: #dc3545;
             margin-bottom: 1rem;
         }
+        
+        .services-list {
+            margin-top: 1rem;
+        }
+        
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+        }
+        
+        .service-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #2c5aa0;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background: #e9ecef;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
 
         @media (max-width: 768px) {
             .admin-nav {
@@ -244,6 +351,17 @@
             .tab-btn {
                 padding: 0.8rem 1rem;
             }
+            
+            .service-item {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .service-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
         }
     </style>
 </head>
@@ -267,8 +385,29 @@
     </nav>
     
     <div class="content">
+        <!-- الإحصائيات السريعة -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number" id="totalServicesCount">0</span>
+                <span class="stat-label">خدمة نشطة</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="totalCategoriesCount">0</span>
+                <span class="stat-label">فئة خدمة</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="totalOrdersCount">0</span>
+                <span class="stat-label">طلب هذا الشهر</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="revenueCount">0 MRU</span>
+                <span class="stat-label">إيرادات الشهر</span>
+            </div>
+        </div>
+        
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="openTab('general')">الإعدادات العامة</button>
+            <button class="tab-btn" onclick="openTab('services')">إدارة الخدمات</button>
             <button class="tab-btn" onclick="openTab('pricing')">الأسعار والخدمات</button>
             <button class="tab-btn" onclick="openTab('notifications')">الإشعارات</button>
             <button class="tab-btn" onclick="openTab('backup')">النسخ الاحتياطي</button>
@@ -331,6 +470,25 @@
             </div>
         </div>
         
+        <!-- إدارة الخدمات -->
+        <div id="services" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>🛠️ إدارة الخدمات</h2>
+                    <button class="btn btn-success" onclick="openServiceModal()">➕ إضافة خدمة جديدة</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>بحث في الخدمات</label>
+                    <input type="text" id="serviceSearch" placeholder="ابحث عن خدمة..." onkeyup="filterServices()">
+                </div>
+                
+                <div id="servicesList" class="services-list">
+                    <!-- سيتم تعبئة الخدمات هنا -->
+                </div>
+            </div>
+        </div>
+        
         <!-- الأسعار والخدمات -->
         <div id="pricing" class="tab-content">
             <div class="section">
@@ -355,6 +513,27 @@
                         <div class="form-group">
                             <label>البحث عن المعلومات (MRU)</label>
                             <input type="number" id="priceResearch" placeholder="السعر">
+                        </div>
+                    </div>
+                    
+                    <div class="price-item">
+                        <div class="form-group">
+                            <label>Netflix & منصات البث (MRU)</label>
+                            <input type="number" id="priceNetflix" placeholder="السعر">
+                        </div>
+                    </div>
+                    
+                    <div class="price-item">
+                        <div class="form-group">
+                            <label>ChatGPT Plus (MRU)</label>
+                            <input type="number" id="priceChatGPT" placeholder="السعر">
+                        </div>
+                    </div>
+                    
+                    <div class="price-item">
+                        <div class="form-group">
+                            <label>إنشاء مواقع ويب (MRU)</label>
+                            <input type="number" id="priceWebsites" placeholder="السعر">
                         </div>
                     </div>
                 </div>
@@ -410,6 +589,7 @@
                     <p>حفظ نسخة احتياطية من جميع البيانات</p>
                     <button class="btn btn-primary" onclick="exportAllData()">📥 تصدير جميع البيانات</button>
                     <button class="btn btn-warning" onclick="exportOrdersData()">📦 تصدير الطلبات فقط</button>
+                    <button class="btn btn-info" onclick="exportServicesData()">🛠️ تصدير الخدمات</button>
                 </div>
                 
                 <div class="danger-zone">
@@ -424,6 +604,69 @@
                     <button class="btn btn-danger" onclick="clearAllData()" id="deleteBtn" disabled>🗑️ مسح جميع البيانات</button>
                     <button class="btn btn-danger" onclick="resetSettings()" id="resetBtn" disabled>🔄 إعادة تعيين الإعدادات</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal لإضافة/تعديل الخدمات -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalServiceTitle">إضافة خدمة جديدة</h3>
+                <button class="close-modal" onclick="closeServiceModal()">✕</button>
+            </div>
+            
+            <div class="form-group">
+                <label>اسم الخدمة</label>
+                <input type="text" id="serviceName" placeholder="اسم الخدمة">
+            </div>
+            
+            <div class="form-group">
+                <label>وصف الخدمة</label>
+                <textarea id="serviceDescription" rows="3" placeholder="وصف الخدمة"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>الفئة</label>
+                <select id="serviceCategory">
+                    <option value="delivery">خدمات التوصيل</option>
+                    <option value="documents">خدمات المستندات</option>
+                    <option value="digital">الخدمات الرقمية</option>
+                    <option value="payment">خدمات الدفع</option>
+                    <option value="home">خدمات منزلية</option>
+                    <option value="government">خدمات حكومية</option>
+                    <option value="information">خدمات البحث والمعلومات</option>
+                    <option value="additional">خدمات إضافية</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>السعر (MRU)</label>
+                <input type="number" id="servicePrice" placeholder="السعر">
+            </div>
+            
+            <div class="form-group">
+                <label>الأيقونة</label>
+                <input type="text" id="serviceIcon" placeholder="🚗 أو 📄 أو 🤖">
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="servicePopular"> 
+                    خدمة شعبية (إظهار كالأكثر طلباً)
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="serviceActive"> 
+                    الخدمة نشطة
+                </label>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-success" onclick="saveService()" id="saveServiceBtn">💾 حفظ الخدمة</button>
+                <button class="btn btn-danger" onclick="closeServiceModal()">إلغاء</button>
             </div>
         </div>
     </div>
@@ -467,15 +710,19 @@
             });
         }
         
-        // نظام الإعدادات مع Firebase
-        class SettingsManager {
+        // نظام الإعدادات المتقدم
+        class AdvancedSettingsManager {
             constructor() {
                 this.settings = {};
+                this.services = {};
+                this.currentEditingService = null;
                 this.init();
             }
             
             async init() {
                 await this.loadSettings();
+                await this.loadServices();
+                await this.loadStats();
                 this.setupEventListeners();
             }
             
@@ -487,13 +734,63 @@
                         this.settings = settingsDoc.data();
                         this.populateForm();
                     } else {
-                        // الإعدادات الافتراضية
                         this.settings = this.getDefaultSettings();
                         await this.saveSettings();
                     }
                     
                 } catch (error) {
                     console.error('❌ خطأ في تحميل الإعدادات:', error);
+                }
+            }
+            
+            async loadServices() {
+                try {
+                    const servicesSnapshot = await db.collection('services').get();
+                    this.services = {};
+                    
+                    servicesSnapshot.forEach(doc => {
+                        this.services[doc.id] = doc.data();
+                    });
+                    
+                    this.renderServices();
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الخدمات:', error);
+                }
+            }
+            
+            async loadStats() {
+                try {
+                    // إحصائيات الخدمات
+                    const servicesCount = Object.keys(this.services).length;
+                    document.getElementById('totalServicesCount').textContent = servicesCount;
+                    
+                    // إحصائيات الفئات
+                    const categories = new Set(Object.values(this.services).map(s => s.category));
+                    document.getElementById('totalCategoriesCount').textContent = categories.size;
+                    
+                    // إحصائيات الطلبات
+                    const now = new Date();
+                    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                    const ordersSnapshot = await db.collection('orders')
+                        .where('timestamp', '>=', startOfMonth)
+                        .get();
+                    
+                    document.getElementById('totalOrdersCount').textContent = ordersSnapshot.size;
+                    
+                    // حساب الإيرادات
+                    let revenue = 0;
+                    ordersSnapshot.forEach(doc => {
+                        const order = doc.data();
+                        if (order.price && order.status === 'مكتمل') {
+                            revenue += order.price;
+                        }
+                    });
+                    
+                    document.getElementById('revenueCount').textContent = revenue + ' MRU';
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل الإحصائيات:', error);
                 }
             }
             
@@ -511,7 +808,10 @@
                     pricing: {
                         shopping: 100,
                         documents: 200,
-                        research: 200
+                        research: 200,
+                        netflix: 200,
+                        chatgpt: 300,
+                        websites: 5000
                     },
                     
                     notifications: {
@@ -542,12 +842,56 @@
                 document.getElementById('priceShopping').value = this.settings.pricing?.shopping || '';
                 document.getElementById('priceDocuments').value = this.settings.pricing?.documents || '';
                 document.getElementById('priceResearch').value = this.settings.pricing?.research || '';
+                document.getElementById('priceNetflix').value = this.settings.pricing?.netflix || '';
+                document.getElementById('priceChatGPT').value = this.settings.pricing?.chatgpt || '';
+                document.getElementById('priceWebsites').value = this.settings.pricing?.websites || '';
                 
                 // الإشعارات
                 document.getElementById('notifyNewOrders').checked = this.settings.notifications?.newOrders || false;
                 document.getElementById('notifyNewMessages').checked = this.settings.notifications?.newMessages || false;
                 document.getElementById('notifyNewAgents').checked = this.settings.notifications?.newAgents || false;
                 document.getElementById('notificationEmail').value = this.settings.notifications?.notificationEmail || '';
+            }
+            
+            renderServices() {
+                const container = document.getElementById('servicesList');
+                let html = '';
+                
+                Object.entries(this.services).forEach(([id, service]) => {
+                    const categoryNames = {
+                        'delivery': 'توصيل',
+                        'documents': 'مستندات',
+                        'digital': 'رقمية',
+                        'payment': 'دفع',
+                        'home': 'منزلية',
+                        'government': 'حكومية',
+                        'information': 'معلومات',
+                        'additional': 'إضافية'
+                    };
+                    
+                    html += `
+                        <div class="service-item" data-service-id="${id}">
+                            <div>
+                                <strong>${service.name}</strong>
+                                <span class="category-badge">${categoryNames[service.category] || service.category}</span>
+                                <div style="color: #666; font-size: 0.9rem; margin-top: 0.3rem;">
+                                    ${service.description}
+                                </div>
+                                <div style="color: #2c5aa0; font-weight: bold; margin-top: 0.3rem;">
+                                    ${service.price} MRU
+                                    ${service.popular ? ' | 🔥 شعبية' : ''}
+                                    ${service.active === false ? ' | ❌ غير نشط' : ''}
+                                </div>
+                            </div>
+                            <div class="service-actions">
+                                <button class="btn btn-primary btn-sm" onclick="editService('${id}')">✏️ تعديل</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteService('${id}')">🗑️ حذف</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html || '<p>لا توجد خدمات مضافة بعد</p>';
             }
             
             async saveSettings() {
@@ -560,6 +904,42 @@
                     return true;
                 } catch (error) {
                     console.error('❌ خطأ في حفظ الإعدادات:', error);
+                    return false;
+                }
+            }
+            
+            async saveService(serviceData, serviceId = null) {
+                try {
+                    if (serviceId) {
+                        // تحديث خدمة موجودة
+                        await db.collection('services').doc(serviceId).update(serviceData);
+                    } else {
+                        // إضافة خدمة جديدة
+                        await db.collection('services').add({
+                            ...serviceData,
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        });
+                    }
+                    
+                    await this.loadServices();
+                    await this.loadStats();
+                    return true;
+                    
+                } catch (error) {
+                    console.error('❌ خطأ في حفظ الخدمة:', error);
+                    return false;
+                }
+            }
+            
+            async deleteService(serviceId) {
+                try {
+                    await db.collection('services').doc(serviceId).delete();
+                    await this.loadServices();
+                    await this.loadStats();
+                    return true;
+                } catch (error) {
+                    console.error('❌ خطأ في حذف الخدمة:', error);
                     return false;
                 }
             }
@@ -579,21 +959,115 @@
         
         // وظائف عامة
         function openTab(tabName) {
-            // إخفاء كل المحتويات
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // إلغاء تنشيط كل الأزرار
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // إظهار المحتوى المطلوب
             document.getElementById(tabName).classList.add('active');
             event.currentTarget.classList.add('active');
         }
         
+        function filterServices() {
+            const searchTerm = document.getElementById('serviceSearch').value.toLowerCase();
+            const serviceItems = document.querySelectorAll('.service-item');
+            
+            serviceItems.forEach(item => {
+                const serviceName = item.querySelector('strong').textContent.toLowerCase();
+                if (serviceName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function openServiceModal(serviceId = null) {
+            const modal = document.getElementById('serviceModal');
+            const title = document.getElementById('modalServiceTitle');
+            
+            if (serviceId) {
+                // وضع التعديل
+                title.textContent = 'تعديل الخدمة';
+                const service = settingsManager.services[serviceId];
+                
+                document.getElementById('serviceName').value = service.name;
+                document.getElementById('serviceDescription').value = service.description;
+                document.getElementById('serviceCategory').value = service.category;
+                document.getElementById('servicePrice').value = service.price;
+                document.getElementById('serviceIcon').value = service.icon || '';
+                document.getElementById('servicePopular').checked = service.popular || false;
+                document.getElementById('serviceActive').checked = service.active !== false;
+                
+                settingsManager.currentEditingService = serviceId;
+            } else {
+                // وضع الإضافة
+                title.textContent = 'إضافة خدمة جديدة';
+                document.getElementById('serviceName').value = '';
+                document.getElementById('serviceDescription').value = '';
+                document.getElementById('serviceCategory').value = 'delivery';
+                document.getElementById('servicePrice').value = '';
+                document.getElementById('serviceIcon').value = '';
+                document.getElementById('servicePopular').checked = false;
+                document.getElementById('serviceActive').checked = true;
+                
+                settingsManager.currentEditingService = null;
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeServiceModal() {
+            document.getElementById('serviceModal').style.display = 'none';
+        }
+        
+        async function saveService() {
+            const serviceData = {
+                name: document.getElementById('serviceName').value,
+                description: document.getElementById('serviceDescription').value,
+                category: document.getElementById('serviceCategory').value,
+                price: parseInt(document.getElementById('servicePrice').value) || 0,
+                icon: document.getElementById('serviceIcon').value,
+                popular: document.getElementById('servicePopular').checked,
+                active: document.getElementById('serviceActive').checked,
+                updatedAt: new Date()
+            };
+            
+            if (!serviceData.name || !serviceData.description) {
+                alert('❌ يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const success = await settingsManager.saveService(serviceData, settingsManager.currentEditingService);
+            if (success) {
+                alert('✅ تم حفظ الخدمة بنجاح');
+                closeServiceModal();
+            } else {
+                alert('❌ حدث خطأ في حفظ الخدمة');
+            }
+        }
+        
+        function editService(serviceId) {
+            openServiceModal(serviceId);
+        }
+        
+        async function deleteService(serviceId) {
+            const serviceName = settingsManager.services[serviceId].name;
+            
+            if (confirm(`⚠️ هل أنت متأكد من حذف الخدمة "${serviceName}"؟`)) {
+                const success = await settingsManager.deleteService(serviceId);
+                if (success) {
+                    alert('✅ تم حذف الخدمة بنجاح');
+                } else {
+                    alert('❌ حدث خطأ في حذف الخدمة');
+                }
+            }
+        }
+        
+        // وظائف الحفظ
         async function saveGeneralSettings() {
             settingsManager.settings.siteName = document.getElementById('siteName').value;
             settingsManager.settings.siteDescription = document.getElementById('siteDescription').value;
@@ -630,6 +1104,9 @@
             settingsManager.settings.pricing.shopping = parseInt(document.getElementById('priceShopping').value) || 0;
             settingsManager.settings.pricing.documents = parseInt(document.getElementById('priceDocuments').value) || 0;
             settingsManager.settings.pricing.research = parseInt(document.getElementById('priceResearch').value) || 0;
+            settingsManager.settings.pricing.netflix = parseInt(document.getElementById('priceNetflix').value) || 0;
+            settingsManager.settings.pricing.chatgpt = parseInt(document.getElementById('priceChatGPT').value) || 0;
+            settingsManager.settings.pricing.websites = parseInt(document.getElementById('priceWebsites').value) || 0;
             
             const success = await settingsManager.saveSettings();
             if (success) {
@@ -657,14 +1134,15 @@
             }
         }
         
+        // وظائف التصدير
         async function exportAllData() {
             try {
-                // جلب جميع البيانات
-                const [ordersSnapshot, messagesSnapshot, agentsSnapshot, visitorsSnapshot] = await Promise.all([
+                const [ordersSnapshot, messagesSnapshot, agentsSnapshot, visitorsSnapshot, servicesSnapshot] = await Promise.all([
                     db.collection('orders').get(),
                     db.collection('messages').get(),
                     db.collection('agent_applications').get(),
-                    db.collection('visitors').get()
+                    db.collection('visitors').get(),
+                    db.collection('services').get()
                 ]);
                 
                 const data = {
@@ -672,8 +1150,10 @@
                     messages: messagesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
                     agents: agentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
                     visitors: visitorsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    services: servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    settings: settingsManager.settings,
                     exportDate: new Date().toLocaleString('ar-SA'),
-                    totalRecords: ordersSnapshot.size + messagesSnapshot.size + agentsSnapshot.size + visitorsSnapshot.size
+                    totalRecords: ordersSnapshot.size + messagesSnapshot.size + agentsSnapshot.size + visitorsSnapshot.size + servicesSnapshot.size
                 };
                 
                 downloadJSON(data, `backup_mauri-services_${new Date().toISOString().split('T')[0]}.json`);
@@ -698,6 +1178,23 @@
             } catch (error) {
                 console.error('❌ خطأ في تصدير الطلبات:', error);
                 alert('❌ حدث خطأ في تصدير الطلبات');
+            }
+        }
+        
+        async function exportServicesData() {
+            try {
+                const servicesSnapshot = await db.collection('services').get();
+                const data = {
+                    services: servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                    exportDate: new Date().toLocaleString('ar-SA'),
+                    totalServices: servicesSnapshot.size
+                };
+                
+                downloadJSON(data, `services_mauri-services_${new Date().toISOString().split('T')[0]}.json`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تصدير الخدمات:', error);
+                alert('❌ حدث خطأ في تصدير الخدمات');
             }
         }
         
@@ -749,7 +1246,7 @@
         // بدء النظام
         let settingsManager;
         function initSettingsPage() {
-            settingsManager = new SettingsManager();
+            settingsManager = new AdvancedSettingsManager();
         }
     </script>
 </body>
