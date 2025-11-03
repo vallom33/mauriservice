@@ -891,36 +891,40 @@
     const user = auth.currentUser;
     if (!user) return;
 
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    const userData = userDoc.data();
-    const availableBalance = document.querySelector('#earningsDetails .bg-\\[\\#fff3e0\\] div')?.textContent || '0';
+    try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const userData = userDoc.data();
+        
+        // حساب الرصيد المتاح
+        const tasksSnapshot = await db.collection('agent_tasks')
+            .where('agentId', '==', user.uid)
+            .get();
+        
+        let availableBalance = 0;
+        tasksSnapshot.forEach(doc => {
+            const task = doc.data();
+            if (task.status === 'completed' && task.paymentStatus === 'paid') {
+                availableBalance += task.commission || 0;
+            }
+        });
 
-    // إزالة شرط الحد الأدنى - أي مبلغ ممكن
-    if (parseInt(availableBalance) <= 0) {
-        showSystemMessage('❌ لا يوجد رصيد متاح للسحب');
-        return;
-    }
-
-    if (confirm(`💳 هل تريد طلب سداد مبلغ ${availableBalance} MRU؟`)) {
-        try {
-            await db.collection('payout_requests').add({
-                agentId: user.uid,
-                agentName: userData.name,
-                agentPhone: userData.phone, // إضافة رقم الهاتف
-                amount: parseInt(availableBalance),
-                status: 'pending',
-                requestedAt: new Date(),
-                paymentMethod: 'bank_transfer',
-                note: 'طلب سداد من الوكيل'
-            });
-            
-            // رسالة النجاح الجديدة
-            showSystemMessage('✅ تم إرسال طلب السداد للإدارة بنجاح! سيتم الإيداع في حسابك البنكي قريباً.', 'success');
-            
-        } catch (error) {
-            console.error('Error requesting payout:', error);
-            showSystemMessage('❌ حدث خطأ في طلب السداد');
-        }
+        // 🔥 إرسال الطلب مباشرة بدون أي شروط
+        await db.collection('payout_requests').add({
+            agentId: user.uid,
+            agentName: userData.name,
+            agentPhone: userData.phone || 'غير محدد',
+            amount: parseInt(availableBalance),
+            status: 'pending',
+            requestedAt: new Date(),
+            paymentMethod: 'bank_transfer',
+            note: 'طلب سداد من الوكيل'
+        });
+        
+        showSystemMessage('✅ تم إرسال طلب السداد للإدارة بنجاح! سيتم الإيداع في حسابك البنكي خلال 1-3 أيام عمل.', 'success');
+        
+    } catch (error) {
+        console.error('Error requesting payout:', error);
+        showSystemMessage('❌ حدث خطأ في طلب السداد');
     }
 }
 
