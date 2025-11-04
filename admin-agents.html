@@ -1454,6 +1454,185 @@ async function deleteAgent(agentId) {
         function initAgentsManager() {
             new AgentsManager();
         }
+
+
+        // 🔥 نظام الإشعارات المتكامل
+async function sendAgentApprovalNotification(userId, applicationData) {
+    try {
+        // 1. احفظ الإشعار في قاعدة البيانات
+        await db.collection('notifications').add({
+            userId: userId,
+            title: '🎉 تم قبول طلبك كـ وكيل!',
+            message: `مبروك ${applicationData.name}! تم قبول طلبك كـ وكيل في Mauri Services. يمكنك الآن تسجيل الدخول وعرض المهام المتاحة.`,
+            type: 'agent_approved',
+            read: false,
+            timestamp: new Date(),
+            data: {
+                action: 'agent_approved',
+                url: '/agent-tasks.html'
+            }
+        });
+
+        // 2. احصل على FCM token الخاص بالمستخدم
+        const tokenDoc = await db.collection('user_tokens').doc(userId).get();
+        if (tokenDoc.exists && tokenDoc.data().fcmToken) {
+            const fcmToken = tokenDoc.data().fcmToken;
+            
+            // 3. أرسل إشعار FCM مباشر
+            await sendFCMMessage(fcmToken, {
+                title: '🎉 تم قبول طلبك كـ وكيل!',
+                body: `مبروك ${applicationData.name}! يمكنك الآن البدء في تلقي المهام.`,
+                data: {
+                    click_action: '/agent-tasks.html',
+                    type: 'agent_approved'
+                }
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Error sending notification:', error);
+    }
+}
+
+// 🔥 دالة إرسال رسالة FCM
+async function sendFCMMessage(token, message) {
+    try {
+        const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'key=AAAAj4tJ8kM:APA91bHr6p3qL7V7Q6Zx6vY6wY9W5tT8kXqY1V2dC3vB4nR7gE8hM9nL0oPqR5sT9uXvY1wZ2aB3cD4eF6gH7iJ8kK9lL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3sT4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                to: token,
+                notification: {
+                    title: message.title,
+                    body: message.body
+                },
+                data: message.data
+            })
+        });
+
+        if (response.ok) {
+            console.log('✅ FCM notification sent successfully');
+        } else {
+            console.error('❌ FCM error:', await response.text());
+        }
+    } catch (error) {
+        console.error('❌ FCM send error:', error);
+    }
+}
+
+// 🔥 تحديث دالة قبول الطلب لاستخدام نظام الإشعارات
+async function approveApplication(applicationId) {
+    if (confirm('✅ هل أنت متأكد من قبول هذا الطلب؟')) {
+        try {
+            const applicationDoc = await db.collection('agent_applications').doc(applicationId).get();
+            const applicationData = applicationDoc.data();
+            
+            // البحث عن المستخدم
+            const usersSnapshot = await db.collection('users')
+                .where('email', '==', applicationData.userEmail)
+                .get();
+            
+            let userId;
+            if (!usersSnapshot.empty) {
+                userId = usersSnapshot.docs[0].id;
+                await usersSnapshot.docs[0].ref.update({
+                    role: 'agent',
+                    status: 'active',
+                    district: applicationData.district,
+                    approvedAt: new Date()
+                });
+            }
+            
+            // تحديث حالة الطلب
+            await db.collection('agent_applications').doc(applicationId).update({
+                status: 'approved',
+                approvedAt: new Date()
+            });
+            
+            // 🔥 إرسال إشعار للمستخدم
+            await sendAgentApprovalNotification(userId, applicationData);
+            
+            alert('🎉 تم قبول الوكيل بنجاح! تم إرسال إشعار للمستخدم.');
+            
+        } catch (error) {
+            alert('❌ حدث خطأ: ' + error.message);
+        }
+    }
+}
+
+// 🔥 تحديث دالة تعيين المهمة لإرسال إشعار FCM
+document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const agentId = document.getElementById('taskAgent').value;
+    const title = document.getElementById('taskTitle').value;
+    const description = document.getElementById('taskDescription').value;
+    const priority = document.getElementById('taskPriority').value;
+    const commission = parseInt(document.getElementById('taskCommission').value);
+    const deadline = new Date(document.getElementById('taskDeadline').value);
+    const customerName = document.getElementById('customerName').value;
+    const customerPhone = document.getElementById('customerPhone').value;
+    const customerAddress = document.getElementById('customerAddress').value;
+    const customerDistrict = document.getElementById('applicantDistrict').value;
+
+    try {
+        const agentDoc = await db.collection('users').doc(agentId).get();
+        const agentData = agentDoc.data();
+
+        // إنشاء المهمة
+        await db.collection('agent_tasks').add({
+            agentId: agentId,
+            agentName: agentData.name,
+            title: title,
+            description: description,
+            priority: priority,
+            commission: commission,
+            deadline: deadline,
+            customerName: customerName,
+            customerPhone: customerPhone,
+            customerAddress: customerAddress,
+            customerDistrict: customerDistrict,
+            status: 'assigned',
+            createdAt: new Date()
+        });
+
+        // 🔥 إرسال إشعار FCM للوكيل
+        const tokenDoc = await db.collection('user_tokens').doc(agentId).get();
+        if (tokenDoc.exists && tokenDoc.data().fcmToken) {
+            await sendFCMMessage(tokenDoc.data().fcmToken, {
+                title: '🎯 مهمة جديدة',
+                body: `تم تعيين مهمة جديدة: "${title}" - العمولة: ${commission} MRU`,
+                data: {
+                    click_action: '/agent-tasks.html',
+                    type: 'task_assigned'
+                }
+            });
+        }
+
+        // حفظ إشعار في قاعدة البيانات
+        await db.collection('notifications').add({
+            userId: agentId,
+            title: '🎯 مهمة جديدة',
+            message: `تم تعيين مهمة جديدة لك: "${title}" - العمولة: ${commission} MRU - منطقة العميل: ${customerDistrict}`,
+            type: 'task_assigned',
+            read: false,
+            timestamp: new Date()
+        });
+
+        showSystemMessage('✅ تم تعيين المهمة بنجاح', 'success');
+        closeAssignTaskModal();
+
+    } catch (error) {
+        console.error('❌ خطأ في تعيين المهمة:', error);
+        showSystemMessage('❌ حدث خطأ في تعيين المهمة: ' + error.message);
+    }
+});
+
+
+    
     </script>
 </body>
 </html>

@@ -1,6 +1,5 @@
-const CACHE_NAME = 'mauri-services-v2.0.0'; // غير الرقم إلى إصدار جديد
+const CACHE_NAME = 'mauri-services-v2.1.0';
 
-// الملفات التي تريد تخزينها في الكاش
 const urlsToCache = [
   '/',
   '/index.html',
@@ -8,17 +7,16 @@ const urlsToCache = [
   '/agents.html', 
   '/agent-tasks.html',
   '/contact.html',
-  '/me.html'
+  '/me.html',
+  '/firebase-messaging-sw.js'
 ];
 
-// حدث التثبيت - يحذف الكاش القديم أولاً
 self.addEventListener('install', (event) => {
   console.log('🔄 Service Worker installing...');
-  self.skipWaiting(); // مهم للتحديث الفوري
+  self.skipWaiting();
   
   event.waitUntil(
     caches.keys().then((cacheNames) => {
-      // حذف جميع الكاشات القديمة
       return Promise.all(
         cacheNames.map((cacheName) => {
           console.log('🗑️ Deleting old cache:', cacheName);
@@ -26,7 +24,6 @@ self.addEventListener('install', (event) => {
         })
       );
     }).then(() => {
-      // إنشاء كاش جديد
       return caches.open(CACHE_NAME);
     }).then((cache) => {
       console.log('✅ New cache created:', CACHE_NAME);
@@ -35,7 +32,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// حدث التفعيل - يؤكد الحذف
 self.addEventListener('activate', (event) => {
   console.log('✅ Service Worker activated');
   event.waitUntil(
@@ -50,20 +46,17 @@ self.addEventListener('activate', (event) => {
       );
     }).then(() => {
       console.log('🎉 All old caches removed!');
-      return self.clients.claim(); // يجعل التحديث فوري
+      return self.clients.claim();
     })
   );
 });
 
-// حدث الجلب - يعطي الأولوية للشبكة
 self.addEventListener('fetch', (event) => {
-  // تجاهل طلبات غير GET
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        // إذا نجح الاتصال، تحديث الكاش
         if (networkResponse && networkResponse.status === 200) {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME)
@@ -74,7 +67,6 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       })
       .catch(() => {
-        // إذا فشل الاتصال، استخدم الكاش
         return caches.match(event.request)
           .then((cachedResponse) => {
             return cachedResponse || caches.match('/index.html');
