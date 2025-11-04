@@ -1,23 +1,122 @@
 {
-  "name": "Mauri-Services",
-  "short_name": "MauriServices",
-  "description": "منصة الخدمات المتكاملة في موريتانيا",
+  "name": "Mauri Services",
+  "short_name": "Mauri",
+  "description": "منصة الخدمات المتكاملة في موريتانيا - طلبات ووكلاء خدمات",
   "start_url": "/",
+  "scope": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#2c5aa0",
   "theme_color": "#2c5aa0",
   "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["business", "shopping", "utilities"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>",
-      "sizes": "192x192",
-      "type": "image/svg+xml"
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c5aa0' rx='15'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='45' text-anchor='middle' fill='white' font-weight='bold'>MS</text></svg>",
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "gcm_sender_id": "103953800507"
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "الصفحة الرئيسية"
+    },
+    {
+      "src": "/screenshots/services.png", 
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "قائمة الخدمات"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "طلب خدمة",
+      "short_name": "طلب",
+      "description": "اطلب خدمة جديدة",
+      "url": "/services.html",
+      "icons": [
+        {
+          "src": "/icons/shortcut-order.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "حسابي",
+      "short_name": "حسابي", 
+      "description": "إدارة طلباتي وحسابي",
+      "url": "/me.html",
+      "icons": [
+        {
+          "src": "/icons/shortcut-profile.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "انضم كوكيل",
+      "short_name": "وكيل",
+      "description": "التقديم كـ وكيل خدمات",
+      "url": "/agents.html",
+      "icons": [
+        {
+          "src": "/icons/shortcut-agent.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }
