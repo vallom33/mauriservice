@@ -14,9 +14,34 @@
     ],
     "headers": [
       {
-        "source": "**",
+        "source": "/sw.js",
         "headers": [
-          { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" }
+          { 
+            "key": "Cache-Control", 
+            "value": "no-cache, no-store, must-revalidate, max-age=0" 
+          },
+          { 
+            "key": "Expires", 
+            "value": "0" 
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(html)",
+        "headers": [
+          { 
+            "key": "Cache-Control", 
+            "value": "no-cache, must-revalidate, max-age=0" 
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css|png|jpg|jpeg|gif|ico|svg)",
+        "headers": [
+          { 
+            "key": "Cache-Control", 
+            "value": "public, max-age=3600, must-revalidate" 
+          }
         ]
       }
     ]
