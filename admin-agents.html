@@ -1268,45 +1268,88 @@ async function approveApplication(applicationId) {
 });
 
 // 🔥 دالة إرسال إشعارات Push للوكلاء
+// 🔥 دالة إرسال الإشعارات الحقيقية
 async function sendPushNotificationToAgent(agentId, notification) {
     try {
-        // جلب token FCM للوكيل
+        console.log('🚀 بدء إرسال إشعار للوكيل:', agentId);
+        
+        // 1. جلب بيانات الوكيل
         const agentDoc = await db.collection('users').doc(agentId).get();
-        if (!agentDoc.exists) return;
+        if (!agentDoc.exists) {
+            console.log('❌ الوكيل غير موجود في قاعدة البيانات');
+            return false;
+        }
 
         const agentData = agentDoc.data();
         const fcmToken = agentData.fcmToken;
 
+        console.log('🔍 FCM Token للوكيل:', fcmToken ? 'موجود' : 'غير موجود');
+
         if (!fcmToken) {
-            console.log('❌ No FCM token for agent:', agentId);
-            return;
+            console.log('⚠️ الوكيل ليس لديه token للإشعارات');
+            // نرسل إشعار عادي فقط
+            await sendNormalNotification(agentId, notification);
+            return false;
         }
 
-        // إرسال الإشعار عبر Firebase Cloud Messaging
-        // Note: In a real app, you'd use a cloud function for this
-        // This is a simplified version for demonstration
-        console.log('📤 Sending push notification to agent:', agentId);
-        console.log('📱 FCM Token:', fcmToken);
-        console.log('📝 Notification:', notification);
-
-        // في التطبيق الحقيقي، ستستخدم Cloud Function هنا
-        // هذا مثال مبسط
-        await db.collection('push_notifications_queue').add({
+        // 2. إرسال إشعار FCM حقيقي
+        console.log('📤 إرسال إشعار FCM...');
+        
+        // نستخدم Firebase Cloud Function مباشرة
+        const pushNotification = {
             to: fcmToken,
             notification: {
                 title: notification.title,
-                body: notification.body
+                body: notification.body,
+                icon: 'https://mauri-services.web.app/icons/icon-192x192.png',
+                click_action: 'https://mauri-services.web.app/agent-tasks.html'
             },
-            data: notification.data,
+            data: {
+                type: 'new_task',
+                taskId: notification.data.taskId,
+                agentId: agentId,
+                click_action: 'https://mauri-services.web.app/agent-tasks.html'
+            }
+        };
+
+        // 3. حفظ في queue للمعالجة
+        await db.collection('push_notifications_queue').add({
+            ...pushNotification,
             agentId: agentId,
             status: 'pending',
-            createdAt: new Date()
+            createdAt: new Date(),
+            title: notification.title,
+            body: notification.body
         });
 
-        console.log('✅ Push notification queued for agent:', agentId);
+        console.log('✅ تم إرسال الإشعار إلى queue');
+
+        // 4. إرسال إشعار عادي أيضاً
+        await sendNormalNotification(agentId, notification);
+
+        return true;
 
     } catch (error) {
-        console.error('❌ Error sending push notification:', error);
+        console.error('❌ فشل إرسال الإشعار:', error);
+        return false;
+    }
+}
+
+// 🔥 إرسال إشعار عادي في قاعدة البيانات
+async function sendNormalNotification(agentId, notification) {
+    try {
+        await db.collection('notifications').add({
+            userId: agentId,
+            title: notification.title,
+            message: notification.body,
+            type: 'task_assigned',
+            read: false,
+            timestamp: new Date(),
+            data: notification.data || {}
+        });
+        console.log('✅ تم إرسال الإشعار العادي');
+    } catch (error) {
+        console.error('❌ خطأ في الإشعار العادي:', error);
     }
 };
 
