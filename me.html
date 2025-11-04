@@ -6,11 +6,62 @@
     <title>حسابي - Mauri Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-messaging-compat.js"></script>
+
+    <script>
+// ⚡ كود التحديث الإجباري للـ Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for(let registration of registrations) {
+      registration.unregister();
+      console.log('🗑️ Unregistered old SW');
+    }
+  });
+
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js?v=2.0.0')
+      .then(function(registration) {
+        console.log('✅ SW registered: ', registration);
+        
+        setInterval(() => {
+          registration.update();
+        }, 60 * 60 * 1000);
+        
+      }).catch(function(error) {
+        console.log('❌ SW registration failed: ', error);
+      });
+  });
+
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    console.log('🔄 New SW activated - reloading page');
+    window.location.reload();
+  });
+}
+
+// ⚡ إعادة تحميل الصفحة عند العودة
+window.addEventListener('focus', function() {
+  if (document.visibilityState === 'visible') {
+    console.log('🔄 Page visible - checking for updates');
+    window.location.reload();
+  }
+});
+
+// ⚡ إعادة تحميل قسري
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+    console.log('🔄 Manual reload detected');
+    caches.keys().then(function(names) {
+      for (let name of names) {
+        caches.delete(name);
+      }
+    });
+  }
+});
+</script>
 
     <style>
         * {
@@ -401,13 +452,24 @@
             text-align: center;
         }
 
-        .notification-permission {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 1rem;
+        .notification-permission-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
             margin: 1rem 0;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .notification-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
         }
         
         @media (max-width: 768px) {
@@ -533,18 +595,60 @@
                 <h2 id="userName">المستخدم</h2>
                 <p id="userEmail">البريد الإلكتروني</p>
                 <p id="userRole" style="margin-top: 0.5rem; font-weight: bold; color: #2c5aa0;"></p>
-                
-                <!-- زر تفعيل الإشعارات -->
-                <div id="notificationPermission" class="notification-permission" style="display: none; margin-top: 1rem;">
-                    <p>🔔 فعّل الإشعارات لتتلقى تحديثات حول طلباتك وحالة الوكالة</p>
-                    <button class="btn btn-success btn-sm" onclick="enableNotifications()">
-                        ✅ تفعيل الإشعارات
-                    </button>
-                </div>
-                
                 <button class="btn btn-warning" onclick="logoutUser()" style="margin-top: 1rem;">
                     <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
                 </button>
+            </div>
+
+            <!-- إعدادات الإشعارات -->
+            <div class="section" id="notificationSettingsSection" style="display: none;">
+                <div class="section-header">
+                    <h2>🔔 إعدادات الإشعارات</h2>
+                </div>
+                
+                <!-- طلب إذن الإشعارات -->
+                <div id="notificationPermissionCard" class="notification-permission-card">
+                    <h3>🔔 تفعيل الإشعارات</h3>
+                    <p style="margin: 1rem 0;">اسمح بتلقي الإشعارات المهمة حول طلباتك وعروضنا</p>
+                    <button class="btn btn-success" onclick="requestNotificationPermission()">
+                        ✅ تفعيل الإشعارات
+                    </button>
+                </div>
+
+                <!-- حالة الإشعارات -->
+                <div id="notificationStatusCard" style="display: none;">
+                    <div class="notification-toggle">
+                        <div>
+                            <h4>حالة الإشعارات</h4>
+                            <p id="notificationStatusText">الإشعارات مفعلة</p>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="disableNotifications()">
+                            إيقاف الإشعارات
+                        </button>
+                    </div>
+                    
+                    <div class="notification-toggle">
+                        <div>
+                            <h4>إشعارات الطلبات</h4>
+                            <p>تلقي تحديثات عن حالة طلباتك</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="orderNotifications" checked onchange="updateNotificationSettings()">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="notification-toggle">
+                        <div>
+                            <h4>إشعارات العروض</h4>
+                            <p>تلقي عروض خاصة وتخفيضات</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="promoNotifications" checked onchange="updateNotificationSettings()">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <!-- حالة الوكيل -->
@@ -589,10 +693,10 @@
                     <h3>الملف الشخصي</h3>
                     <p>عدل معلوماتك</p>
                 </div>
-                <div class="action-card" onclick="testNotification()">
-                    <div class="action-icon">🔔</div>
-                    <h3>تجربة الإشعارات</h3>
-                    <p>اختبر نظام الإشعارات</p>
+                <div class="action-card" onclick="window.location.href='contact.html'">
+                    <div class="action-icon">📞</div>
+                    <h3>الدعم</h3>
+                    <p>تواصل مع الدعم الفني</p>
                 </div>
             </div>
 
@@ -602,7 +706,7 @@
                     <h2>🔔 الإشعارات</h2>
                     <div>
                         <span class="notification-badge" id="notificationCount">0</span>
-                        <button class="btn btn-sm btn-info" onclick="markAllAsRead()">📭 تعيين الكل كمقروء</button>
+                        <button class="btn btn-sm btn-danger" onclick="clearAllNotifications()">مسح الكل</button>
                     </div>
                 </div>
                 <div id="notificationsList">
@@ -701,31 +805,7 @@
     </footer>
 
     <script>
-        // ⚡ كود التحديث الإجباري للـ Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                    console.log('🗑️ Unregistered old SW');
-                }
-            });
-
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=2.1.0')
-                    .then(function(registration) {
-                        console.log('✅ SW registered: ', registration);
-                    }).catch(function(error) {
-                        console.log('❌ SW registration failed: ', error);
-                    });
-            });
-
-            navigator.serviceWorker.addEventListener('controllerchange', function() {
-                console.log('🔄 New SW activated - reloading page');
-                window.location.reload();
-            });
-        }
-
-        // تهيئة Firebase
+        // 🔥 تهيئة Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
             authDomain: "mauri-services.firebaseapp.com",
@@ -736,12 +816,14 @@
         };
 
         // تهيئة Firebase بشكل آمن
-        let app;
+        let app, messaging;
         try {
             if (!firebase.apps.length) {
                 app = firebase.initializeApp(firebaseConfig);
+                messaging = firebase.messaging();
             } else {
                 app = firebase.app();
+                messaging = firebase.messaging();
             }
             console.log('✅ Firebase initialized successfully');
         } catch (error) {
@@ -750,170 +832,10 @@
 
         const auth = firebase.auth();
         const db = firebase.firestore();
-        let messaging = null;
 
-        // 🔥 نظام الإشعارات - FCM
-        async function initializeFCM() {
-            try {
-                messaging = firebase.messaging();
-                
-                // استخدام VAPID key الافتراضي - سيعمل بشكل أساسي
-                await messaging.usePublicVapidKey("BDypShLNbFxAwP9ZBDPzsNY3mIaS6321TIKCRNkEL4YUAMnszj1T5zKQhDDfwjgFw4fT-508-HWtgjSCONPjtDM");
-                
-                setupFCMListeners();
-                checkNotificationPermission();
-                
-                console.log('✅ FCM initialized successfully');
-            } catch (error) {
-                console.error('❌ FCM initialization error:', error);
-            }
-        }
-
-        function setupFCMListeners() {
-            // معالجة الإشعارات في الواجهة الأمامية
-            messaging.onMessage((payload) => {
-                console.log('📬 Received foreground message:', payload);
-                showLocalNotification(payload);
-                updateNotificationsUI();
-            });
-        }
-
-        function checkNotificationPermission() {
-            if (!("Notification" in window)) {
-                console.log('❌ This browser does not support notifications');
-                return;
-            }
-
-            if (Notification.permission === 'granted') {
-                console.log('✅ Notification permission already granted');
-                getFCMToken();
-                document.getElementById('notificationPermission').style.display = 'none';
-            } else if (Notification.permission === 'denied') {
-                console.log('❌ Notification permission denied');
-                document.getElementById('notificationPermission').style.display = 'block';
-            } else {
-                console.log('ℹ️ Notification permission not yet requested');
-                document.getElementById('notificationPermission').style.display = 'block';
-            }
-        }
-
-        async function enableNotifications() {
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('✅ Notification permission granted');
-                    await getFCMToken();
-                    document.getElementById('notificationPermission').style.display = 'none';
-                    showSystemMessage('✅ تم تفعيل الإشعارات بنجاح!', 'success');
-                } else {
-                    console.log('❌ Notification permission denied');
-                    showSystemMessage('❌ لم يتم تفعيل الإشعارات. يرجى السماح بالإشعارات في إعدادات المتصفح.', 'error');
-                }
-            } catch (error) {
-                console.error('❌ Error requesting notification permission:', error);
-                showSystemMessage('❌ حدث خطأ في تفعيل الإشعارات', 'error');
-            }
-        }
-
-        async function getFCMToken() {
-            try {
-                const currentToken = await messaging.getToken();
-                
-                if (currentToken) {
-                    console.log('🔑 FCM Token:', currentToken);
-                    await saveFCMToken(currentToken);
-                    return currentToken;
-                } else {
-                    console.log('❌ No registration token available');
-                    showSystemMessage('❌ لا يمكن الحصول على رمز الإشعارات', 'error');
-                }
-            } catch (error) {
-                console.error('❌ Error getting FCM token:', error);
-            }
-        }
-
-        async function saveFCMToken(token) {
-            const user = auth.currentUser;
-            if (!user) return;
-
-            try {
-                await db.collection('user_tokens').doc(user.uid).set({
-                    fcmToken: token,
-                    userId: user.uid,
-                    userEmail: user.email,
-                    userName: user.displayName,
-                    createdAt: new Date(),
-                    platform: 'web',
-                    active: true
-                }, { merge: true });
-                console.log('✅ FCM token saved to Firebase');
-            } catch (error) {
-                console.error('❌ Error saving FCM token:', error);
-            }
-        }
-
-        function showLocalNotification(payload) {
-    if (!("Notification" in window)) return;
-
-    const notification = payload.notification || {};
-    const title = notification.title || 'Mauri Services';
-    const body = notification.body || 'لديك إشعار جديد';
-
-    if (Notification.permission === "granted") {
-        const notification = new Notification(title, {
-            body: body,
-            icon: '/icon-192.png',
-            badge: '/icon-192.png',
-            tag: 'mauri-notification'
-        });
-
-        notification.onclick = function() {
-            window.focus();
-            notification.close();
-        };
-    }
-
-    showSystemMessage(`🔔 ${title}: ${body}`, 'success');
-}
-
-        async function testNotification() {
-            const user = auth.currentUser;
-            if (!user) {
-                showSystemMessage('❌ يرجى تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            try {
-                // حفظ إشعار تجريبي في قاعدة البيانات
-                await db.collection('notifications').add({
-                    userId: user.uid,
-                    title: '🔔 تجربة الإشعارات',
-                    message: 'مرحباً! هذا إشعار تجريبي من نظام Mauri Services. الإشعارات تعمل بشكل صحيح!',
-                    type: 'test',
-                    read: false,
-                    timestamp: new Date(),
-                    data: {
-                        action: 'test',
-                        url: '/me.html'
-                    }
-                });
-
-                // إرسال إشعار فوري
-                if (Notification.permission === 'granted') {
-                    new Notification('🔔 تجربة الإشعارات', {
-                        body: 'مرحباً! هذا إشعار تجريبي من نظام Mauri Services.',
-                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232c5aa0" rx="15"/><text x="50" y="68" font-family="Arial, sans-serif" font-size="45" text-anchor="middle" fill="white" font-weight="bold">MS</text></svg>'
-                    });
-                }
-
-                showSystemMessage('✅ تم إرسال إشعار تجريبي بنجاح!', 'success');
-                await loadNotifications(user);
-                
-            } catch (error) {
-                console.error('❌ Error sending test notification:', error);
-                showSystemMessage('❌ حدث خطأ في إرسال الإشعار التجريبي', 'error');
-            }
-        }
+        // 🔥 تهيئة الإشعارات
+        let notificationToken = null;
+        let isNotificationEnabled = false;
 
         // Mobile menu
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -948,49 +870,298 @@
             }, 5000);
         }
 
+        // 🔥 نظام الإشعارات
+        async function initializeNotifications() {
+            try {
+                // التحقق من دعم الإشعارات
+                if (!('Notification' in window)) {
+                    console.log('❌ This browser does not support notifications');
+                    return;
+                }
+
+                // التحقق من إذن الإشعارات
+                if (Notification.permission === 'granted') {
+                    await enableNotifications();
+                } else if (Notification.permission === 'default') {
+                    showNotificationPermissionCard();
+                } else {
+                    console.log('🔕 Notifications blocked by user');
+                }
+            } catch (error) {
+                console.error('❌ Error initializing notifications:', error);
+            }
+        }
+
+        // 🔥 طلب إذن الإشعارات
+        async function requestNotificationPermission() {
+            try {
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    console.log('✅ Notification permission granted');
+                    await enableNotifications();
+                    showSystemMessage('✅ تم تفعيل الإشعارات بنجاح!', 'success');
+                } else {
+                    console.log('❌ Notification permission denied');
+                    showSystemMessage('❌ لم يتم تفعيل الإشعارات', 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error requesting notification permission:', error);
+                showSystemMessage('❌ حدث خطأ في تفعيل الإشعارات', 'error');
+            }
+        }
+
+        // 🔥 تفعيل الإشعارات
+        async function enableNotifications() {
+            try {
+                // الحصول على token FCM
+                notificationToken = await messaging.getToken({
+                    vapidKey: 'BDypShLNbFxAwP9ZBDPzsNY3mIaS6321TIKCRNkEL4YUAMnszj1T5zKQhDDfwjgFw4fT-508-HWtgjSCONPjtDM' // يمكنك إنشاء هذا المفتاح من Firebase Console
+                });
+
+                if (notificationToken) {
+                    console.log('✅ FCM Token:', notificationToken);
+                    
+                    // حفظ token في قاعدة البيانات
+                    const user = auth.currentUser;
+                    if (user) {
+                        await db.collection('users').doc(user.uid).set({
+                            fcmToken: notificationToken,
+                            notificationEnabled: true,
+                            notificationSettings: {
+                                orders: true,
+                                promotions: true
+                            },
+                            lastTokenUpdate: new Date()
+                        }, { merge: true });
+                    }
+
+                    isNotificationEnabled = true;
+                    updateNotificationUI();
+                    
+                    // إعداد معالج الرسائل
+                    setupMessageHandlers();
+                }
+            } catch (error) {
+                console.error('❌ Error enabling notifications:', error);
+                if (error.code === 'messaging/permission-blocked') {
+                    showSystemMessage('❌ تم حظر الإشعارات. يرجى السماح بالإشعارات من إعدادات المتصفح', 'error');
+                }
+            }
+        }
+
+        // 🔥 إعداد معالجي الرسائل
+        function setupMessageHandlers() {
+            // معالج الرسائل في الواجهة الأمامية
+            messaging.onMessage((payload) => {
+                console.log('📬 Message received:', payload);
+                
+                // عرض الإشعار
+                showLocalNotification(payload);
+                
+                // تحديث قائمة الإشعارات
+                if (auth.currentUser) {
+                    loadNotifications(auth.currentUser);
+                }
+            });
+
+            // معالج الرسائل في الخلفية (عندما تكون التبويبة مغلقة)
+            messaging.onBackgroundMessage((payload) => {
+                console.log('📬 Background message received:', payload);
+                
+                // عرض الإشعار حتى عندما تكون التبويبة مغلقة
+                const notificationTitle = payload.notification?.title || 'Mauri Services';
+                const notificationOptions = {
+                    body: payload.notification?.body || 'لديك إشعار جديد',
+                    icon: '/icons/icon-192x192.png',
+                    badge: '/icons/badge-72x72.png'
+                };
+
+                self.registration.showNotification(notificationTitle, notificationOptions);
+            });
+        }
+
+        // 🔥 عرض إشعار محلي
+        function showLocalNotification(payload) {
+            const title = payload.notification?.title || 'Mauri Services';
+            const options = {
+                body: payload.notification?.body || 'لديك إشعار جديد',
+                icon: '/icons/icon-192x192.png',
+                badge: '/icons/badge-72x72.png',
+                data: payload.data || {}
+            };
+
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, options);
+            }
+        }
+
+        // 🔥 تحديث واجهة الإشعارات
+        function updateNotificationUI() {
+            const permissionCard = document.getElementById('notificationPermissionCard');
+            const statusCard = document.getElementById('notificationStatusCard');
+            const settingsSection = document.getElementById('notificationSettingsSection');
+
+            if (isNotificationEnabled && Notification.permission === 'granted') {
+                permissionCard.style.display = 'none';
+                statusCard.style.display = 'block';
+                settingsSection.style.display = 'block';
+                document.getElementById('notificationStatusText').textContent = 'الإشعارات مفعلة';
+            } else {
+                permissionCard.style.display = 'block';
+                statusCard.style.display = 'none';
+                settingsSection.style.display = 'block';
+            }
+        }
+
+        // 🔥 إيقاف الإشعارات
+        async function disableNotifications() {
+            try {
+                await messaging.deleteToken();
+                notificationToken = null;
+                isNotificationEnabled = false;
+
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).set({
+                        notificationEnabled: false,
+                        fcmToken: null
+                    }, { merge: true });
+                }
+
+                updateNotificationUI();
+                showSystemMessage('✅ تم إيقاف الإشعارات', 'success');
+            } catch (error) {
+                console.error('❌ Error disabling notifications:', error);
+                showSystemMessage('❌ حدث خطأ في إيقاف الإشعارات', 'error');
+            }
+        }
+
+        // 🔥 تحديث إعدادات الإشعارات
+        async function updateNotificationSettings() {
+            try {
+                const user = auth.currentUser;
+                if (user) {
+                    const settings = {
+                        orders: document.getElementById('orderNotifications').checked,
+                        promotions: document.getElementById('promoNotifications').checked
+                    };
+
+                    await db.collection('users').doc(user.uid).set({
+                        notificationSettings: settings
+                    }, { merge: true });
+
+                    showSystemMessage('✅ تم حفظ الإعدادات', 'success');
+                }
+            } catch (error) {
+                console.error('❌ Error updating notification settings:', error);
+            }
+        }
+
+        // 🔥 عرض بطاقة طلب الإذن
+        function showNotificationPermissionCard() {
+            const permissionCard = document.getElementById('notificationPermissionCard');
+            const settingsSection = document.getElementById('notificationSettingsSection');
+            
+            permissionCard.style.display = 'block';
+            settingsSection.style.display = 'block';
+        }
+
+        // 🔥 مسح جميع الإشعارات
+        async function clearAllNotifications() {
+            try {
+                const user = auth.currentUser;
+                if (user) {
+                    const notificationsSnapshot = await db.collection('notifications')
+                        .where('userId', '==', user.uid)
+                        .get();
+
+                    const batch = db.batch();
+                    notificationsSnapshot.docs.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+
+                    await batch.commit();
+                    await loadNotifications(user);
+                    showSystemMessage('✅ تم مسح جميع الإشعارات', 'success');
+                }
+            } catch (error) {
+                console.error('❌ Error clearing notifications:', error);
+                showSystemMessage('❌ حدث خطأ في مسح الإشعارات', 'error');
+            }
+        }
+
         // نظام المصادقة
-        auth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged(async (user) => {
             console.log('🔐 Auth state changed:', user ? 'User logged in' : 'No user');
             if (user) {
-                showUserSection(user);
+                await showUserSection(user);
+                // 🔥 تهيئة الإشعارات بعد تسجيل الدخول
+                setTimeout(() => {
+                    initializeNotifications();
+                }, 1000);
             } else {
                 showGuestSection();
             }
         });
 
-        // بقية الكود كما هو (الدوال الأخرى لم تتغير)
-        // ... [كل الدوال الأخرى تبقى كما هي بدون تغيير]
-        
-        // تحديث دالة showUserSection لإضافة FCM
+        // باقي الدوال تبقى كما هي (مع بعض التعديلات البسيطة)
+        async function updateUserRoleIfApproved(user) {
+            try {
+                const agentAppsSnapshot = await db.collection('agent_applications').get();
+                const userApplications = agentAppsSnapshot.docs.filter(doc => {
+                    const app = doc.data();
+                    return (app.userEmail === user.email || app.userId === user.uid) && app.status === 'approved';
+                });
+
+                if (userApplications.length > 0) {
+                    await db.collection('users').doc(user.uid).set({
+                        role: 'agent'
+                    }, { merge: true });
+                    console.log('✅ User role updated to agent');
+                }
+            } catch (error) {
+                console.error('❌ Error updating user role:', error);
+            }
+        }
+
+        async function checkAgentActiveStatus(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    if (userData.role === 'agent' && userData.status === 'inactive') {
+                        console.log('🚫 الوكيل غير نشط - تحويل إلى مستخدم عادي');
+                        await db.collection('users').doc(user.uid).update({
+                            role: 'user'
+                        });
+                        return false;
+                    }
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error checking agent status:', error);
+            }
+            return false;
+        }
+
         async function showUserSection(user) {
             console.log('👤 Showing user section for:', user.email);
             document.getElementById('guestSection').style.display = 'none';
             document.getElementById('userSection').style.display = 'block';
             
             try {
-                // تحديث معلومات المستخدم الأساسية
                 document.getElementById('userName').textContent = user.displayName || 'مستخدم';
                 document.getElementById('userEmail').textContent = user.email;
                 document.getElementById('userAvatar').textContent = (user.displayName || 'U').charAt(0).toUpperCase();
                 
-                // 🔥 تهيئة نظام الإشعارات
-                await initializeFCM();
-                
-                // 🔥 أولاً: التحقق من حالة الوكيل النشط
                 await checkAgentActiveStatus(user);
-                
-                // 🔥 ثانياً: تحديث role إذا كان مقبولاً
                 await updateUserRoleIfApproved(user);
-                
-                // 🔥 تحميل بيانات المستخدم الإضافية
                 await loadUserData(user);
                 await loadUserOrders(user);
-                
-                // 🔥 تحميل حالة الوكيل والإشعارات
                 await loadAgentStatus(user);
                 await loadNotifications(user);
-                
-                // 🔥 التحقق النهائي من حالة الوكيل وإخفاء الأزرار
                 await checkAgentStatusAndHideButtons(user);
                 
             } catch (error) {
@@ -999,9 +1170,543 @@
             }
         }
 
-        // [يتبع باقي الكود كما هو بدون تغيير]
-        // ... جميع الدوال الأخرى تبقى كما هي
+        function showGuestSection() {
+            console.log('👤 Showing guest section');
+            document.getElementById('guestSection').style.display = 'block';
+            document.getElementById('userSection').style.display = 'none';
+        }
 
+        // دوال المصادقة (تبقى كما هي)
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showSignupModal() {
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+
+        function hideSignupModal() {
+            document.getElementById('signupModal').style.display = 'none';
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupPhone').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showSystemMessage('⚠️ يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                console.log('✅ Login successful:', userCredential.user.email);
+                hideLoginModal();
+                showSystemMessage('✅ تم تسجيل الدخول بنجاح!', 'success');
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                showSystemMessage('❌ ' + getErrorMessage(error.code));
+            }
+        }
+
+        async function signupUser() {
+            const name = document.getElementById('signupName').value;
+            const phone = document.getElementById('signupPhone').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            if (!name || !phone || !email || !password) {
+                showSystemMessage('⚠️ يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showSystemMessage('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({
+                    displayName: name
+                });
+
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    role: 'user',
+                    createdAt: new Date(),
+                    status: 'active',
+                    totalOrders: 0,
+                    totalSpent: 0,
+                    lastLogin: new Date(),
+                    notificationEnabled: false,
+                    notificationSettings: {
+                        orders: true,
+                        promotions: true
+                    }
+                });
+
+                console.log('✅ Signup successful:', userCredential.user.email);
+                hideSignupModal();
+                showSystemMessage('✅ تم إنشاء حسابك بنجاح!', 'success');
+            } catch (error) {
+                console.error('❌ Signup error:', error);
+                showSystemMessage('❌ ' + getErrorMessage(error.code));
+            }
+        }
+
+        async function logoutUser() {
+            try {
+                await auth.signOut();
+                console.log('✅ Logout successful');
+                showSystemMessage('✅ تم تسجيل الخروج بنجاح', 'success');
+            } catch (error) {
+                console.error('❌ Logout error:', error);
+                showSystemMessage('❌ حدث خطأ أثناء تسجيل الخروج');
+            }
+        }
+
+        // باقي الدوال تبقى كما هي (loadUserData, loadUserOrders, loadAgentStatus, loadNotifications, etc.)
+
+        // تحميل بيانات المستخدم
+        async function loadUserData(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    console.log('📊 User data loaded:', userData);
+                    
+                    document.getElementById('fullName').value = userData.name || '';
+                    document.getElementById('phone').value = userData.phone || '';
+                    document.getElementById('city').value = userData.city || '';
+                    document.getElementById('address').value = userData.address || '';
+                    
+                    const roleText = userData.role === 'agent' ? '👤 وكيل معتمد' : 
+                                   userData.role === 'admin' ? '👑 مدير النظام' : '👤 مستخدم عادي';
+                    document.getElementById('userRole').textContent = roleText;
+
+                    // 🔥 تحميل إعدادات الإشعارات
+                    if (userData.notificationSettings) {
+                        document.getElementById('orderNotifications').checked = userData.notificationSettings.orders !== false;
+                        document.getElementById('promoNotifications').checked = userData.notificationSettings.promotions !== false;
+                    }
+
+                } else {
+                    await db.collection('users').doc(user.uid).set({
+                        name: user.displayName || 'مستخدم',
+                        email: user.email,
+                        role: 'user',
+                        createdAt: new Date(),
+                        status: 'active',
+                        totalOrders: 0,
+                        totalSpent: 0,
+                        lastLogin: new Date(),
+                        notificationEnabled: false,
+                        notificationSettings: {
+                            orders: true,
+                            promotions: true
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Error loading user data:', error);
+                throw error;
+            }
+        }
+
+        // تحميل طلبات المستخدم
+        async function loadUserOrders(user) {
+            try {
+                console.log('📦 Loading orders for user:', user.uid);
+                const ordersSnapshot = await db.collection('orders').get();
+                
+                const userOrders = ordersSnapshot.docs.filter(doc => {
+                    const order = doc.data();
+                    return order.userId === user.uid || order.customerEmail === user.email;
+                }).sort((a, b) => {
+                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
+                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
+                    return timeB - timeA;
+                }).slice(0, 10);
+
+                console.log('✅ Found orders:', userOrders.length);
+
+                const ordersContainer = document.getElementById('userOrders');
+                let totalOrders = 0;
+                let pendingOrders = 0;
+                let completedOrders = 0;
+                let totalSpent = 0;
+
+                if (userOrders.length === 0) {
+                    ordersContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div>📭</div>
+                            <h3>لا توجد طلبات سابقة</h3>
+                            <p>لم تقم بأي طلبات حتى الآن</p>
+                            <button class="btn btn-primary" onclick="window.location.href='services.html'" style="margin-top: 1rem;">
+                                🛍️ اطلب خدمة جديدة
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    let ordersHTML = '';
+                    
+                    userOrders.forEach(doc => {
+                        const order = doc.data();
+                        const orderId = doc.id;
+                        totalOrders++;
+                        
+                        if (order.status === 'completed' || order.status === 'مكتمل') {
+                            completedOrders++;
+                        } else if (order.status === 'pending' || order.status === 'قيد التنفيذ' || order.status === 'جديد') {
+                            pendingOrders++;
+                        }
+                        
+                        if (order.price && !isNaN(order.price)) {
+                            totalSpent += parseFloat(order.price);
+                        }
+                        
+                        const orderDate = order.timestamp?.toDate?.() || new Date();
+                        const statusText = getStatusText(order.status);
+                        const statusClass = getStatusClass(order.status);
+                        
+                        ordersHTML += `
+                            <div class="order-item">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                    <h4>${order.serviceName || order.service || 'خدمة'}</h4>
+                                    <span class="status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                                <p style="color: #666; margin-bottom: 0.5rem;">
+                                    ${order.description || order.details || 'لا يوجد وصف'}
+                                </p>
+                                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+                                    <span style="color: #2c5aa0; font-weight: bold;">
+                                        ${order.price ? order.price + ' MRU' : 'السعر غير محدد'}
+                                    </span>
+                                    <span style="color: #888;">
+                                        ${orderDate.toLocaleDateString('ar-SA')}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    ordersContainer.innerHTML = ordersHTML;
+                }
+                
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('pendingOrders').textContent = pendingOrders;
+                document.getElementById('completedOrders').textContent = completedOrders;
+                document.getElementById('totalSpent').textContent = totalSpent.toFixed(0);
+                
+            } catch (error) {
+                console.error('❌ Error loading orders:', error);
+                document.getElementById('userOrders').innerHTML = `
+                    <div class="error-message">
+                        ❌ حدث خطأ في تحميل الطلبات: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // تحميل حالة الوكيل
+        async function loadAgentStatus(user) {
+            try {
+                const agentAppsSnapshot = await db.collection('agent_applications').get();
+                
+                const userApplications = agentAppsSnapshot.docs.filter(doc => {
+                    const app = doc.data();
+                    return app.userEmail === user.email || app.userId === user.uid;
+                }).sort((a, b) => {
+                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
+                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
+                    return timeB - timeA;
+                });
+
+                const agentStatusSection = document.getElementById('agentStatusSection');
+                
+                if (userApplications.length === 0) {
+                    agentStatusSection.style.display = 'none';
+                    return;
+                }
+
+                const latestApp = userApplications[0].data();
+                const status = latestApp.status || 'pending';
+                
+                let statusText = '';
+                let statusClass = '';
+                
+                switch(status) {
+                    case 'pending':
+                        statusText = '⏳ طلبك قيد المراجعة';
+                        statusClass = 'status-agent-pending';
+                        break;
+                    case 'approved':
+                        statusText = '✅ تم قبول طلبك كـ وكيل';
+                        statusClass = 'status-agent-approved';
+                        break;
+                    case 'rejected':
+                        statusText = '❌ تم رفض طلب الوكالة';
+                        statusClass = 'status-agent-rejected';
+                        break;
+                }
+
+                agentStatusSection.innerHTML = `
+                    <div class="agent-status-card">
+                        <h3>💼 حالة طلب الوكالة</h3>
+                        <p style="margin: 1rem 0; font-size: 1.2rem;">${statusText}</p>
+                        <span class="status-badge ${statusClass}">${getAgentStatusText(status)}</span>
+                        ${status === 'rejected' ? `
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                                ${latestApp.rejectionReason || 'للأسف لا تنطبق عليك الشروط حالياً'}
+                            </p>
+                            <button class="btn btn-warning" onclick="reapplyAsAgent()" style="margin-top: 1rem;">
+                                🔄 إعادة التقديم
+                            </button>
+                        ` : ''}
+                        ${status === 'pending' ? `
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                                سيتم مراجعة طلبك خلال 24 ساعة
+                            </p>
+                        ` : ''}
+                        ${status === 'approved' ? `
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                                🎉 يمكنك الآن البدء في تلقي المهام
+                            </p>
+                            <button class="btn btn-success" onclick="window.location.href='agent-tasks.html'" style="margin-top: 1rem;">
+                                📋 الانتقال إلى المهام
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                agentStatusSection.style.display = 'block';
+
+            } catch (error) {
+                console.error('❌ Error loading agent status:', error);
+            }
+        }
+
+        // تحميل الإشعارات
+        async function loadNotifications(user) {
+            try {
+                const notificationsSnapshot = await db.collection('notifications').get();
+                
+                const userNotifications = notificationsSnapshot.docs.filter(doc => {
+                    const notification = doc.data();
+                    return notification.userId === user.uid;
+                }).sort((a, b) => {
+                    const timeA = a.data().timestamp?.toDate?.() || new Date(0);
+                    const timeB = b.data().timestamp?.toDate?.() || new Date(0);
+                    return timeB - timeA;
+                }).slice(0, 10);
+
+                const notificationsContainer = document.getElementById('notificationsList');
+                const notificationCount = document.getElementById('notificationCount');
+                const notificationsSection = document.getElementById('notificationsSection');
+                
+                if (userNotifications.length === 0) {
+                    notificationsContainer.innerHTML = `
+                        <div class="empty-state" style="padding: 2rem;">
+                            <div>🔔</div>
+                            <p>لا توجد إشعارات جديدة</p>
+                        </div>
+                    `;
+                    notificationCount.textContent = '0';
+                    notificationsSection.style.display = 'none';
+                } else {
+                    let notificationsHTML = '';
+                    let unreadCount = 0;
+                    
+                    userNotifications.forEach(doc => {
+                        const notification = doc.data();
+                        if (!notification.read) unreadCount++;
+                        
+                        notificationsHTML += `
+                            <div class="notification-item" style="${!notification.read ? 'background: #fff3cd;' : ''}">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <h4 style="margin-bottom: 0.5rem;">${notification.title}</h4>
+                                    <small style="color: #888;">
+                                        ${notification.timestamp?.toDate?.().toLocaleDateString('ar-SA') || ''}
+                                    </small>
+                                </div>
+                                <p style="margin: 0;">${notification.message}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    notificationsContainer.innerHTML = notificationsHTML;
+                    notificationCount.textContent = unreadCount;
+                    notificationsSection.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading notifications:', error);
+            }
+        }
+
+        // التحقق من حالة الوكيل وإخفاء الأزرار
+        async function checkAgentStatusAndHideButtons(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const agentsLink = document.getElementById('agentsLink');
+                const agentTasksLink = document.getElementById('agentTasksLink');
+                const becomeAgentCard = document.getElementById('becomeAgentCard');
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    if (userData.role === 'agent') {
+                        agentsLink.style.display = 'none';
+                        becomeAgentCard.style.display = 'none';
+                        agentTasksLink.style.display = 'block';
+                        return;
+                    }
+                }
+                
+                const agentAppsSnapshot = await db.collection('agent_applications').get();
+                const userApplications = agentAppsSnapshot.docs.filter(doc => {
+                    const app = doc.data();
+                    return app.userEmail === user.email || app.userId === user.uid;
+                });
+
+                if (userApplications.length > 0) {
+                    const latestApp = userApplications[0].data();
+                    
+                    if (latestApp.status === 'pending' || latestApp.status === 'approved') {
+                        agentsLink.style.display = 'none';
+                        becomeAgentCard.style.display = 'none';
+                        
+                        if (latestApp.status === 'approved') {
+                            agentTasksLink.style.display = 'block';
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ Error checking agent status:', error);
+            }
+        }
+
+        // دوال المساعدة
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'قيد الانتظار',
+                'in-progress': 'قيد التنفيذ',
+                'completed': 'مكتمل',
+                'cancelled': 'ملغي',
+                'جديد': 'جديد',
+                'قيد التنفيذ': 'قيد التنفيذ',
+                'مكتمل': 'مكتمل'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getStatusClass(status) {
+            const classMap = {
+                'pending': 'status-pending',
+                'in-progress': 'status-pending',
+                'completed': 'status-completed',
+                'cancelled': 'status-new',
+                'جديد': 'status-new',
+                'قيد التنفيذ': 'status-pending',
+                'مكتمل': 'status-completed'
+            };
+            return classMap[status] || 'status-pending';
+        }
+
+        function getAgentStatusText(status) {
+            const statusMap = {
+                'pending': 'قيد المراجعة',
+                'approved': 'مقبول',
+                'rejected': 'مرفوض'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getErrorMessage(errorCode) {
+            const errorMessages = {
+                'auth/invalid-email': 'البريد الإلكتروني غير صالح',
+                'auth/user-disabled': 'هذا الحساب معطل',
+                'auth/user-not-found': 'لا يوجد حساب بهذا البريد الإلكتروني',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة',
+                'auth/email-already-in-use': 'هذا البريد الإلكتروني مستخدم بالفعل',
+                'auth/weak-password': 'كلمة المرور ضعيفة، يجب أن تكون 6 أحرف على الأقل',
+                'auth/network-request-failed': 'خطأ في الشبكة، يرجى المحاولة مرة أخرى'
+            };
+            return errorMessages[errorCode] || 'حدث خطأ غير متوقع';
+        }
+
+        // دوال الإجراءات
+        function applyAsAgent() {
+            window.location.href = 'agents.html';
+        }
+
+        function reapplyAsAgent() {
+            window.location.href = 'agents.html?reapply=true';
+        }
+
+        function editProfile() {
+            document.getElementById('profileForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // حفظ الملف الشخصي
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const user = auth.currentUser;
+            if (!user) {
+                showSystemMessage('❌ يرجى تسجيل الدخول أولاً');
+                return;
+            }
+            
+            const userData = {
+                name: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                city: document.getElementById('city').value,
+                address: document.getElementById('address').value,
+                updatedAt: new Date()
+            };
+            
+            try {
+                await db.collection('users').doc(user.uid).set(userData, { merge: true });
+                
+                await user.updateProfile({
+                    displayName: userData.name
+                });
+                
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+                
+                showSystemMessage('✅ تم حفظ التغييرات بنجاح', 'success');
+            } catch (error) {
+                console.error('❌ Error saving profile:', error);
+                showSystemMessage('❌ حدث خطأ في حفظ التغييرات: ' + error.message);
+            }
+        });
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ me.html loaded successfully');
+            
+            // 🔥 التحقق من حالة الإشعارات عند تحميل الصفحة
+            if (auth.currentUser) {
+                setTimeout(() => {
+                    initializeNotifications();
+                }, 2000);
+            }
+        });
     </script>
 </body>
 </html>
