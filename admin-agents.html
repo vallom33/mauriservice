@@ -1237,25 +1237,11 @@ async function approveApplication(applicationId) {
             paymentStatus: 'pending'
         });
 
-        // 🔥 إرسال إشعار push للوكيل
-        await sendPushNotificationToAgent(agentId, {
-            title: '🎯 مهمة جديدة',
-            body: `تم تعيين مهمة جديدة لك: "${title}" - العمولة: ${commission} MRU`,
-            data: {
-                type: 'new_task',
-                taskId: taskRef.id,
-                agentId: agentId
-            }
-        });
-
-        // إرسال إشعار عادي في قاعدة البيانات
-        await db.collection('notifications').add({
-            userId: agentId,
+        // 🔥 إرسال إشعار للوكيل
+        await sendAgentNotification(agentId, {
             title: '🎯 مهمة جديدة',
             message: `تم تعيين مهمة جديدة لك: "${title}" - العمولة: ${commission} MRU - منطقة العميل: ${customerDistrict}`,
-            type: 'task_assigned',
-            read: false,
-            timestamp: new Date()
+            type: 'task_assigned'
         });
 
         showSystemMessage('✅ تم تعيين المهمة بنجاح وإرسال الإشعار للوكيل', 'success');
@@ -1267,91 +1253,73 @@ async function approveApplication(applicationId) {
     }
 });
 
-// 🔥 دالة إرسال إشعارات Push للوكلاء
-// 🔥 دالة إرسال الإشعارات الحقيقية
-async function sendPushNotificationToAgent(agentId, notification) {
+// 🔥 دالة إرسال الإشعارات للوكلاء
+async function sendAgentNotification(agentId, notification) {
     try {
-        console.log('🚀 بدء إرسال إشعار للوكيل:', agentId);
+        console.log('🚀 إرسال إشعار للوكيل:', agentId);
         
-        // 1. جلب بيانات الوكيل
-        const agentDoc = await db.collection('users').doc(agentId).get();
-        if (!agentDoc.exists) {
-            console.log('❌ الوكيل غير موجود في قاعدة البيانات');
-            return false;
-        }
-
-        const agentData = agentDoc.data();
-        const fcmToken = agentData.fcmToken;
-
-        console.log('🔍 FCM Token للوكيل:', fcmToken ? 'موجود' : 'غير موجود');
-
-        if (!fcmToken) {
-            console.log('⚠️ الوكيل ليس لديه token للإشعارات');
-            // نرسل إشعار عادي فقط
-            await sendNormalNotification(agentId, notification);
-            return false;
-        }
-
-        // 2. إرسال إشعار FCM حقيقي
-        console.log('📤 إرسال إشعار FCM...');
-        
-        // نستخدم Firebase Cloud Function مباشرة
-        const pushNotification = {
-            to: fcmToken,
-            notification: {
-                title: notification.title,
-                body: notification.body,
-                icon: 'https://mauri-services.web.app/icons/icon-192x192.png',
-                click_action: 'https://mauri-services.web.app/agent-tasks.html'
-            },
-            data: {
-                type: 'new_task',
-                taskId: notification.data.taskId,
-                agentId: agentId,
-                click_action: 'https://mauri-services.web.app/agent-tasks.html'
-            }
-        };
-
-        // 3. حفظ في queue للمعالجة
-        await db.collection('push_notifications_queue').add({
-            ...pushNotification,
-            agentId: agentId,
-            status: 'pending',
-            createdAt: new Date(),
-            title: notification.title,
-            body: notification.body
-        });
-
-        console.log('✅ تم إرسال الإشعار إلى queue');
-
-        // 4. إرسال إشعار عادي أيضاً
-        await sendNormalNotification(agentId, notification);
-
-        return true;
-
-    } catch (error) {
-        console.error('❌ فشل إرسال الإشعار:', error);
-        return false;
-    }
-}
-
-// 🔥 إرسال إشعار عادي في قاعدة البيانات
-async function sendNormalNotification(agentId, notification) {
-    try {
+        // أولاً: إرسال إشعار عادي في قاعدة البيانات
         await db.collection('notifications').add({
             userId: agentId,
             title: notification.title,
-            message: notification.body,
-            type: 'task_assigned',
+            message: notification.message,
+            type: notification.type,
             read: false,
             timestamp: new Date(),
             data: notification.data || {}
         });
-        console.log('✅ تم إرسال الإشعار العادي');
+
+        console.log('✅ تم إرسال الإشعار العادي للوكيل');
+
+        // ثانياً: محاولة إرسال إشعار FCM إذا كان متاحاً
+        await sendFCMPushNotification(agentId, notification);
+
     } catch (error) {
-        console.error('❌ خطأ في الإشعار العادي:', error);
+        console.error('❌ خطأ في إرسال الإشعار:', error);
     }
-};
+}
+
+// 🔥 دالة إرسال إشعار FCM
+async function sendFCMPushNotification(agentId, notification) {
+    try {
+        // جلب بيانات الوكيل
+        const agentDoc = await db.collection('users').doc(agentId).get();
+        if (!agentDoc.exists) return;
+
+        const agentData = agentDoc.data();
+        const fcmToken = agentData.fcmToken;
+
+        if (!fcmToken) {
+            console.log('⚠️ الوكيل ليس لديه token للإشعارات');
+            return;
+        }
+
+        console.log('📤 إرسال إشعار FCM للوكيل...');
+
+        // حفظ في queue للمعالجة
+        await db.collection('push_notifications_queue').add({
+            to: fcmToken,
+            notification: {
+                title: notification.title,
+                body: notification.message,
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232c5aa0" rx="15"/><text x="50" y="68" font-family="Arial, sans-serif" font-size="45" text-anchor="middle" fill="white" font-weight="bold">MS</text></svg>',
+                click_action: 'https://mauri-services.web.app/agent-tasks.html'
+            },
+            data: {
+                type: notification.type,
+                click_action: 'https://mauri-services.web.app/agent-tasks.html'
+            },
+            agentId: agentId,
+            status: 'pending',
+            createdAt: new Date()
+        });
+
+        console.log('✅ تم إرسال الإشعار إلى queue');
+
+    } catch (error) {
+        console.error('❌ فشل إرسال إشعار FCM:', error);
+    }
+}
 
         async function viewTaskDetails(taskId) {
             try {
