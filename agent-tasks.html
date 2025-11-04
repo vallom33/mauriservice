@@ -67,6 +67,7 @@ document.addEventListener('keydown', function(e) {
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-messaging-compat.js"></script>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -79,6 +80,7 @@ document.addEventListener('keydown', function(e) {
     <meta name="msapplication-TileColor" content="#2c5aa0">
     
     <style>
+        /* جميع الأنماط تبقى كما هي */
         * {
             margin: 0;
             padding: 0;
@@ -654,34 +656,7 @@ document.addEventListener('keydown', function(e) {
     </footer>
 
     <script>
-        // إضافة JavaScript لإدارة القائمة المتنقلة
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const navLinks = document.getElementById('navLinks');
-            
-            if (mobileMenuBtn && navLinks) {
-                mobileMenuBtn.addEventListener('click', function() {
-                    navLinks.classList.toggle('active');
-                });
-                
-                // إغلاق القائمة عند النقر على رابط
-                const navLinksItems = navLinks.querySelectorAll('.nav-link');
-                navLinksItems.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navLinks.classList.remove('active');
-                    });
-                });
-                
-                // إغلاق القائمة عند النقر خارجها
-                document.addEventListener('click', function(event) {
-                    if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
-                        navLinks.classList.remove('active');
-                    }
-                });
-            }
-        });
-
-        // تهيئة Firebase
+        // 🔥 إضافة Firebase Messaging
         const firebaseConfig = {
             apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
             authDomain: "mauri-services.firebaseapp.com",
@@ -691,19 +666,150 @@ document.addEventListener('keydown', function(e) {
             appId: "1:324986363643:web:803453b8ff2681b51d1a5e"
         };
 
-        let app;
+        // تهيئة Firebase بشكل آمن
+        let app, messaging;
         try {
             if (!firebase.apps.length) {
                 app = firebase.initializeApp(firebaseConfig);
+                messaging = firebase.messaging();
             } else {
                 app = firebase.app();
+                messaging = firebase.messaging();
             }
+            console.log('✅ Firebase initialized successfully in agent-tasks');
         } catch (error) {
-            console.error('Firebase initialization error:', error);
+            console.error('❌ Firebase initialization error:', error);
         }
 
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // 🔥 تهيئة الإشعارات للوكيل
+        async function initializeAgentNotifications() {
+            try {
+                console.log('🔔 بدء تهيئة إشعارات الوكيل...');
+                
+                if (!('Notification' in window)) {
+                    console.log('❌ This browser does not support notifications');
+                    return;
+                }
+
+                if (Notification.permission === 'granted') {
+                    console.log('✅ Notification permission already granted');
+                    await enableAgentNotifications();
+                } else if (Notification.permission === 'default') {
+                    console.log('🔄 Notification permission not decided yet');
+                    // يمكن طلب الإذن تلقائياً أو عند حدث معين
+                }
+            } catch (error) {
+                console.error('❌ Error initializing agent notifications:', error);
+            }
+        }
+
+        // 🔥 تفعيل إشعارات الوكيل
+        async function enableAgentNotifications() {
+            try {
+                console.log('🔔 تفعيل إشعارات الوكيل...');
+                
+                if (!('serviceWorker' in navigator)) {
+                    console.log('❌ Service Worker not supported');
+                    return;
+                }
+
+                // الحصول على token FCM
+                const notificationToken = await messaging.getToken({
+                    vapidKey: 'BDypShLNbFxAwP9ZBDPzsNY3mIaS6321TIKCRNkEL4YUAMnszj1T5zKQhDDfwjgFw4fT-508-HWtgjSCONPjtDM'
+                });
+
+                if (notificationToken) {
+                    console.log('✅ FCM Token for agent:', notificationToken);
+                    
+                    // حفظ token في قاعدة البيانات
+                    const user = auth.currentUser;
+                    if (user) {
+                        await db.collection('users').doc(user.uid).set({
+                            fcmToken: notificationToken,
+                            notificationEnabled: true,
+                            userType: 'agent',
+                            lastTokenUpdate: new Date()
+                        }, { merge: true });
+                    }
+                    
+                    // إعداد معالج الرسائل
+                    setupAgentMessageHandlers();
+                    
+                    console.log('✅ Agent notifications enabled successfully');
+                }
+            } catch (error) {
+                console.error('❌ Error enabling agent notifications:', error);
+            }
+        }
+
+        // 🔥 إعداد معالجي الرسائل للوكيل
+        function setupAgentMessageHandlers() {
+            console.log('🔔 إعداد معالجات رسائل الوكيل...');
+            
+            // معالج الرسائل في الواجهة الأمامية
+            messaging.onMessage((payload) => {
+                console.log('📬 Agent message received:', payload);
+                
+                // عرض الإشعار
+                showAgentNotification(payload);
+                
+                // تحديث الصفحة تلقائياً عند استلام مهمة جديدة
+                if (payload.data && payload.data.type === 'new_task') {
+                    console.log('🔄 New task received, refreshing page...');
+                    setTimeout(() => {
+                        if (auth.currentUser) {
+                            loadAgentTasks(auth.currentUser);
+                            loadAgentEarnings(auth.currentUser);
+                        }
+                    }, 1000);
+                }
+            });
+
+            console.log('✅ Agent message handlers setup completed');
+        }
+
+        // 🔥 عرض إشعار للوكيل
+        function showAgentNotification(payload) {
+            const title = payload.notification?.title || 'Mauri Services - مهمة جديدة';
+            const options = {
+                body: payload.notification?.body || 'لديك مهمة جديدة',
+                icon: '/icons/icon-192x192.png',
+                badge: '/icons/badge-72x72.png',
+                data: payload.data || {}
+            };
+
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, options);
+            }
+        }
+
+        // باقي الكود يبقى كما هو مع إضافة تهيئة الإشعارات
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+                
+                const navLinksItems = navLinks.querySelectorAll('.nav-link');
+                navLinksItems.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navLinks.classList.remove('active');
+                    });
+                });
+                
+                document.addEventListener('click', function(event) {
+                    if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            }
+        });
 
         // دالة لعرض رسائل النظام
         function showSystemMessage(message, type = 'error') {
@@ -716,10 +822,14 @@ document.addEventListener('keydown', function(e) {
             }, 5000);
         }
 
-        // نظام المصادقة
+        // نظام المصادقة - مع إضافة تهيئة الإشعارات
         auth.onAuthStateChanged((user) => {
             if (user) {
                 checkUserRole(user);
+                // 🔥 تهيئة إشعارات الوكيل بعد تسجيل الدخول
+                setTimeout(() => {
+                    initializeAgentNotifications();
+                }, 1000);
             } else {
                 showGuestSection();
             }
@@ -727,7 +837,6 @@ document.addEventListener('keydown', function(e) {
 
         async function checkUserRole(user) {
             try {
-                // أولاً: التحقق من role في users
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 if (userDoc.exists) {
                     const userData = userDoc.data();
@@ -737,7 +846,6 @@ document.addEventListener('keydown', function(e) {
                     }
                 }
 
-                // ثانياً: إذا لم يكن agent في users، نتحقق من agent_applications
                 const agentAppsSnapshot = await db.collection('agent_applications').get();
                 const userApplications = agentAppsSnapshot.docs.filter(doc => {
                     const app = doc.data();
@@ -745,7 +853,6 @@ document.addEventListener('keydown', function(e) {
                 });
 
                 if (userApplications.length > 0) {
-                    // إذا كان مقبولاً في agent_applications، نحدث role في users
                     await db.collection('users').doc(user.uid).set({
                         role: 'agent'
                     }, { merge: true });
@@ -789,7 +896,7 @@ document.addEventListener('keydown', function(e) {
             setupRealtimeListeners(user);
         }
 
-        // تحميل مهام الوكيل
+        // باقي الدوال تبقى كما هي بدون تغيير
         async function loadAgentTasks(user) {
             try {
                 const tasksSnapshot = await db.collection('agent_tasks')
@@ -811,18 +918,12 @@ document.addEventListener('keydown', function(e) {
                     }
                 });
 
-                // تحديث الإحصائيات
                 document.getElementById('totalTasks').textContent = tasksSnapshot.size;
                 document.getElementById('assignedTasks').textContent = assignedTasks.length;
                 document.getElementById('inProgressTasks').textContent = inProgressTasks.length;
 
-                // عرض المهام الموكلة
                 displayTasks('assignedTasksList', assignedTasks);
-                
-                // عرض المهام قيد التنفيذ
                 displayTasks('inProgressTasksList', inProgressTasks);
-                
-                // عرض المهام المكتملة
                 displayTasks('completedTasksList', completedTasks);
 
             } catch (error) {
@@ -831,7 +932,6 @@ document.addEventListener('keydown', function(e) {
             }
         }
 
-        // عرض المهام
         function displayTasks(containerId, tasks) {
             const container = document.getElementById(containerId);
             
@@ -849,7 +949,6 @@ document.addEventListener('keydown', function(e) {
             container.innerHTML = tasks.map(task => createTaskCard(task.id, task)).join('');
         }
 
-        // إنشاء بطاقة مهمة
         function createTaskCard(taskId, task) {
             const priorityClass = `priority-${task.priority || 'medium'}`;
             const statusClass = `status-${task.status?.replace('-', '') || 'assigned'}`;
@@ -915,7 +1014,6 @@ document.addEventListener('keydown', function(e) {
             `;
         }
 
-        // تحميل أرباح الوكيل
         async function loadAgentEarnings(user) {
             try {
                 const tasksSnapshot = await db.collection('agent_tasks')
@@ -957,7 +1055,6 @@ document.addEventListener('keydown', function(e) {
                         <button class="btn btn-success" onclick="requestPayout()">
                             💳 طلب سداد الرصيد
                         </button>
-                        
                     </div>
                 `;
 
@@ -1099,46 +1196,44 @@ document.addEventListener('keydown', function(e) {
             document.getElementById('taskModal').style.display = 'none';
         }
 
-    async function requestPayout() {
-    const user = auth.currentUser;
-    if (!user) return;
+        async function requestPayout() {
+            const user = auth.currentUser;
+            if (!user) return;
 
-    try {
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        const userData = userDoc.data();
-        
-        // حساب الرصيد المتاح
-        const tasksSnapshot = await db.collection('agent_tasks')
-            .where('agentId', '==', user.uid)
-            .get();
-        
-        let availableBalance = 0;
-        tasksSnapshot.forEach(doc => {
-            const task = doc.data();
-            if (task.status === 'completed' && task.paymentStatus === 'paid') {
-                availableBalance += task.commission || 0;
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const userData = userDoc.data();
+                
+                const tasksSnapshot = await db.collection('agent_tasks')
+                    .where('agentId', '==', user.uid)
+                    .get();
+                
+                let availableBalance = 0;
+                tasksSnapshot.forEach(doc => {
+                    const task = doc.data();
+                    if (task.status === 'completed' && task.paymentStatus === 'paid') {
+                        availableBalance += task.commission || 0;
+                    }
+                });
+
+                await db.collection('payout_requests').add({
+                    agentId: user.uid,
+                    agentName: userData.name,
+                    agentPhone: userData.phone || 'غير محدد',
+                    amount: parseInt(availableBalance),
+                    status: 'pending',
+                    requestedAt: new Date(),
+                    paymentMethod: 'bank_transfer',
+                    note: 'طلب سداد من الوكيل'
+                });
+                
+                showSystemMessage('✅ تم إرسال طلب السداد للإدارة بنجاح! سيتم الإيداع في حسابك البنكي خلال ساعة عمل.', 'success');
+                
+            } catch (error) {
+                console.error('Error requesting payout:', error);
+                showSystemMessage('❌ حدث خطأ في طلب السداد');
             }
-        });
-
-        // 🔥 إرسال الطلب مباشرة بدون أي شروط
-        await db.collection('payout_requests').add({
-            agentId: user.uid,
-            agentName: userData.name,
-            agentPhone: userData.phone || 'غير محدد',
-            amount: parseInt(availableBalance),
-            status: 'pending',
-            requestedAt: new Date(),
-            paymentMethod: 'bank_transfer',
-            note: 'طلب سداد من الوكيل'
-        });
-        
-        showSystemMessage('✅ تم إرسال طلب السداد للإدارة بنجاح! سيتم الإيداع في حسابك البنكي خلال ساعة عمل.', 'success');
-        
-    } catch (error) {
-        console.error('Error requesting payout:', error);
-        showSystemMessage('❌ حدث خطأ في طلب السداد');
-    }
-}
+        }
 
         // دوال مساعدة
         function openTab(tabName) {
