@@ -643,6 +643,132 @@
         </div>
     </footer>
 
+    <!-- نماذج المصادقة -->
+<div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">تسجيل الدخول</h3>
+        <div class="form-group">
+            <input type="email" id="loginEmail" placeholder="📧 البريد الإلكتروني" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        </div>
+        <div class="form-group">
+            <input type="password" id="loginPassword" placeholder="🔒 كلمة المرور" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        </div>
+        <button onclick="loginUser()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            🚀 تسجيل الدخول
+        </button>
+        <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+        <p style="text-align: center; margin-top: 1rem;">
+            <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">📝 إنشاء حساب جديد</a>
+        </p>
+    </div>
+</div>
+
+<!-- نموذج التسجيل -->
+<div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">إنشاء حساب جديد</h3>
+        <div class="form-group">
+            <input type="text" id="signupName" placeholder="👤 الاسم الكامل" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        </div>
+        <div class="form-group">
+            <input type="tel" id="signupPhone" placeholder="📞 رقم الهاتف" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        </div>
+        <div class="form-group">
+            <input type="email" id="signupEmail" placeholder="📧 البريد الإلكتروني" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        </div>
+        <div class="form-group">
+            <input type="password" id="signupPassword" placeholder="🔒 كلمة المرور" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        </div>
+        <button onclick="signupUser()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            🎉 إنشاء حساب
+        </button>
+        <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+        <p style="text-align: center; margin-top: 1rem;">
+            <a onclick="showLoginModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🚀 لديك حساب؟ سجل الدخول</a>
+        </p>
+    </div>
+</div>
+
+<!-- نموذج تسجيل الدخول برقم الهاتف -->
+<div id="phoneLoginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">تسجيل الدخول برقم الهاتف</h3>
+        
+        <div class="form-group">
+            <label>📞 رقم الهاتف (+222)</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <div style="background: #f0f0f0; padding: 1rem; border-radius: 8px; font-weight: bold; color: #2c5aa0;">
+                    +222
+                </div>
+                <input type="tel" id="phoneNumber" placeholder="12345678" style="flex: 1; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+        </div>
+
+        <div id="recaptcha-container-phone" style="margin: 1rem 0;"></div>
+
+        <button onclick="sendPhoneVerification()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            📱 إرسال رمز التحقق
+        </button>
+        <button onclick="hidePhoneLoginModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+    </div>
+</div>
+
+<!-- نموذج التسجيل بالهاتف -->
+<div id="phoneSignupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">إنشاء حساب بالهاتف</h3>
+        
+        <div class="form-group">
+            <label>👤 الاسم الكامل</label>
+            <input type="text" id="phoneSignupName" placeholder="أدخل اسمك الكامل" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+        </div>
+
+        <div class="form-group">
+            <label>📞 رقم الهاتف (+222)</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <div style="background: #f0f0f0; padding: 1rem; border-radius: 8px; font-weight: bold; color: #2c5aa0;">
+                    +222
+                </div>
+                <input type="tel" id="phoneSignupNumber" placeholder="12345678" style="flex: 1; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+        </div>
+
+        <div id="recaptcha-container-phone-signup" style="margin: 1rem 0;"></div>
+
+        <button onclick="sendPhoneSignupVerification()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            📱 إنشاء حساب
+        </button>
+        <button onclick="hidePhoneSignupModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+        
+        <p style="text-align: center; margin-top: 1rem;">
+            <a onclick="showLoginModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🚀 لديك حساب؟ سجل الدخول</a>
+        </p>
+    </div>
+</div>
+
+<!-- نموذج التحقق من الرمز -->
+<div id="verifyCodeModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">أدخل رمز التحقق</h3>
+        
+        <div class="form-group">
+            <label>🔢 رمز التحقق (6 أرقام)</label>
+            <input type="text" id="verificationCode" placeholder="123456" maxlength="6" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1.2rem; text-align: center; letter-spacing: 0.5rem;">
+            <small style="color: #666; display: block; margin-top: 0.5rem;">تم إرسال الرمز إلى هاتفك</small>
+        </div>
+
+        <button onclick="verifyPhoneCode()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            ✅ تأكيد الرمز
+        </button>
+        <button onclick="hideVerifyCodeModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+        
+        <p style="text-align: center; margin-top: 1rem;">
+            <a onclick="resendVerificationCode()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🔄 إعادة إرسال الرمز</a>
+        </p>
+    </div>
+</div>
+
+
     <script>
     // 🔥 تهيئة Firebase بدون مشاكل
     const firebaseConfig = {
@@ -1747,5 +1873,6 @@
         }, 5000);
     }
 </script>
+
 </body>
 </html>
