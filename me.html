@@ -13,44 +13,45 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-messaging-compat.js"></script>
 
     <!-- PWA Meta Tags -->
-    <meta name="application-name" content="Mauri Services">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Mauri Services">
-    <meta name="description" content="منصة الخدمات المتكاملة في موريتانيا">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="msapplication-TileColor" content="#2c5aa0">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="theme-color" content="#2c5aa0">
+<meta name="application-name" content="Mauri Services">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mauri Services">
+<meta name="description" content="منصة الخدمات المتكاملة في موريتانيا">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="msapplication-TileColor" content="#2c5aa0">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="theme-color" content="#2c5aa0">
 
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png">
+<!-- Apple Touch Icons -->
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
 
-    <!-- Manifest -->
-    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+<!-- Manifest -->
+<link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+
 
     <script>
-    // 🔥 كود Service Worker مبسط جداً
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/firebase-messaging-sw.js')
-          .then(function(registration) {
-            console.log('✅ SW registered: ', registration.scope);
-          })
-          .catch(function(error) {
-            console.log('❌ SW registration failed: ', error);
-          });
+// 🔥 كود Service Worker مبسط جداً
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      .then(function(registration) {
+        console.log('✅ SW registered: ', registration.scope);
+      })
+      .catch(function(error) {
+        console.log('❌ SW registration failed: ', error);
       });
-    }
-    </script>
+  });
+}
+</script>
 
     <style>
         * {
@@ -598,43 +599,217 @@
             <p>إدارة طلباتك وتحديث معلوماتك</p>
         </div>
     </section>
-<div class="container">
-    <!-- رسائل النظام -->
-    <div id="systemMessage"></div>
 
-    <!-- للمستخدمين غير المسجلين -->
-    <div id="guestSection" class="auth-section">
-        <h2>مرحباً بك!</h2>
-        <p>سجل الدخول أو أنشئ حساباً لمتابعة طلباتك والاستفادة من جميع المزايا</p>
-        
-        <div class="auth-buttons">
-            <button class="btn btn-primary" onclick="showLoginModal()">
-                <i class="fas fa-envelope"></i> تسجيل الدخول بالبريد
-            </button>
-            <button class="btn btn-info" onclick="showPhoneLoginModal()">
-                <i class="fas fa-mobile-alt"></i> تسجيل الدخول بالهاتف
-            </button>
-            <button class="btn btn-success" onclick="showSignupModal()">
-                <i class="fas fa-envelope"></i> إنشاء حساب بالبريد
-            </button>
-            <button class="btn btn-warning" onclick="showPhoneSignupModal()">
-                <i class="fas fa-mobile-alt"></i> إنشاء حساب بالهاتف
-            </button>
+    <div class="container">
+        <!-- رسائل النظام -->
+        <div id="systemMessage"></div>
+
+        <!-- للمستخدمين غير المسجلين -->
+        <div id="guestSection" class="auth-section">
+            <h2>مرحباً بك!</h2>
+            <p>سجل الدخول أو أنشئ حساباً لمتابعة طلباتك والاستفادة من جميع المزايا</p>
+            
+            <div class="auth-buttons">
+                <button class="btn btn-primary" onclick="showLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                </button>
+                <button class="btn btn-success" onclick="showSignupModal()">
+                    <i class="fas fa-user-plus"></i> إنشاء حساب جديد
+                </button>
+            </div>
+            
+            <p style="margin-top: 1rem; color: #666;">
+                يمكنك طلب الخدمات بدون حساب عبر الواتساب، لكن الحساب يمكنك من متابعة الطلبات
+            </p>
         </div>
-        
-        <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
-            <p style="margin: 0; color: #666; font-size: 0.9rem;">
-                <strong>🇲🇷 خاص لموريتانيا:</strong> يمكنك التسجيل برقم هاتفك (+222)
+
+        <!-- للمستخدمين المسجلين -->
+        <div id="userSection" style="display: none;">
+            <!-- رأس الملف -->
+            <div class="profile-header">
+                <div class="profile-avatar" id="userAvatar">U</div>
+                <h2 id="userName">المستخدم</h2>
+                <p id="userEmail">البريد الإلكتروني</p>
+                <p id="userRole" style="margin-top: 0.5rem; font-weight: bold; color: #2c5aa0;"></p>
+                <button class="btn btn-warning" onclick="logoutUser()" style="margin-top: 1rem;">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+            </div>
+
+            <!-- إعدادات الإشعارات -->
+            <div class="section" id="notificationSettingsSection">
+                <div class="section-header">
+                    <h2>🔔 إعدادات الإشعارات</h2>
+                </div>
+                
+                <!-- طلب إذن الإشعارات -->
+                <div id="notificationPermissionCard" class="notification-permission-card" style="display: none;">
+                    <h3>🔔 تفعيل الإشعارات</h3>
+                    <p style="margin: 1rem 0;">اسمح بتلقي الإشعارات المهمة حول طلباتك وعروضنا</p>
+                    <button class="btn btn-success" onclick="requestSimpleNotificationPermission()">
+                        ✅ تفعيل الإشعارات
+                    </button>
+                </div>
+
+                <!-- حالة الإشعارات -->
+                <div id="notificationStatusCard" style="display: none;">
+                    <div class="notification-toggle">
+                        <div>
+                            <h4>حالة الإشعارات</h4>
+                            <p id="notificationStatusText">الإشعارات مفعلة</p>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="disableNotifications()">
+                            إيقاف الإشعارات
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- حالة الوكيل -->
+            <div id="agentStatusSection" style="display: none;">
+                <!-- سيتم تعبئتها بحالة طلب الوكالة -->
+            </div>
+
+            <!-- الإحصائيات العامة -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalOrders">0</span>
+                    <p>إجمالي الطلبات</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="pendingOrders">0</span>
+                    <p>طلبات قيد التنفيذ</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="completedOrders">0</span>
+                    <p>طلبات مكتملة</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalSpent">0</span>
+                    <p>إجمالي المصروف (MRU)</p>
+                </div>
+            </div>
+
+            <!-- الإجراءات السريعة -->
+            <div class="quick-actions">
+                <div class="action-card" onclick="window.location.href='services.html'">
+                    <div class="action-icon">🛍️</div>
+                    <h3>طلب خدمة جديدة</h3>
+                    <p>اطلب خدمة من متجرنا</p>
+                </div>
+                <div class="action-card" onclick="applyAsAgent()" id="becomeAgentCard">
+                    <div class="action-icon">💼</div>
+                    <h3>كن وكيلاً</h3>
+                    <p>اربح عمولات معنا</p>
+                </div>
+                <div class="action-card" onclick="editProfile()">
+                    <div class="action-icon">👤</div>
+                    <h3>الملف الشخصي</h3>
+                    <p>عدل معلوماتك</p>
+                </div>
+                <div class="action-card" onclick="window.location.href='contact.html'">
+                    <div class="action-icon">📞</div>
+                    <h3>الدعم</h3>
+                    <p>تواصل مع الدعم الفني</p>
+                </div>
+            </div>
+
+            <!-- الإشعارات -->
+            <div class="section" id="notificationsSection" style="display: none;">
+                <div class="section-header">
+                    <h2>🔔 الإشعارات</h2>
+                    <div>
+                        <span class="notification-badge" id="notificationCount">0</span>
+                        <button class="btn btn-sm btn-danger" onclick="clearAllNotifications()">مسح الكل</button>
+                    </div>
+                </div>
+                <div id="notificationsList">
+                    <!-- سيتم تعبئتها بالإشعارات -->
+                </div>
+            </div>
+
+            <!-- الطلبات الأخيرة -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>📦 طلباتي الأخيرة</h2>
+                    <button class="btn btn-primary" onclick="window.location.href='services.html'">طلب جديد</button>
+                </div>
+                <div id="userOrders" class="loading">
+                    ⏳ جاري تحميل الطلبات...
+                </div>
+            </div>
+
+            <!-- معلوماتي -->
+            <div class="section">
+                <h2>👤 معلوماتي الشخصية</h2>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label>الاسم الكامل</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف</label>
+                        <input type="tel" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label>المدينة</label>
+                        <input type="text" id="city">
+                    </div>
+                    <div class="form-group">
+                        <label>العنوان</label>
+                        <textarea id="address" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">💾 حفظ التغييرات</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نماذج المصادقة -->
+    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+            <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">تسجيل الدخول</h3>
+            <div class="form-group">
+                <input type="email" id="loginEmail" placeholder="📧 البريد الإلكتروني" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" placeholder="🔒 كلمة المرور" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <button onclick="loginUser()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                🚀 تسجيل الدخول
+            </button>
+            <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">📝 إنشاء حساب جديد</a>
             </p>
         </div>
     </div>
 
-    <!-- للمستخدمين المسجلين -->
-    <div id="userSection" style="display: none;">
-        <!-- باقي الكود يبقى كما هو -->
-        <!-- ... -->
+    <!-- نموذج التسجيل -->
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
+            <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">إنشاء حساب جديد</h3>
+            <div class="form-group">
+                <input type="text" id="signupName" placeholder="👤 الاسم الكامل" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <input type="tel" id="signupPhone" placeholder="📞 رقم الهاتف" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <input type="email" id="signupEmail" placeholder="📧 البريد الإلكتروني" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <input type="password" id="signupPassword" placeholder="🔒 كلمة المرور" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <button onclick="signupUser()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                🎉 إنشاء حساب
+            </button>
+            <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a onclick="showLoginModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🚀 لديك حساب؟ سجل الدخول</a>
+            </p>
+        </div>
     </div>
-</div>
 
     <footer class="footer">
         <div class="container">
@@ -643,133 +818,7 @@
         </div>
     </footer>
 
-    <!-- نماذج المصادقة -->
-<div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
-        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">تسجيل الدخول</h3>
-        <div class="form-group">
-            <input type="email" id="loginEmail" placeholder="📧 البريد الإلكتروني" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-            <input type="password" id="loginPassword" placeholder="🔒 كلمة المرور" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-        <button onclick="loginUser()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
-            🚀 تسجيل الدخول
-        </button>
-        <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
-        <p style="text-align: center; margin-top: 1rem;">
-            <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">📝 إنشاء حساب جديد</a>
-        </p>
-    </div>
-</div>
-
-<!-- نموذج التسجيل -->
-<div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
-        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">إنشاء حساب جديد</h3>
-        <div class="form-group">
-            <input type="text" id="signupName" placeholder="👤 الاسم الكامل" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-            <input type="tel" id="signupPhone" placeholder="📞 رقم الهاتف" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-            <input type="email" id="signupEmail" placeholder="📧 البريد الإلكتروني" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-            <input type="password" id="signupPassword" placeholder="🔒 كلمة المرور" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-        <button onclick="signupUser()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
-            🎉 إنشاء حساب
-        </button>
-        <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
-        <p style="text-align: center; margin-top: 1rem;">
-            <a onclick="showLoginModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🚀 لديك حساب؟ سجل الدخول</a>
-        </p>
-    </div>
-</div>
-
-<!-- نموذج تسجيل الدخول برقم الهاتف -->
-<div id="phoneLoginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
-        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">تسجيل الدخول برقم الهاتف</h3>
-        
-        <div class="form-group">
-            <label>📞 رقم الهاتف (+222)</label>
-            <div style="display: flex; gap: 0.5rem;">
-                <div style="background: #f0f0f0; padding: 1rem; border-radius: 8px; font-weight: bold; color: #2c5aa0;">
-                    +222
-                </div>
-                <input type="tel" id="phoneNumber" placeholder="12345678" style="flex: 1; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-            </div>
-        </div>
-
-        <div id="recaptcha-container-phone" style="margin: 1rem 0;"></div>
-
-        <button onclick="sendPhoneVerification()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
-            📱 إرسال رمز التحقق
-        </button>
-        <button onclick="hidePhoneLoginModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
-    </div>
-</div>
-
-<!-- نموذج التسجيل بالهاتف -->
-<div id="phoneSignupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
-        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">إنشاء حساب بالهاتف</h3>
-        
-        <div class="form-group">
-            <label>👤 الاسم الكامل</label>
-            <input type="text" id="phoneSignupName" placeholder="أدخل اسمك الكامل" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-        </div>
-
-        <div class="form-group">
-            <label>📞 رقم الهاتف (+222)</label>
-            <div style="display: flex; gap: 0.5rem;">
-                <div style="background: #f0f0f0; padding: 1rem; border-radius: 8px; font-weight: bold; color: #2c5aa0;">
-                    +222
-                </div>
-                <input type="tel" id="phoneSignupNumber" placeholder="12345678" style="flex: 1; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-            </div>
-        </div>
-
-        <div id="recaptcha-container-phone-signup" style="margin: 1rem 0;"></div>
-
-        <button onclick="sendPhoneSignupVerification()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
-            📱 إنشاء حساب
-        </button>
-        <button onclick="hidePhoneSignupModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
-        
-        <p style="text-align: center; margin-top: 1rem;">
-            <a onclick="showLoginModal()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🚀 لديك حساب؟ سجل الدخول</a>
-        </p>
-    </div>
-</div>
-
-<!-- نموذج التحقق من الرمز -->
-<div id="verifyCodeModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px;">
-        <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c5aa0;">أدخل رمز التحقق</h3>
-        
-        <div class="form-group">
-            <label>🔢 رمز التحقق (6 أرقام)</label>
-            <input type="text" id="verificationCode" placeholder="123456" maxlength="6" style="width: 100%; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1.2rem; text-align: center; letter-spacing: 0.5rem;">
-            <small style="color: #666; display: block; margin-top: 0.5rem;">تم إرسال الرمز إلى هاتفك</small>
-        </div>
-
-        <button onclick="verifyPhoneCode()" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
-            ✅ تأكيد الرمز
-        </button>
-        <button onclick="hideVerifyCodeModal()" style="background: #6c757d; margin-top: 0.5rem; width: 100%; padding: 1rem;" class="btn">إلغاء</button>
-        
-        <p style="text-align: center; margin-top: 1rem;">
-            <a onclick="resendVerificationCode()" style="color: #2c5aa0; cursor: pointer; text-decoration: none; font-weight: bold;">🔄 إعادة إرسال الرمز</a>
-        </p>
-    </div>
-</div>
-
-
-    <script>
+   <script>
     // 🔥 تهيئة Firebase بدون مشاكل
     const firebaseConfig = {
         apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
@@ -797,385 +846,6 @@
 
     const auth = firebase.auth();
     const db = firebase.firestore();
-
-    // 🔥 متغيرات المصادقة بالهاتف
-    let confirmationResult = null;
-    let recaptchaVerifier = null;
-    let signupConfirmationResult = null;
-    let signupRecaptchaVerifier = null;
-
-    // 🔥 تهيئة reCAPTCHA لتسجيل الدخول
-    function initializeRecaptcha() {
-        try {
-            recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container-phone', {
-                'size': 'normal',
-                'callback': (response) => {
-                    console.log('✅ reCAPTCHA solved');
-                },
-                'expired-callback': () => {
-                    console.log('❌ reCAPTCHA expired');
-                }
-            });
-            
-            recaptchaVerifier.render();
-            console.log('✅ reCAPTCHA initialized');
-        } catch (error) {
-            console.error('❌ Error initializing reCAPTCHA:', error);
-        }
-    }
-
-    // 🔥 تهيئة reCAPTCHA للتسجيل
-    function initializeSignupRecaptcha() {
-        try {
-            signupRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container-phone-signup', {
-                'size': 'normal',
-                'callback': (response) => {
-                    console.log('✅ reCAPTCHA solved for signup');
-                },
-                'expired-callback': () => {
-                    console.log('❌ reCAPTCHA expired for signup');
-                }
-            });
-            
-            signupRecaptchaVerifier.render();
-            console.log('✅ Signup reCAPTCHA initialized');
-        } catch (error) {
-            console.error('❌ Error initializing signup reCAPTCHA:', error);
-        }
-    }
-
-    // 🔥 عرض نموذج تسجيل الدخول بالهاتف
-    function showPhoneLoginModal() {
-        document.getElementById('phoneLoginModal').style.display = 'flex';
-        
-        // إعادة تهيئة reCAPTCHA بعد عرض النموذج
-        setTimeout(() => {
-            if (recaptchaVerifier) {
-                recaptchaVerifier.clear();
-            }
-            initializeRecaptcha();
-        }, 100);
-    }
-
-    // 🔥 إخفاء نموذج تسجيل الدخول بالهاتف
-    function hidePhoneLoginModal() {
-        document.getElementById('phoneLoginModal').style.display = 'none';
-        document.getElementById('phoneNumber').value = '';
-        
-        if (recaptchaVerifier) {
-            recaptchaVerifier.clear();
-        }
-    }
-
-    // 🔥 عرض نموذج التسجيل بالهاتف
-    function showPhoneSignupModal() {
-        document.getElementById('phoneSignupModal').style.display = 'flex';
-        
-        // إعادة تهيئة reCAPTCHA بعد عرض النموذج
-        setTimeout(() => {
-            if (signupRecaptchaVerifier) {
-                signupRecaptchaVerifier.clear();
-            }
-            initializeSignupRecaptcha();
-        }, 100);
-    }
-
-    // 🔥 إخفاء نموذج التسجيل بالهاتف
-    function hidePhoneSignupModal() {
-        document.getElementById('phoneSignupModal').style.display = 'none';
-        document.getElementById('phoneSignupName').value = '';
-        document.getElementById('phoneSignupNumber').value = '';
-        
-        if (signupRecaptchaVerifier) {
-            signupRecaptchaVerifier.clear();
-        }
-    }
-
-    // 🔥 إرسال رمز التحقق لتسجيل الدخول
-    async function sendPhoneVerification() {
-        const phoneNumber = document.getElementById('phoneNumber').value;
-        
-        if (!phoneNumber) {
-            showSystemMessage('⚠️ يرجى إدخال رقم الهاتف');
-            return;
-        }
-        
-        if (phoneNumber.length < 8) {
-            showSystemMessage('⚠️ رقم الهاتف يجب أن يكون 8 أرقام على الأقل');
-            return;
-        }
-        
-        const fullPhoneNumber = '+222' + phoneNumber;
-        
-        try {
-            showSystemMessage('📱 جاري إرسال رمز التحقق...', 'success');
-            
-            confirmationResult = await auth.signInWithPhoneNumber(fullPhoneNumber, recaptchaVerifier);
-            
-            hidePhoneLoginModal();
-            showVerifyCodeModal();
-            showSystemMessage('✅ تم إرسال رمز التحقق إلى هاتفك', 'success');
-            
-        } catch (error) {
-            console.error('❌ Error sending verification code:', error);
-            showSystemMessage('❌ ' + getPhoneErrorMessage(error.code));
-            
-            // إعادة تعيين reCAPTCHA في حالة الخطأ
-            if (recaptchaVerifier) {
-                recaptchaVerifier.clear();
-                setTimeout(initializeRecaptcha, 500);
-            }
-        }
-    }
-
-    // 🔥 إرسال رمز التحقق للتسجيل
-    async function sendPhoneSignupVerification() {
-        const name = document.getElementById('phoneSignupName').value;
-        const phoneNumber = document.getElementById('phoneSignupNumber').value;
-        
-        if (!name || !phoneNumber) {
-            showSystemMessage('⚠️ يرجى ملء جميع الحقول');
-            return;
-        }
-        
-        if (phoneNumber.length < 8) {
-            showSystemMessage('⚠️ رقم الهاتف يجب أن يكون 8 أرقام على الأقل');
-            return;
-        }
-        
-        const fullPhoneNumber = '+222' + phoneNumber;
-        
-        try {
-            showSystemMessage('📱 جاري إرسال رمز التحقق...', 'success');
-            
-            signupConfirmationResult = await auth.signInWithPhoneNumber(fullPhoneNumber, signupRecaptchaVerifier);
-            
-            // حفظ الاسم مؤقتاً للاستخدام لاحقاً
-            sessionStorage.setItem('tempUserName', name);
-            sessionStorage.setItem('tempUserPhone', fullPhoneNumber);
-            
-            hidePhoneSignupModal();
-            showVerifyCodeModal();
-            showSystemMessage('✅ تم إرسال رمز التحقق إلى هاتفك', 'success');
-            
-        } catch (error) {
-            console.error('❌ Error sending verification code for signup:', error);
-            showSystemMessage('❌ ' + getPhoneErrorMessage(error.code));
-            
-            // إعادة تعيين reCAPTCHA في حالة الخطأ
-            if (signupRecaptchaVerifier) {
-                signupRecaptchaVerifier.clear();
-                setTimeout(initializeSignupRecaptcha, 500);
-            }
-        }
-    }
-
-    // 🔥 عرض نموذج التحقق
-    function showVerifyCodeModal() {
-        document.getElementById('verifyCodeModal').style.display = 'flex';
-    }
-
-    // 🔥 إخفاء نموذج التحقق
-    function hideVerifyCodeModal() {
-        document.getElementById('verifyCodeModal').style.display = 'none';
-        document.getElementById('verificationCode').value = '';
-    }
-
-    // 🔥 التحقق من الرمز
-    async function verifyPhoneCode() {
-        const code = document.getElementById('verificationCode').value;
-        
-        if (!code || code.length !== 6) {
-            showSystemMessage('⚠️ يرجى إدخال رمز التحقق المكون من 6 أرقام');
-            return;
-        }
-        
-        try {
-            showSystemMessage('جاري التحقق...', 'success');
-            
-            let result;
-            if (signupConfirmationResult) {
-                // حالة التسجيل
-                result = await signupConfirmationResult.confirm(code);
-            } else {
-                // حالة تسجيل الدخول
-                result = await confirmationResult.confirm(code);
-            }
-            
-            const user = result.user;
-            
-            console.log('✅ Phone authentication successful:', user.phoneNumber);
-            
-            // التحقق إذا كان هذا تسجيل جديد
-            const tempUserName = sessionStorage.getItem('tempUserName');
-            const tempUserPhone = sessionStorage.getItem('tempUserPhone');
-            
-            if (tempUserName && tempUserPhone) {
-                // حالة التسجيل - إنشاء حساب جديد
-                await createPhoneUserAccount(user, tempUserName, tempUserPhone);
-                
-                // مسح البيانات المؤقتة
-                sessionStorage.removeItem('tempUserName');
-                sessionStorage.removeItem('tempUserPhone');
-            } else {
-                // حالة تسجيل الدخول - تحديث البيانات
-                await savePhoneUserData(user);
-            }
-            
-            hideVerifyCodeModal();
-            showSystemMessage('✅ ' + (tempUserName ? 'تم إنشاء حسابك بنجاح!' : 'تم تسجيل الدخول بنجاح!'), 'success');
-            
-            // إعادة تعيين المتغيرات
-            signupConfirmationResult = null;
-            confirmationResult = null;
-            
-        } catch (error) {
-            console.error('❌ Error verifying code:', error);
-            showSystemMessage('❌ ' + getPhoneErrorMessage(error.code));
-        }
-    }
-
-    // 🔥 إنشاء حساب مستخدم هاتف جديد
-    async function createPhoneUserAccount(user, name, phone) {
-        try {
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            
-            if (!userDoc.exists) {
-                // إنشاء حساب جديد لمستخدم الهاتف
-                await db.collection('users').doc(user.uid).set({
-                    name: name,
-                    phone: phone,
-                    role: 'user',
-                    authMethod: 'phone',
-                    createdAt: new Date(),
-                    status: 'active',
-                    totalOrders: 0,
-                    totalSpent: 0,
-                    lastLogin: new Date(),
-                    notificationEnabled: false,
-                    profileCompleted: true
-                });
-                
-                // تحديث الاسم في الملف الشخصي
-                await user.updateProfile({
-                    displayName: name
-                });
-                
-                console.log('✅ New phone user account created:', name);
-            } else {
-                // تحديث بيانات المستخدم الحالي
-                await db.collection('users').doc(user.uid).update({
-                    name: name,
-                    phone: phone,
-                    lastLogin: new Date(),
-                    profileCompleted: true
-                });
-            }
-        } catch (error) {
-            console.error('❌ Error creating phone user account:', error);
-            throw error;
-        }
-    }
-
-    // 🔥 حفظ بيانات مستخدم الهاتف (لتسجيل الدخول)
-    async function savePhoneUserData(user) {
-        try {
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            
-            if (!userDoc.exists) {
-                // إنشاء حساب جديد لمستخدم الهاتف
-                await db.collection('users').doc(user.uid).set({
-                    name: 'مستخدم ' + user.phoneNumber,
-                    phone: user.phoneNumber,
-                    role: 'user',
-                    authMethod: 'phone',
-                    createdAt: new Date(),
-                    status: 'active',
-                    totalOrders: 0,
-                    totalSpent: 0,
-                    lastLogin: new Date(),
-                    notificationEnabled: false
-                });
-                console.log('✅ New phone user created');
-            } else {
-                // تحديث بيانات المستخدم الحالي
-                await db.collection('users').doc(user.uid).update({
-                    lastLogin: new Date(),
-                    phone: user.phoneNumber
-                });
-            }
-        } catch (error) {
-            console.error('❌ Error saving phone user data:', error);
-        }
-    }
-
-    // 🔥 إعادة إرسال الرمز
-    async function resendVerificationCode() {
-        let phoneNumber, recaptchaVerifierToUse, confirmationVar;
-        
-        if (signupConfirmationResult) {
-            // حالة التسجيل
-            phoneNumber = document.getElementById('phoneSignupNumber').value;
-            recaptchaVerifierToUse = signupRecaptchaVerifier;
-            confirmationVar = 'signup';
-        } else {
-            // حالة تسجيل الدخول
-            phoneNumber = document.getElementById('phoneNumber').value;
-            recaptchaVerifierToUse = recaptchaVerifier;
-            confirmationVar = 'login';
-        }
-        
-        const fullPhoneNumber = '+222' + phoneNumber;
-        
-        try {
-            // إعادة تهيئة reCAPTCHA المناسب
-            if (recaptchaVerifierToUse) {
-                recaptchaVerifierToUse.clear();
-            }
-            
-            if (confirmationVar === 'signup') {
-                initializeSignupRecaptcha();
-            } else {
-                initializeRecaptcha();
-            }
-            
-            // الانتظار قليلاً لتهيئة reCAPTCHA
-            setTimeout(async () => {
-                try {
-                    if (confirmationVar === 'signup') {
-                        signupConfirmationResult = await auth.signInWithPhoneNumber(fullPhoneNumber, signupRecaptchaVerifier);
-                    } else {
-                        confirmationResult = await auth.signInWithPhoneNumber(fullPhoneNumber, recaptchaVerifier);
-                    }
-                    showSystemMessage('✅ تم إعادة إرسال الرمز بنجاح', 'success');
-                } catch (error) {
-                    console.error('❌ Error resending code:', error);
-                    showSystemMessage('❌ ' + getPhoneErrorMessage(error.code));
-                }
-            }, 1000);
-            
-        } catch (error) {
-            console.error('❌ Error in resend process:', error);
-            showSystemMessage('❌ حدث خطأ في إعادة الإرسال');
-        }
-    }
-
-    // 🔥 رسائل الخطأ الخاصة بالمصادقة بالهاتف
-    function getPhoneErrorMessage(errorCode) {
-        const errorMessages = {
-            'auth/invalid-phone-number': 'رقم الهاتف غير صالح',
-            'auth/missing-phone-number': 'يرجى إدخال رقم الهاتف',
-            'auth/quota-exceeded': 'تم تجاوز عدد المحاولات، يرجى المحاولة لاحقاً',
-            'auth/user-disabled': 'هذا الحساب معطل',
-            'auth/operation-not-allowed': 'المصادقة بالهاتف غير مفعلة',
-            'auth/too-many-requests': 'محاولات كثيرة، يرجى الانتظار',
-            'auth/captcha-check-failed': 'فشل التحقق من reCAPTCHA',
-            'auth/invalid-verification-code': 'رمز التحقق غير صحيح',
-            'auth/missing-verification-code': 'يرجى إدخال رمز التحقق',
-            'auth/session-expired': 'انتهت الجلسة، يرجى إعادة المحاولة'
-        };
-        return errorMessages[errorCode] || 'حدث خطأ غير متوقع: ' + errorCode;
-    }
 
     // 🔥 نظام الإشعارات المبسط جداً
     async function initializeSimpleNotifications() {
@@ -1260,6 +930,17 @@
         document.getElementById('notificationStatusCard').style.display = 'none';
     }
 
+    // باقي الكود الأصلي يبقى كما هو بدون تغيير
+    function showSystemMessage(message, type = 'error') {
+        const messageDiv = document.getElementById('systemMessage');
+        const messageClass = type === 'error' ? 'error-message' : 'success-message';
+        messageDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
+        
+        setTimeout(() => {
+            messageDiv.innerHTML = '';
+        }, 5000);
+    }
+
     // نظام المصادقة
     auth.onAuthStateChanged(async (user) => {
         if (user) {
@@ -1275,7 +956,7 @@
         
         try {
             document.getElementById('userName').textContent = user.displayName || 'مستخدم';
-            document.getElementById('userEmail').textContent = user.email || user.phoneNumber || 'لا يوجد بريد';
+            document.getElementById('userEmail').textContent = user.email;
             document.getElementById('userAvatar').textContent = (user.displayName || 'U').charAt(0).toUpperCase();
             
             await loadUserData(user);
@@ -1415,7 +1096,6 @@
                 await db.collection('users').doc(user.uid).set({
                     name: user.displayName || 'مستخدم',
                     email: user.email,
-                    phone: user.phoneNumber,
                     role: 'user',
                     createdAt: new Date(),
                     status: 'active',
@@ -1748,18 +1428,9 @@
             'auth/wrong-password': 'كلمة المرور غير صحيحة',
             'auth/email-already-in-use': 'هذا البريد الإلكتروني مستخدم بالفعل',
             'auth/weak-password': 'كلمة المرور ضعيفة، يجب أن تكون 6 أحرف على الأقل',
-            'auth/network-request-failed': 'خطأ في الشبكة، يرجى المحاولة مرة أخرى',
-            'auth/invalid-phone-number': 'رقم الهاتف غير صالح',
-            'auth/missing-phone-number': 'يرجى إدخال رقم الهاتف',
-            'auth/quota-exceeded': 'تم تجاوز عدد المحاولات، يرجى المحاولة لاحقاً',
-            'auth/operation-not-allowed': 'المصادقة بالهاتف غير مفعلة',
-            'auth/too-many-requests': 'محاولات كثيرة، يرجى الانتظار',
-            'auth/captcha-check-failed': 'فشل التحقق من reCAPTCHA',
-            'auth/invalid-verification-code': 'رمز التحقق غير صحيح',
-            'auth/missing-verification-code': 'يرجى إدخال رمز التحقق',
-            'auth/session-expired': 'انتهت الجلسة، يرجى إعادة المحاولة'
+            'auth/network-request-failed': 'خطأ في الشبكة، يرجى المحاولة مرة أخرى'
         };
-        return errorMessages[errorCode] || 'حدث خطأ غير متوقع: ' + errorCode;
+        return errorMessages[errorCode] || 'حدث خطأ غير متوقع';
     }
 
     // دوال الإجراءات
@@ -1856,23 +1527,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ me.html loaded successfully');
         setupMobileMenu();
-        
-        // 🔥 تهيئة reCAPTCHA عند تحميل الصفحة
-        setTimeout(initializeRecaptcha, 1000);
-        setTimeout(initializeSignupRecaptcha, 1500);
     });
-
-    // 🔥 دالة عرض رسائل النظام
-    function showSystemMessage(message, type = 'error') {
-        const messageDiv = document.getElementById('systemMessage');
-        const messageClass = type === 'error' ? 'error-message' : 'success-message';
-        messageDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
-        
-        setTimeout(() => {
-            messageDiv.innerHTML = '';
-        }, 5000);
-    }
-</script>
-
+    </script>
 </body>
 </html>
