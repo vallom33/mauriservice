@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, shrink-to-fit=no">
     <title>انضم كوكيل - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -62,7 +62,6 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
-
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
@@ -94,16 +93,29 @@ document.addEventListener('keydown', function(e) {
 <!-- Manifest -->
 <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 
-
-
-
-
     <style>
+        /* إصلاحات iOS */
+        html {
+            -webkit-overflow-scrolling: touch;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            height: 100%;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-text-size-adjust: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
         
         body {
@@ -196,6 +208,8 @@ document.addEventListener('keydown', function(e) {
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin: 2rem auto;
             text-align: center;
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
         }
         
         .location-importance {
@@ -244,6 +258,8 @@ document.addEventListener('keydown', function(e) {
             text-align: center;
             border-left: 4px solid #2c5aa0;
             transition: transform 0.3s ease;
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
         }
         
         .benefit-card:hover {
@@ -439,32 +455,6 @@ document.addEventListener('keydown', function(e) {
             margin-top: 3rem;
         }
         
-        /* أنماط المصادقة */
-        .auth-section {
-            background: white;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        
-        .user-welcome {
-            background: #e8f5e8;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-right: 4px solid #4caf50;
-        }
-        
-        .agent-status {
-            background: #fff3cd;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            border-right: 4px solid #ffc107;
-        }
-        
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -558,7 +548,6 @@ document.addEventListener('keydown', function(e) {
             <a href="agents.html" class="nav-link active">انضم كوكيل</a>
             <a href="contact.html" class="nav-link">اتصل بنا</a>
             <a href="me.html" class="nav-link">👤 حسابي</a>
-            <div id="authElements"></div>
         </div>
     </nav>
 
@@ -570,19 +559,6 @@ document.addEventListener('keydown', function(e) {
     </section>
 
     <section class="container">
-        <!-- قسم المصادقة -->
-        <div class="auth-section" id="authSection">
-            <div id="userWelcome" class="user-welcome" style="display: none;">
-                <h3>مرحباً بك! <span id="userName"></span></h3>
-                <p>يمكنك الآن التقديم للانضمام كوسيط خدمات</p>
-            </div>
-            <div id="agentStatus" class="agent-status" style="display: none;">
-                <h4>📋 حالة طلب الانضمام: <span id="statusText">جارٍ المراجعة</span></h4>
-                <p id="statusMessage">سيتم مراجعة طلبك خلال 12 ساعة</p>
-            </div>
-            <div id="authButtons"></div>
-        </div>
-
         <div class="agent-section">
             <h2 style="color: #2c5aa0; margin-bottom: 1rem;">تبحث عن دخل إضافي؟</h2>
             <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666;">
@@ -611,17 +587,6 @@ document.addEventListener('keydown', function(e) {
                         <span class="stat-number" id="totalAgents">0</span>
                         <span>وكيل نشط</span>
                     </div>
-                    <!--
-                    <div class="stat-item">
-                        <span class="stat-number" id="totalEarnings">0</span>
-                        <span>MRU أرباح</span>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-number" id="completedOrders">21</span>
-                        <span>طلب منفذ</span>
-                    </div>
-                    -->
                     <div class="stat-item">
                         <span class="stat-number">4.8</span>
                         <span>تقييم ⭐</span>
@@ -705,7 +670,7 @@ document.addEventListener('keydown', function(e) {
                     🚀 قدم طلب الانضمام
                 </button>
                 <p style="color: #666; margin-top: 1rem;">
-                    سيتم مراجعة طلبك خلال  ساعة وسنتصل بك لتأكيد التفاصيل
+                    سيتم مراجعة طلبك خلال ساعة وسنتصل بك لتأكيد التفاصيل
                 </p>
             </div>
         </div>
@@ -809,51 +774,19 @@ document.addEventListener('keydown', function(e) {
         </div>
     </div>
 
-    <!-- نماذج المصادقة -->
-    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
-            <h3>تسجيل الدخول</h3>
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem;">البريد الإلكتروني</label>
-                <input type="email" id="loginEmail" placeholder="أدخل بريدك الإلكتروني" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem;">كلمة المرور</label>
-                <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
-            </div>
-            <button onclick="loginUser()" class="btn-primary">تسجيل الدخول</button>
-            <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
-            <p style="text-align: center; margin-top: 1rem;">
-                <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer;">إنشاء حساب جديد</a>
-            </p>
-        </div>
-    </div>
-
-    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
-            <h3>إنشاء حساب جديد</h3>
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem;">الاسم الكامل</label>
-                <input type="text" id="signupName" placeholder="أدخل اسمك الكامل" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem;">رقم الهاتف</label>
-                <input type="tel" id="signupPhone" placeholder="أدخل رقم هاتفك" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem;">البريد الإلكتروني</label>
-                <input type="email" id="signupEmail" placeholder="أدخل بريدك الإلكتروني" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem;">كلمة المرور</label>
-                <input type="password" id="signupPassword" placeholder="أدخل كلمة المرور (6 أحرف على الأقل)" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
-            </div>
-            <button onclick="signupUser()" class="btn-primary">إنشاء حساب</button>
-            <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
-        </div>
-    </div>
-
     <script>
+        // إصلاحات iOS
+        document.addEventListener('DOMContentLoaded', function() {
+            // منع السلوك غير المرغوب في iOS
+            document.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            // إصلاح التمرير
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+        });
+
         // تهيئة Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyC3qL5dzdOvIv7raaEd3xWOOraCiRks0h0",
@@ -865,10 +798,7 @@ document.addEventListener('keydown', function(e) {
         };
 
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.firestore();
-
-        let userApplication = null;
 
         // Mobile menu functionality
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -889,77 +819,6 @@ document.addEventListener('keydown', function(e) {
             setupEarningsCalculator();
             loadAgentsStats();
         });
-
-        // نظام المصادقة
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                await showUserWelcome(user);
-                await checkUserApplication(user);
-            } else {
-                showAuthButtons();
-            }
-        });
-
-        async function showUserWelcome(user) {
-            document.getElementById('userWelcome').style.display = 'block';
-            document.getElementById('userName').textContent = user.displayName || user.email;
-            document.getElementById('authButtons').innerHTML = `
-                <button onclick="logoutUser()" class="btn-primary" style="padding: 0.5rem 1rem;">تسجيل الخروج</button>
-            `;
-        }
-
-        function showAuthButtons() {
-            document.getElementById('userWelcome').style.display = 'none';
-            document.getElementById('agentStatus').style.display = 'none';
-            document.getElementById('authButtons').innerHTML = `
-                <button onclick="showLoginModal()" class="btn-primary" style="padding: 0.5rem 1rem;">تسجيل الدخول</button>
-                <button onclick="showSignupModal()" class="btn-outline" style="padding: 0.5rem 1rem;">إنشاء حساب</button>
-            `;
-        }
-
-        // التحقق من طلب المستخدم
-        async function checkUserApplication(user) {
-            try {
-                const applicationsSnapshot = await db.collection('agent_applications')
-                    .where('userId', '==', user.uid)
-                    .orderBy('timestamp', 'desc')
-                    .limit(1)
-                    .get();
-
-                if (!applicationsSnapshot.empty) {
-                    userApplication = applicationsSnapshot.docs[0].data();
-                    userApplication.id = applicationsSnapshot.docs[0].id;
-                    
-                    showApplicationStatus(userApplication);
-                } else {
-                    document.getElementById('agentStatus').style.display = 'none';
-                    document.getElementById('applyButton').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error checking application:', error);
-            }
-        }
-
-        function showApplicationStatus(application) {
-            const statusElement = document.getElementById('agentStatus');
-            const statusText = document.getElementById('statusText');
-            const statusMessage = document.getElementById('statusMessage');
-            
-            statusElement.style.display = 'block';
-            document.getElementById('applyButton').style.display = 'none';
-            
-            const statusConfig = {
-                'pending': { text: '⏳ قيد المراجعة', message: 'جاري مراجعة طلبك، سيتم الرد خلال 24 ساعة', color: '#fff3cd' },
-                'approved': { text: '✅ مقبول', message: 'مبروك! تم قبول طلبك. سنتواصل معك قريباً', color: '#d4edda' },
-                'rejected': { text: '❌ مرفوض', message: 'نعتذر، لم يتم قبول طلبك حالياً', color: '#f8d7da' },
-                'under_review': { text: '🔍 قيد التدقيق', message: 'طلبك قيد التدقيق الإضافي', color: '#cce7ff' }
-            };
-            
-            const config = statusConfig[application.status] || statusConfig.pending;
-            statusText.textContent = config.text;
-            statusMessage.textContent = application.message || config.message;
-            statusElement.style.background = config.color;
-        }
 
         // حاسبة الأرباح
         function setupEarningsCalculator() {
@@ -993,17 +852,6 @@ document.addEventListener('keydown', function(e) {
                 
                 document.getElementById('totalAgents').textContent = agentsSnapshot.size;
 
-                // إحصائيات الأرباح (محاكاة)
-                const totalEarnings = agentsSnapshot.size * 15000; // متوسط أرباح
-                document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString();
-
-                // عدد الطلبات المكتملة
-                const ordersSnapshot = await db.collection('orders')
-                    .where('status', '==', 'مكتمل')
-                    .get();
-                
-                document.getElementById('completedOrders').textContent = ordersSnapshot.size;
-
             } catch (error) {
                 console.log('⚠️ لا يمكن تحميل الإحصائيات');
             }
@@ -1011,23 +859,7 @@ document.addEventListener('keydown', function(e) {
 
         // إظهار نموذج التقديم
         function showApplicationModal() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert('⚠️ يرجى تسجيل الدخول أولاً لتقديم طلب الانضمام');
-                showLoginModal();
-                return;
-            }
-            
             document.getElementById('applicationModal').style.display = 'flex';
-            
-            // تعبئة البيانات من حساب المستخدم إن وجدت
-            db.collection('users').doc(user.uid).get().then((doc) => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    document.getElementById('applicantName').value = userData.name || '';
-                    document.getElementById('applicantPhone').value = userData.phone || '';
-                }
-            });
         }
 
         function closeApplicationModal() {
@@ -1037,14 +869,8 @@ document.addEventListener('keydown', function(e) {
         // تقديم طلب الانضمام
         document.getElementById('agentApplicationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const user = auth.currentUser;
-            if (!user) return;
 
             const applicationData = {
-                userId: user.uid,
-                userName: user.displayName,
-                userEmail: user.email,
                 name: document.getElementById('applicantName').value,
                 phone: document.getElementById('applicantPhone').value,
                 district: document.getElementById('applicantDistrict').value,
@@ -1065,98 +891,14 @@ document.addEventListener('keydown', function(e) {
                 const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
                 
-                alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك خلال  ساعة.');
+                alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك خلال ساعة.');
                 closeApplicationModal();
-                
-                // تحديث الواجهة
-                await checkUserApplication(user);
                 
             } catch (error) {
                 console.error('❌ خطأ في إرسال الطلب:', error);
                 alert('⚠️ حدث خطأ في إرسال الطلب. يرجى المحاولة مرة أخرى.');
             }
         });
-
-        // دوال المصادقة
-        function showLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-
-        function hideLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-        }
-
-        function showSignupModal() {
-            document.getElementById('signupModal').style.display = 'flex';
-        }
-
-        function hideSignupModal() {
-            document.getElementById('signupModal').style.display = 'none';
-        }
-
-        async function loginUser() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                hideLoginModal();
-            } catch (error) {
-                alert('❌ ' + getErrorMessage(error.code));
-            }
-        }
-
-        async function signupUser() {
-            const name = document.getElementById('signupName').value;
-            const phone = document.getElementById('signupPhone').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            
-            if (password.length < 6) {
-                alert('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-                return;
-            }
-            
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await userCredential.user.updateProfile({
-                    displayName: name
-                });
-
-                await db.collection('users').doc(userCredential.user.uid).set({
-                    name: name,
-                    phone: phone,
-                    email: email,
-                    role: 'user',
-                    createdAt: new Date(),
-                    status: 'active'
-                });
-
-                hideSignupModal();
-                alert('✅ تم إنشاء حسابك بنجاح!');
-            } catch (error) {
-                alert('❌ ' + getErrorMessage(error.code));
-            }
-        }
-
-        async function logoutUser() {
-            try {
-                await auth.signOut();
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        }
-
-        function getErrorMessage(errorCode) {
-            const messages = {
-                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
-                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
-                'auth/weak-password': 'كلمة المرور ضعيفة',
-                'auth/user-not-found': 'لم يتم العثور على المستخدم',
-                'auth/wrong-password': 'كلمة المرور غير صحيحة'
-            };
-            return messages[errorCode] || 'حدث خطأ غير متوقع';
-        }
 
         // تتبع الزوار في Firebase
         async function trackVisitor() {
