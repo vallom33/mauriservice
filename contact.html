@@ -65,11 +65,7 @@ document.addEventListener('keydown', function(e) {
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    
-    <!-- PWA Manifest -->
-  
     
     <!-- الأيقونات الجديدة -->
     <!-- PWA Meta Tags -->
@@ -98,25 +94,6 @@ document.addEventListener('keydown', function(e) {
 <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
     
     <style>
-        /* إضافة أنماط نظام المصادقة */
-        .auth-section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .user-welcome {
-            background: #e8f5e8;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-right: 4px solid #4caf50;
-        }
-
-        /* باقي الأنماط تبقى كما هي */
         * {
             margin: 0;
             padding: 0;
@@ -298,17 +275,6 @@ document.addEventListener('keydown', function(e) {
         .btn-primary:hover {
             background: #1e3a8a;
         }
-
-        .btn-outline {
-            background: transparent;
-            color: #2c5aa0;
-            border: 2px solid #2c5aa0;
-        }
-        
-        .btn-outline:hover {
-            background: #2c5aa0;
-            color: white;
-        }
         
         .footer {
             background: #1e3a8a;
@@ -432,15 +398,6 @@ document.addEventListener('keydown', function(e) {
     </section>
 
     <section class="container">
-        <!-- قسم المصادقة -->
-        <div class="auth-section" id="authSection">
-            <div id="userWelcome" class="user-welcome" style="display: none;">
-                <h3>مرحباً بك! <span id="userName"></span></h3>
-                <p>يمكنك الآن إرسال رسائل وتتبع طلباتك</p>
-            </div>
-            <div id="authButtons"></div>
-        </div>
-
         <div class="contact-section">
             <div class="contact-info">
                 <h2 style="color: #2c5aa0; margin-bottom: 1.5rem;">معلومات الاتصال</h2>
@@ -532,51 +489,6 @@ document.addEventListener('keydown', function(e) {
         </div>
     </footer>
 
-    <!-- نموذج تسجيل الدخول -->
-    <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
-            <h3>تسجيل الدخول</h3>
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="loginEmail" placeholder="أدخل بريدك الإلكتروني">
-            </div>
-            <div class="form-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور">
-            </div>
-            <button onclick="loginUser()" class="btn-primary">تسجيل الدخول</button>
-            <button onclick="hideLoginModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
-            <p style="text-align: center; margin-top: 1rem;">
-                <a onclick="showSignupModal()" style="color: #2c5aa0; cursor: pointer;">إنشاء حساب جديد</a>
-            </p>
-        </div>
-    </div>
-
-    <!-- نموذج إنشاء حساب -->
-    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 400px;">
-            <h3>إنشاء حساب جديد</h3>
-            <div class="form-group">
-                <label>الاسم الكامل</label>
-                <input type="text" id="signupName" placeholder="أدخل اسمك الكامل">
-            </div>
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="tel" id="signupPhone" placeholder="أدخل رقم هاتفك">
-            </div>
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="signupEmail" placeholder="أدخل بريدك الإلكتروني">
-            </div>
-            <div class="form-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="signupPassword" placeholder="أدخل كلمة المرور (6 أحرف على الأقل)">
-            </div>
-            <button onclick="signupUser()" class="btn-primary">إنشاء حساب</button>
-            <button onclick="hideSignupModal()" style="background: #6c757d; margin-top: 0.5rem;" class="btn-primary">إلغاء</button>
-        </div>
-    </div>
-
     <script>
         // تهيئة Firebase
         const firebaseConfig = {
@@ -589,7 +501,6 @@ document.addEventListener('keydown', function(e) {
         };
 
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.firestore();
 
         // Mobile menu functionality
@@ -606,120 +517,6 @@ document.addEventListener('keydown', function(e) {
             }
         });
 
-        // نظام المصادقة
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                showUserWelcome(user);
-            } else {
-                showAuthButtons();
-            }
-        });
-
-        function showUserWelcome(user) {
-            document.getElementById('userWelcome').style.display = 'block';
-            document.getElementById('userName').textContent = user.displayName || user.email;
-            document.getElementById('authButtons').innerHTML = `
-                <button onclick="logoutUser()" class="btn-outline">تسجيل الخروج</button>
-            `;
-            
-            // تعبئة بيانات المستخدم في النموذج
-            db.collection('users').doc(user.uid).get().then((doc) => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    document.getElementById('name').value = userData.name || '';
-                    document.getElementById('phone').value = userData.phone || '';
-                }
-            });
-        }
-
-        function showAuthButtons() {
-            document.getElementById('userWelcome').style.display = 'none';
-            document.getElementById('authButtons').innerHTML = `
-                <button onclick="showLoginModal()" class="btn-primary">تسجيل الدخول</button>
-                <button onclick="showSignupModal()" class="btn-outline">إنشاء حساب</button>
-            `;
-        }
-
-        function showLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-
-        function hideLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-        }
-
-        function showSignupModal() {
-            document.getElementById('signupModal').style.display = 'flex';
-        }
-
-        function hideSignupModal() {
-            document.getElementById('signupModal').style.display = 'none';
-        }
-
-        async function loginUser() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                hideLoginModal();
-            } catch (error) {
-                alert('❌ ' + getErrorMessage(error.code));
-            }
-        }
-
-        async function signupUser() {
-            const name = document.getElementById('signupName').value;
-            const phone = document.getElementById('signupPhone').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            
-            if (password.length < 6) {
-                alert('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-                return;
-            }
-            
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await userCredential.user.updateProfile({
-                    displayName: name
-                });
-
-                await db.collection('users').doc(userCredential.user.uid).set({
-                    name: name,
-                    phone: phone,
-                    email: email,
-                    role: 'user',
-                    createdAt: new Date(),
-                    status: 'active'
-                });
-
-                hideSignupModal();
-                alert('✅ تم إنشاء حسابك بنجاح!');
-            } catch (error) {
-                alert('❌ ' + getErrorMessage(error.code));
-            }
-        }
-
-        async function logoutUser() {
-            try {
-                await auth.signOut();
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        }
-
-        function getErrorMessage(errorCode) {
-            const messages = {
-                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
-                'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
-                'auth/weak-password': 'كلمة المرور ضعيفة',
-                'auth/user-not-found': 'لم يتم العثور على المستخدم',
-                'auth/wrong-password': 'كلمة المرور غير صحيحة'
-            };
-            return messages[errorCode] || 'حدث خطأ غير متوقع';
-        }
-
         // نظام إرسال الرسائل مع Firebase
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -728,9 +525,6 @@ document.addEventListener('keydown', function(e) {
             const phone = document.getElementById('phone').value;
             const service = document.getElementById('service').value;
             const message = document.getElementById('message').value;
-            
-            const user = auth.currentUser;
-            const userId = user ? user.uid : 'anonymous';
             
             const serviceNames = {
                 'delivery': 'توصيل مشتريات',
@@ -753,7 +547,6 @@ document.addEventListener('keydown', function(e) {
                     timestamp: new Date(),
                     read: false,
                     type: 'message',
-                    userId: userId,
                     status: 'جديد'
                 };
                 
@@ -767,8 +560,7 @@ document.addEventListener('keydown', function(e) {
                         message: message,
                         timestamp: new Date(),
                         status: 'جديد',
-                        type: 'agent_request',
-                        userId: userId
+                        type: 'agent_request'
                     };
                     await db.collection('agents').add(agentData);
                 }

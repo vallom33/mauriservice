@@ -94,20 +94,25 @@ document.addEventListener('keydown', function(e) {
 <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 
     <style>
-        /* إصلاحات iOS */
+        /* إصلاحات iOS والهواتف - حل مشكلة الاهتزاز */
         html {
             -webkit-overflow-scrolling: touch;
             height: 100%;
             overflow-x: hidden;
+            position: fixed;
+            width: 100%;
         }
         
         body {
             height: 100%;
             overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
             -webkit-text-size-adjust: 100%;
             padding: 0;
             margin: 0;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
         }
 
         * {
@@ -116,6 +121,7 @@ document.addEventListener('keydown', function(e) {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -130,7 +136,17 @@ document.addEventListener('keydown', function(e) {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 60px;
+        }
+        
+        /* إضافة مساحة للـ navbar الثابت */
+        body {
+            padding-top: 60px;
         }
         
         .nav-logo {
@@ -175,13 +191,15 @@ document.addEventListener('keydown', function(e) {
             font-size: 1.3rem;
             color: #2c5aa0;
             cursor: pointer;
+            padding: 5px;
         }
         
         .page-hero {
             background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
             color: white;
-            padding: 60px 1rem 40px;
+            padding: 40px 1rem 30px;
             text-align: center;
+            margin-top: 0;
         }
         
         .page-hero h1 {
@@ -199,24 +217,26 @@ document.addEventListener('keydown', function(e) {
         .container {
             max-width: 100%;
             padding: 0 1rem;
+            position: relative;
         }
         
         .agent-section {
             background: white;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin: 2rem auto;
+            margin: 1.5rem auto;
             text-align: center;
             -webkit-transform: translate3d(0,0,0);
             transform: translate3d(0,0,0);
+            will-change: transform;
         }
         
         .location-importance {
             background: #e8f4ff;
             padding: 1.5rem;
             border-radius: 12px;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
             border-right: 4px solid #2c5aa0;
             text-align: right;
         }
@@ -248,7 +268,7 @@ document.addEventListener('keydown', function(e) {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
         
         .benefit-card {
@@ -260,6 +280,7 @@ document.addEventListener('keydown', function(e) {
             transition: transform 0.3s ease;
             -webkit-transform: translate3d(0,0,0);
             transform: translate3d(0,0,0);
+            will-change: transform;
         }
         
         .benefit-card:hover {
@@ -282,9 +303,9 @@ document.addEventListener('keydown', function(e) {
         .commission-calculator {
             background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
             color: white;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 15px;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
         
         .calculator-input {
@@ -303,6 +324,8 @@ document.addEventListener('keydown', function(e) {
             width: 120px;
             text-align: center;
             font-size: 1.1rem;
+            background: white;
+            color: #333;
         }
         
         .calculator-result {
@@ -316,7 +339,7 @@ document.addEventListener('keydown', function(e) {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
         
         .requirement-item {
@@ -329,9 +352,9 @@ document.addEventListener('keydown', function(e) {
         
         .stats-section {
             background: #f8f9fa;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 15px;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
         
         .stats-grid {
@@ -375,6 +398,7 @@ document.addEventListener('keydown', function(e) {
             border-radius: 8px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
+            background: white;
         }
         
         .form-input:focus {
@@ -399,6 +423,7 @@ document.addEventListener('keydown', function(e) {
             font-size: 1rem;
             resize: vertical;
             min-height: 80px;
+            background: white;
         }
         
         .location-info {
@@ -452,7 +477,7 @@ document.addEventListener('keydown', function(e) {
             color: white;
             padding: 2rem 1rem;
             text-align: center;
-            margin-top: 3rem;
+            margin-top: 2rem;
         }
         
         /* أنماط المصادقة */
@@ -485,8 +510,8 @@ document.addEventListener('keydown', function(e) {
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
-                position: absolute;
-                top: 100%;
+                position: fixed;
+                top: 60px;
                 right: 0;
                 left: 0;
                 background: white;
@@ -494,6 +519,7 @@ document.addEventListener('keydown', function(e) {
                 padding: 1rem;
                 box-shadow: 0 5px 10px rgba(0,0,0,0.1);
                 border-radius: 0 0 10px 10px;
+                z-index: 999;
             }
             
             .nav-links.active {
@@ -505,7 +531,7 @@ document.addEventListener('keydown', function(e) {
             }
             
             .page-hero {
-                padding: 35px 1rem 25px !important;
+                padding: 25px 1rem 20px !important;
             }
             
             .page-hero h1 {
@@ -525,6 +551,15 @@ document.addEventListener('keydown', function(e) {
             .benefits-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .agent-section {
+                padding: 1rem;
+                margin: 1rem auto;
+            }
+            
+            .container {
+                padding: 0 0.5rem;
+            }
         }
         
         @media (min-width: 992px) {
@@ -533,7 +568,7 @@ document.addEventListener('keydown', function(e) {
             }
             
             .page-hero {
-                padding: 80px 2rem 60px;
+                padding: 60px 2rem 40px;
             }
             
             .page-hero h1 {
@@ -547,8 +582,8 @@ document.addEventListener('keydown', function(e) {
             }
             
             .agent-section {
-                padding: 3rem;
-                margin: 3rem auto;
+                padding: 2.5rem;
+                margin: 2.5rem auto;
             }
             
             .btn-primary {
@@ -627,17 +662,6 @@ document.addEventListener('keydown', function(e) {
                         <span class="stat-number" id="totalAgents">0</span>
                         <span>وكيل نشط</span>
                     </div>
-                    <!--
-                    <div class="stat-item">
-                        <span class="stat-number" id="totalEarnings">0</span>
-                        <span>MRU أرباح</span>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-number" id="completedOrders">21</span>
-                        <span>طلب منفذ</span>
-                    </div>
-                    -->
                     <div class="stat-item">
                         <span class="stat-number">4.8</span>
                         <span>تقييم ⭐</span>
@@ -721,7 +745,7 @@ document.addEventListener('keydown', function(e) {
                     🚀 قدم طلب الانضمام
                 </button>
                 <p style="color: #666; margin-top: 1rem;">
-                    سيتم مراجعة طلبك خلال  ساعة وسنتصل بك لتأكيد التفاصيل
+                    سيتم مراجعة طلبك خلال ساعة وسنتصل بك لتأكيد التفاصيل
                 </p>
             </div>
         </div>
@@ -870,16 +894,25 @@ document.addEventListener('keydown', function(e) {
     </div>
 
     <script>
-        // إصلاحات iOS
+        // إصلاحات iOS والهواتف - حل مشكلة الاهتزاز
         document.addEventListener('DOMContentLoaded', function() {
-            // منع السلوك غير المرغوب في iOS
-            document.addEventListener('touchstart', function(e) {
+            // منع التأثيرات غير المرغوبة في الهواتف
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            
+            // إصلاح التمرير على iOS
+            document.addEventListener('touchmove', function(e) {
                 e.preventDefault();
             }, { passive: false });
             
-            // إصلاح التمرير
-            document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
+            // إصلاح التركيز على الحقول
+            document.addEventListener('focus', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    setTimeout(function() {
+                        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                }
+            }, true);
         });
 
         // تهيئة Firebase
@@ -902,7 +935,8 @@ document.addEventListener('keydown', function(e) {
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         
-        mobileMenuBtn.addEventListener('click', () => {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             navLinks.classList.toggle('active');
         });
         
@@ -1021,17 +1055,6 @@ document.addEventListener('keydown', function(e) {
                 
                 document.getElementById('totalAgents').textContent = agentsSnapshot.size;
 
-                // إحصائيات الأرباح (محاكاة)
-                const totalEarnings = agentsSnapshot.size * 15000; // متوسط أرباح
-                document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString();
-
-                // عدد الطلبات المكتملة
-                const ordersSnapshot = await db.collection('orders')
-                    .where('status', '==', 'مكتمل')
-                    .get();
-                
-                document.getElementById('completedOrders').textContent = ordersSnapshot.size;
-
             } catch (error) {
                 console.log('⚠️ لا يمكن تحميل الإحصائيات');
             }
@@ -1093,7 +1116,7 @@ document.addEventListener('keydown', function(e) {
                 const whatsappUrl = `https://wa.me/22231573340?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
                 
-                alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك خلال  ساعة.');
+                alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك خلال ساعة.');
                 closeApplicationModal();
                 
                 // تحديث الواجهة
