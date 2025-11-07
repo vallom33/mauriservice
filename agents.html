@@ -6,61 +6,61 @@
     <title>انضم كوكيل - Mauri-Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-     <script>
-// ⚡ كود التحديث الإجباري للـ Service Worker
-if ('serviceWorker' in navigator) {
-  // إلغاء تسجيل أي Service Worker قديم
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for(let registration of registrations) {
-      registration.unregister();
-      console.log('🗑️ Unregistered old SW');
-    }
-  });
-
-  // تسجيل الـ Service Worker الجديد
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=2.0.0') // أضف نسخة هنا أيضاً
-      .then(function(registration) {
-        console.log('✅ SW registered: ', registration);
-        
-        // التحقق من التحديثات كل ساعة
-        setInterval(() => {
-          registration.update();
-        }, 60 * 60 * 1000);
-        
-      }).catch(function(error) {
-        console.log('❌ SW registration failed: ', error);
+    <script>
+    // ⚡ كود التحديث الإجباري للـ Service Worker
+    if ('serviceWorker' in navigator) {
+      // إلغاء تسجيل أي Service Worker قديم
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+          console.log('🗑️ Unregistered old SW');
+        }
       });
-  });
 
-  // إعادة تحميل الصفحة عند اكتشاف تحديث
-  navigator.serviceWorker.addEventListener('controllerchange', function() {
-    console.log('🔄 New SW activated - reloading page');
-    window.location.reload();
-  });
-}
+      // تسجيل الـ Service Worker الجديد
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js?v=2.0.0') // أضف نسخة هنا أيضاً
+          .then(function(registration) {
+            console.log('✅ SW registered: ', registration);
+            
+            // التحقق من التحديثات كل ساعة
+            setInterval(() => {
+              registration.update();
+            }, 60 * 60 * 1000);
+            
+          }).catch(function(error) {
+            console.log('❌ SW registration failed: ', error);
+          });
+      });
 
-// ⚡ إعادة تحميل الصفحة عند العودة (يساعد في التحديث)
-window.addEventListener('focus', function() {
-  if (document.visibilityState === 'visible') {
-    console.log('🔄 Page visible - checking for updates');
-    window.location.reload();
-  }
-});
+      // إعادة تحميل الصفحة عند اكتشاف تحديث
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        console.log('🔄 New SW activated - reloading page');
+        window.location.reload();
+      });
+    }
 
-// ⚡ إعادة تحميل قسري عند الضغط على Ctrl+F5
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-    console.log('🔄 Manual reload detected');
-    // حذف الكاش المحلي
-    caches.keys().then(function(names) {
-      for (let name of names) {
-        caches.delete(name);
+    // ⚡ إعادة تحميل الصفحة عند العودة (يساعد في التحديث)
+    window.addEventListener('focus', function() {
+      if (document.visibilityState === 'visible') {
+        console.log('🔄 Page visible - checking for updates');
+        window.location.reload();
       }
     });
-  }
-});
-</script>
+
+    // ⚡ إعادة تحميل قسري عند الضغط على Ctrl+F5
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+        console.log('🔄 Manual reload detected');
+        // حذف الكاش المحلي
+        caches.keys().then(function(names) {
+          for (let name of names) {
+            caches.delete(name);
+          }
+        });
+      }
+    });
+    </script>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
@@ -69,38 +69,37 @@ document.addEventListener('keydown', function(e) {
     
     <!-- الأيقونات الجديدة -->
     <!-- PWA Meta Tags -->
-<meta name="application-name" content="Mauri Services">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mauri Services">
-<meta name="description" content="منصة الخدمات المتكاملة في موريتانيا">
-<meta name="format-detection" content="telephone=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="msapplication-TileColor" content="#2c5aa0">
-<meta name="msapplication-tap-highlight" content="no">
-<meta name="theme-color" content="#2c5aa0">
+    <meta name="application-name" content="Mauri Services">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mauri Services">
+    <meta name="description" content="منصة الخدمات المتكاملة في موريتانيا">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#2c5aa0">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#2c5aa0">
 
-<!-- Apple Touch Icons -->
-<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
-<link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png">
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png">
 
-<!-- Favicon -->
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
 
-<!-- Manifest -->
-<link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 
     <style>
-        /* إصلاحات iOS والهواتف - حل مشكلة الاهتزاز */
+        /* إصلاحات iOS والهواتف - حل مشكلة التمرير */
         html {
             -webkit-overflow-scrolling: touch;
             height: 100%;
             overflow-x: hidden;
-            position: fixed;
-            width: 100%;
+            /* تم إزالة position: fixed */
         }
         
         body {
@@ -113,6 +112,8 @@ document.addEventListener('keydown', function(e) {
             margin: 0;
             -webkit-overflow-scrolling: touch;
             width: 100%;
+            /* إضافة خاصية لمنع التمرير الأفقي */
+            overscroll-behavior-y: none;
         }
 
         * {
@@ -560,6 +561,17 @@ document.addEventListener('keydown', function(e) {
             .container {
                 padding: 0 0.5rem;
             }
+            
+            /* إصلاحات إضافية للهواتف */
+            body {
+                overflow-y: auto !important;
+                position: static !important;
+            }
+            
+            html {
+                position: static !important;
+                overflow-y: auto !important;
+            }
         }
         
         @media (min-width: 992px) {
@@ -894,16 +906,12 @@ document.addEventListener('keydown', function(e) {
     </div>
 
     <script>
-        // إصلاحات iOS والهواتف - حل مشكلة الاهتزاز
+        // إصلاحات iOS والهواتف - حل مشكلة التمرير
         document.addEventListener('DOMContentLoaded', function() {
-            // منع التأثيرات غير المرغوبة في الهواتف
-            document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
-            
             // إصلاح التمرير على iOS
             document.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            }, { passive: false });
+                // السماح بالتمرير الطبيعي
+            }, { passive: true });
             
             // إصلاح التركيز على الحقول
             document.addEventListener('focus', function(e) {
@@ -913,6 +921,10 @@ document.addEventListener('keydown', function(e) {
                     }, 300);
                 }
             }, true);
+            
+            // إصلاحات إضافية للهواتف
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
         });
 
         // تهيئة Firebase
