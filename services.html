@@ -339,6 +339,24 @@ document.addEventListener('keydown', function(e) {
             font-weight: bold;
         }
         
+        .service-essential {
+            background: #dc3545;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .service-common {
+            background: #6f42c1;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
         .btn-primary {
             background: #2c5aa0;
             color: white;
@@ -571,7 +589,7 @@ document.addEventListener('keydown', function(e) {
         <!-- إحصائيات سريعة -->
         <div class="quick-stats" id="quickStats">
             <div class="stat-item">
-                <span class="stat-number" id="totalServices">30+</span>
+                <span class="stat-number" id="totalServices">35+</span>
                 <span>خدمة متاحة</span>
             </div>
             <div class="stat-item">
@@ -695,7 +713,7 @@ document.addEventListener('keydown', function(e) {
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // بيانات الخدمات المحسنة
+        // بيانات الخدمات المحسنة والمحدثة
         const servicesData = {
             delivery: {
                 title: "خدمات التوصيل",
@@ -703,7 +721,10 @@ document.addEventListener('keydown', function(e) {
                 services: [
                     { name: "توصيل مشتريات السوق", description: "خضروات، فواكه، لحوم، شاي", price: 100, popular: true, type: "delivery" },
                     { name: "توصيل وجبات طعام", description: "من المطاعم إلى منزلك", price: 100, popular: true, type: "delivery" },
-                    { name: "توصيل طرود", description: "أي شيء، في أي مكان", price: 100, popular: false, type: "delivery" }
+                    { name: "توصيل من مدينة إلى مدينة", description: "من نواكشوط إلى NDB والمذرذرة وكل المدن", price: 0, popular: true, type: "delivery", badge: "new" },
+                    { name: "توصيل أدوية ومواد طبية", description: "أدوية، مستلزمات طبية، إسعافات أولية", price: 150, popular: true, type: "delivery", badge: "essential" },
+                    { name: "توصيل طرود وباكجات", description: "أي شيء، أي حجم، أي وزن - توصيل آمن", price: 100, popular: true, type: "delivery", badge: "common" },
+                    { name: "لابتوب قوي للدراسة والعمل", description: "هل تريد لابتوب قوي للدراسة أو العمل؟ هنا ما تبحث عنه!", price: 0, popular: true, type: "delivery" }
                 ]
             },
             documents: {
@@ -856,6 +877,8 @@ document.addEventListener('keydown', function(e) {
                                         ${service.badge === 'new' ? '<span class="service-new">🆕 جديد</span>' : ''}
                                         ${service.badge === 'ai' ? '<span class="service-digital">🤖 AI</span>' : ''}
                                         ${service.badge === 'digital' ? '<span class="service-digital">🌐 رقمي</span>' : ''}
+                                        ${service.badge === 'essential' ? '<span class="service-essential">💊 ضروري</span>' : ''}
+                                        ${service.badge === 'common' ? '<span class="service-common">📦 شائع</span>' : ''}
                                         <span>⏱️ 1-4 ساعات</span>
                                     </div>
                                 </div>
